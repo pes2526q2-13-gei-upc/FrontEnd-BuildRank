@@ -12,6 +12,39 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
   String _selectedType = 'residential';
 
+  final List<Map<String, dynamic>> _buildingTypes = [
+    {
+      'id': 'residential',
+      'icon': Icons.apartment,
+      'title': 'Residencial',
+      'subtitle': 'Unifamiliar o pisos',
+    },
+    {
+      'id': 'commercial',
+      'icon': Icons.business,
+      'title': 'Comercial',
+      'subtitle': 'Oficines, comerç...',
+    },
+    {
+      'id': 'education',
+      'icon': Icons.school,
+      'title': 'Educatiu',
+      'subtitle': 'Escoles',
+    },
+    {
+      'id': 'health',
+      'icon': Icons.local_hospital,
+      'title': 'Sanitari',
+      'subtitle': 'Hospitals',
+    },
+    {
+      'id': 'mixed',
+      'icon': Icons.business_center,
+      'title': 'Mixt',
+      'subtitle': 'Edificis amb usos combinats',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,36 +131,32 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
           const SizedBox(height: 12),
 
-          Row(
-            children: [
-              Expanded(
-                child: _BuildingTypeCard(
-                  icon: Icons.apartment,
-                  title: "Residencial",
-                  subtitle: "Unifamiliar o pisos",
-                  selected: _selectedType == 'residential',
-                  onTap: () {
-                    setState(() {
-                      _selectedType = 'residential';
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _BuildingTypeCard(
-                  icon: Icons.business,
-                  title: "Comercial",
-                  subtitle: "Oficines, comerç...",
-                  selected: _selectedType == 'commercial',
-                  onTap: () {
-                    setState(() {
-                      _selectedType = 'commercial';
-                    });
-                  },
-                ),
-              ),
-            ],
+          SizedBox(
+            height: 120,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _buildingTypes.length,
+              itemBuilder: (context, index) {
+                final type = _buildingTypes[index];
+
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: index == _buildingTypes.length - 1 ? 0 : 12,
+                  ),
+                  child: _BuildingTypeCard(
+                    icon: type['icon'],
+                    title: type['title'],
+                    subtitle: type['subtitle'],
+                    selected: _selectedType == type['id'],
+                    onTap: () {
+                      setState(() {
+                        _selectedType = type['id'];
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
           ),
 
           const SizedBox(height: 20),
