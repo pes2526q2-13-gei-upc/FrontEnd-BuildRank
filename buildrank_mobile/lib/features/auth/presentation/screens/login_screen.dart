@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 //import '../../../formBuilding/presentation/screens/formBuilding_screen.dart'; //només per fer proves del formulari d'edifici
-
+import  '../../../buildingCard/presentation/screens/buildingCard_screen.dart'; //
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -112,8 +112,9 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (_) => const HomeScreen(),
+                            //builder: (_) => const HomeScreen(),
                             //builder: (_) => const BuildingFormScreen(), //només per fer proves del formulari, després canviar a HomeScreen
+                            builder: (_) => const BuildingDetailScreen(), //només per fer proves de la targeta d'edifici, després canviar a HomeScreen
                           ),
                         );
                       },
