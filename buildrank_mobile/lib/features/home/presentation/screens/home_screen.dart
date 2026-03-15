@@ -18,8 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _selectedIndex == 0
               ? 'BuildRank'
               : _selectedIndex == 1
-                  ? 'Rànquing'
-                  : 'Perfil',
+              ? 'Rànquing'
+              : 'Perfil',
         ),
         centerTitle: true,
         actions: _selectedIndex == 0
@@ -66,15 +66,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return const _PlaceholderScreen(
           icon: Icons.emoji_events,
           title: 'Pantalla de rànquing',
-          subtitle:
-              'Aquí hi anirà la classificació de la lliga energètica.',
+          subtitle: 'Aquí hi anirà la classificació de la lliga energètica.',
         );
       case 2:
         return const _PlaceholderScreen(
           icon: Icons.person,
           title: 'Pantalla de perfil',
-          subtitle:
-              'Aquí hi anirà el perfil de l’usuari i la configuració.',
+          subtitle: 'Aquí hi anirà el perfil de l’usuari i la configuració.',
         );
       default:
         return _buildDashboard();
@@ -88,27 +86,17 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 4),
         const Text(
           'Bon dia',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-          ),
+          style: TextStyle(fontSize: 14, color: Colors.black54),
         ),
         const SizedBox(height: 4),
         const Text(
           'Resum del teu edifici',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
         const Text(
           'Consulta l’estat energètic actual, la teva posició a la lliga i les properes accions recomanades.',
-          style: TextStyle(
-            fontSize: 16,
-            height: 1.4,
-            color: Colors.black54,
-          ),
+          style: TextStyle(fontSize: 16, height: 1.4, color: Colors.black54),
         ),
         const SizedBox(height: 24),
         Container(
@@ -116,10 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF3FA66B),
-                Color(0xFF6BCB8B),
-              ],
+              colors: [Color(0xFF3FA66B), Color(0xFF6BCB8B)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -138,31 +123,19 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 6),
               Text(
                 'Edifici monitoritzat aquesta setmana',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.white70),
               ),
               SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
-                    child: _MetricItem(
-                      label: 'Consum',
-                      value: '124 kWh',
-                    ),
+                    child: _MetricItem(label: 'Consum', value: '124 kWh'),
                   ),
                   Expanded(
-                    child: _MetricItem(
-                      label: 'Posició',
-                      value: '#3',
-                    ),
+                    child: _MetricItem(label: 'Posició', value: '#3'),
                   ),
                   Expanded(
-                    child: _MetricItem(
-                      label: 'Millora',
-                      value: '+12%',
-                    ),
+                    child: _MetricItem(label: 'Millora', value: '+12%'),
                   ),
                 ],
               ),
@@ -172,10 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 24),
         const Text(
           'Indicadors clau',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
         const _InfoTile(
@@ -198,10 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 24),
         const Text(
           'Accions ràpides',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
         Row(
@@ -255,10 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 'Objectiu setmanal',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               SizedBox(height: 8),
               Text(
@@ -281,10 +245,7 @@ class _MetricItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _MetricItem({
-    required this.label,
-    required this.value,
-  });
+  const _MetricItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -293,10 +254,7 @@ class _MetricItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-          ),
+          style: const TextStyle(color: Colors.white70, fontSize: 13),
         ),
         const SizedBox(height: 4),
         Text(
@@ -328,9 +286,7 @@ class _InfoTile extends StatelessWidget {
     return Card(
       elevation: 0,
       color: const Color(0xFFF7F8F5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ListTile(
         leading: Icon(icon),
         title: Text(title),
@@ -367,12 +323,7 @@ class _QuickActionCard extends StatelessWidget {
           children: [
             Icon(icon, size: 28),
             const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -404,10 +355,7 @@ class _PlaceholderScreen extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
