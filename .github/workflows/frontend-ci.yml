@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - desenvolupament
+      - "feature/**"
     paths:
       - "buildrank_mobile/**"
       - ".github/workflows/frontend-ci.yml"
