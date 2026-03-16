@@ -8,7 +8,6 @@ class BuildingDetailScreen extends StatefulWidget {
 }
 
 class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
-
   int _tabIndex = 0;
 
   @override
@@ -35,17 +34,14 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
           Padding(
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                "https://i.pravatar.cc/100",
-              ),
+              backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
             ),
-          )
+          ),
         ],
       ),
 
       body: ListView(
         children: [
-
           _buildHeader(),
 
           const SizedBox(height: 20),
@@ -85,7 +81,6 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -106,10 +101,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
 
           const Text(
             "Torre Skyline Heights",
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 6),
@@ -127,22 +119,17 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
           Center(
             child: Column(
               children: [
-
                 Container(
                   width: 180,
                   height: 180,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.green,
-                      width: 10,
-                    ),
+                    border: Border.all(color: Colors.green, width: 10),
                   ),
                   child: const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-
                         Text(
                           "94",
                           style: TextStyle(
@@ -157,7 +144,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                             color: Colors.green,
                             fontWeight: FontWeight.bold,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -175,7 +162,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   child: const Text("+12% vs temporada anterior"),
-                )
+                ),
               ],
             ),
           ),
@@ -190,16 +177,12 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 "RENDIMENT",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
               ),
               Text(
                 "Veure Auditoria",
@@ -221,7 +204,6 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             mainAxisSpacing: 12,
             childAspectRatio: 1.7,
             children: const [
-
               _MetricCard(
                 title: "QUALIFICACIÓ ENERGÈTICA",
                 value: "B",
@@ -246,7 +228,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                 icon: Icons.eco,
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -258,13 +240,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
-
           Text(
             "ACCIONS RECOMANADES",
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
           ),
 
           SizedBox(height: 14),
@@ -322,7 +300,6 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: const [
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -337,7 +314,10 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _DetailItem(label: "TIPOLOGIA", value: "Complex Residencial"),
-              _DetailItem(label: "TIPUS SUBMINISTRAMENT", value: "Mixt (xarxa/gas)"),
+              _DetailItem(
+                label: "TIPUS SUBMINISTRAMENT",
+                value: "Mixt (xarxa/gas)",
+              ),
             ],
           ),
         ],
@@ -358,11 +338,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
-              Icons.info_outline,
-              size: 22,
-              color: Colors.black54,
-            ),
+            const Icon(Icons.info_outline, size: 22, color: Colors.black54),
 
             const SizedBox(width: 12),
 
@@ -381,8 +357,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextSpan(
-                        text:
-                            ". Millora la qualificació energètica per passar a la "),
+                      text:
+                          ". Millora la qualificació energètica per passar a la ",
+                    ),
                     TextSpan(
                       text: "Gold League",
                       style: TextStyle(
@@ -413,15 +390,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
         child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Row(
               children: const [
-
-                Icon(
-                  Icons.access_time,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                Icon(Icons.access_time, color: Colors.white, size: 20),
 
                 SizedBox(width: 8),
 
@@ -448,7 +419,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             Text(
               "Les dades de verificació estan completes al 75%.",
               style: TextStyle(color: Colors.white70),
-            )
+            ),
           ],
         ),
       ),
@@ -478,7 +449,6 @@ class _MetricCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Text(
             title,
             style: const TextStyle(
@@ -500,9 +470,9 @@ class _MetricCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Icon(icon)
+              Icon(icon),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -532,11 +502,7 @@ class _ActionTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-
-          CircleAvatar(
-            backgroundColor: Colors.white,
-            child: Icon(icon),
-          ),
+          CircleAvatar(backgroundColor: Colors.white, child: Icon(icon)),
 
           const SizedBox(width: 12),
 
@@ -544,25 +510,17 @@ class _ActionTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
 
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Colors.black54,
-                  ),
-                )
+                Text(subtitle, style: const TextStyle(color: Colors.black54)),
               ],
             ),
           ),
 
-          const Icon(Icons.chevron_right)
+          const Icon(Icons.chevron_right),
         ],
       ),
     );
@@ -573,17 +531,13 @@ class _DetailItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _DetailItem({
-    required this.label,
-    required this.value,
-  });
+  const _DetailItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         Text(
           label,
           style: const TextStyle(
@@ -597,11 +551,8 @@ class _DetailItem extends StatelessWidget {
 
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        )
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }

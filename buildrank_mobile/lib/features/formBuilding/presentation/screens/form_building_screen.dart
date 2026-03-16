@@ -73,20 +73,14 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
           const Text(
             "Registra l'edifici",
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 6),
 
           const Text(
             "Completa les dades tècniques per obtenir el teu rànquing energètic.",
-            style: TextStyle(
-              color: Colors.black54,
-              height: 1.4,
-            ),
+            style: TextStyle(color: Colors.black54, height: 1.4),
           ),
 
           const SizedBox(height: 24),
@@ -196,10 +190,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
             ),
             child: const Text(
               "Desa i Continua →",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
 
@@ -231,10 +222,7 @@ class _StepCircle extends StatelessWidget {
   final int number;
   final bool active;
 
-  const _StepCircle({
-    required this.number,
-    this.active = false,
-  });
+  const _StepCircle({required this.number, this.active = false});
 
   @override
   Widget build(BuildContext context) {
@@ -286,18 +274,12 @@ class _BuildingTypeCard extends StatelessWidget {
           children: [
             Icon(icon, size: 28, color: Colors.green),
             const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.black54,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.black54),
             ),
           ],
         ),
