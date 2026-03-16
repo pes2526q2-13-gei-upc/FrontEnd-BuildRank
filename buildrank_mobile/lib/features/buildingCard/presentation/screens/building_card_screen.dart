@@ -391,7 +391,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              children: const [
+              children: [
                 Icon(Icons.access_time, color: Colors.white, size: 20),
 
                 SizedBox(width: 8),
