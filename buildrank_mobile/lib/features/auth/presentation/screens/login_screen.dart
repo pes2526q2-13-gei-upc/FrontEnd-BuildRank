@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../home/presentation/screens/home_screen.dart';
-//import '../../../formBuilding/presentation/screens/formBuilding_screen.dart'; //només per fer proves del formulari d'edifici
+//import '../../../formBuilding/presentation/screens/form_building_screen.dart'; //només per fer proves del formulari d'edifici
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -32,10 +32,7 @@ class LoginScreen extends StatelessWidget {
             const Text(
               'Benvingut a BuildRank',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             const Text(
@@ -66,18 +63,12 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Inicia sessió',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Accedeix amb el teu compte per veure la informació del teu edifici.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 24),
                   const TextField(
@@ -138,10 +129,7 @@ class LoginScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black54),
             ),
-            TextButton(
-              onPressed: null,
-              child: const Text('Registra’t'),
-            ),
+            TextButton(onPressed: null, child: const Text('Registra’t')),
           ],
         ),
       ),
