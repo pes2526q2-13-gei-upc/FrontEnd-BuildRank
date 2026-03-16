@@ -1,4 +1,11 @@
+import 'package:buildrank_mobile/shared/widgets/main_bottom_navigation.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../shared/widgets/metric_card.dart';
+import '../../../../shared/widgets/action_tile.dart';
+import '../../../../shared/widgets/league_info_card.dart';
+import '../../../../shared/widgets/revision_card.dart';
+import '../../../../shared/widgets/main_bottom_navigation.dart';
 
 class BuildingDetailScreen extends StatefulWidget {
   const BuildingDetailScreen({super.key});
@@ -62,11 +69,11 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
 
           const SizedBox(height: 20),
 
-          _buildLeagueInfo(),
+          const LeagueInfoCard(),
 
           const SizedBox(height: 20),
 
-          _buildRevision(),
+          const RevisionCard(),
 
           const SizedBox(height: 40),
         ],
@@ -204,25 +211,25 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             mainAxisSpacing: 12,
             childAspectRatio: 1.7,
             children: const [
-              _MetricCard(
+              MetricCard(
                 title: "QUALIFICACIÓ ENERGÈTICA",
                 value: "B",
                 icon: Icons.bolt,
               ),
 
-              _MetricCard(
+              MetricCard(
                 title: "EFICIÈNCIA HÍDRICA",
                 value: "A",
                 icon: Icons.water_drop,
               ),
 
-              _MetricCard(
+              MetricCard(
                 title: "RESILIÈNCIA",
                 value: "Alta",
                 icon: Icons.shield,
               ),
 
-              _MetricCard(
+              MetricCard(
                 title: "EMISSIONS DE CO2",
                 value: "12kg/m²",
                 icon: Icons.eco,
@@ -247,7 +254,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
 
           SizedBox(height: 14),
 
-          _ActionTile(
+          ActionTile(
             icon: Icons.bolt,
             title: "Executa Simulació",
             subtitle: "Prova el ROI de solar i aïllament",
@@ -256,7 +263,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
 
           SizedBox(height: 10),
 
-          _ActionTile(
+          ActionTile(
             icon: Icons.how_to_vote,
             title: "Votació de la comunitat",
             subtitle: "Revisa 2 renovacions actives",
@@ -265,7 +272,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
 
           SizedBox(height: 10),
 
-          _ActionTile(
+          ActionTile(
             icon: Icons.description,
             title: "Genera Informe",
             subtitle: "Exporta les dades de l'edifici",
@@ -320,207 +327,6 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLeagueInfo() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE4E7E2)),
-          color: const Color(0xFFF8FAF7),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.info_outline, size: 22, color: Colors.black54),
-
-            const SizedBox(width: 12),
-
-            Expanded(
-              child: RichText(
-                text: const TextSpan(
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                  children: [
-                    TextSpan(text: "Aquest edifici és actualment a la "),
-                    TextSpan(
-                      text: "Silver League",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
-                      text:
-                          ". Millora la qualificació energètica per passar a la ",
-                    ),
-                    TextSpan(
-                      text: "Gold League",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE0A100),
-                      ),
-                    ),
-                    TextSpan(text: "."),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRevision() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF4B5458),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.access_time, color: Colors.white, size: 20),
-
-                SizedBox(width: 8),
-
-                Text(
-                  "Propera revisió: 15 des. 2026",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 12),
-
-            LinearProgressIndicator(
-              value: 0.75,
-              color: Colors.green,
-              backgroundColor: Colors.white24,
-            ),
-
-            SizedBox(height: 12),
-
-            Text(
-              "Les dades de verificació estan completes al 75%.",
-              style: TextStyle(color: Colors.white70),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MetricCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
-  const _MetricCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F8F5),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-            ),
-          ),
-
-          const Spacer(),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Icon(icon),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
-
-  const _ActionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(backgroundColor: Colors.white, child: Icon(icon)),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-
-                Text(subtitle, style: const TextStyle(color: Colors.black54)),
-              ],
-            ),
-          ),
-
-          const Icon(Icons.chevron_right),
         ],
       ),
     );

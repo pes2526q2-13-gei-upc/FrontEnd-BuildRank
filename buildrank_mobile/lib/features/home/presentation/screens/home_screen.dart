@@ -31,52 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ]
             : null,
       ),
-      body: _buildBody(),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Inici',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.emoji_events_outlined),
-            selectedIcon: Icon(Icons.emoji_events),
-            label: 'Rànquing',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
-      ),
+      body: _buildDashboard(),
     );
-  }
-
-  Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 1:
-        return const _PlaceholderScreen(
-          icon: Icons.emoji_events,
-          title: 'Pantalla de rànquing',
-          subtitle: 'Aquí hi anirà la classificació de la lliga energètica.',
-        );
-      case 2:
-        return const _PlaceholderScreen(
-          icon: Icons.person,
-          title: 'Pantalla de perfil',
-          subtitle: 'Aquí hi anirà el perfil de l’usuari i la configuració.',
-        );
-      default:
-        return _buildDashboard();
-    }
   }
 
   Widget _buildDashboard() {
