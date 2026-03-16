@@ -8,7 +8,7 @@ class RankingScreen extends StatefulWidget {
 }
 
 class _RankingScreenState extends State<RankingScreen> {
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {

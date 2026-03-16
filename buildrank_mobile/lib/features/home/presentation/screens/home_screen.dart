@@ -8,7 +8,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +287,7 @@ class _QuickActionCard extends StatelessWidget {
   }
 }
 
+/*
 class _PlaceholderScreen extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -329,3 +330,5 @@ class _PlaceholderScreen extends StatelessWidget {
     );
   }
 }
+
+*/

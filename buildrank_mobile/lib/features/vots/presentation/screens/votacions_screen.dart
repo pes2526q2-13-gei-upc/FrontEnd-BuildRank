@@ -8,7 +8,7 @@ class VotacionsScreen extends StatefulWidget {
 }
 
 class _VotacionsScreenState extends State<VotacionsScreen> {
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {

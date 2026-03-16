@@ -8,7 +8,7 @@ class SimulationScreen extends StatefulWidget {
 }
 
 class _SimulationScreenState extends State<SimulationScreen> {
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {

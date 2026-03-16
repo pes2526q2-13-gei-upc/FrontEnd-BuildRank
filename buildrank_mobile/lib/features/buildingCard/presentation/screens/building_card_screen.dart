@@ -1,11 +1,9 @@
-import 'package:buildrank_mobile/shared/widgets/main_bottom_navigation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../shared/widgets/metric_card.dart';
 import '../../../../shared/widgets/action_tile.dart';
 import '../../../../shared/widgets/league_info_card.dart';
 import '../../../../shared/widgets/revision_card.dart';
-import '../../../../shared/widgets/main_bottom_navigation.dart';
 
 class BuildingDetailScreen extends StatefulWidget {
   const BuildingDetailScreen({super.key});

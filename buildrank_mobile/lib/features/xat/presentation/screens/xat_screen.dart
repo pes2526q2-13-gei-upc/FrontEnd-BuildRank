@@ -8,7 +8,7 @@ class XatScreen extends StatefulWidget {
 }
 
 class _XatScreenState extends State<XatScreen> {
-  int _selectedIndex = 0;
+  //int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
