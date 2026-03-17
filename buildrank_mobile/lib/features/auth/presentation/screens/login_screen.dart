@@ -16,23 +16,7 @@ class LoginScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           children: [
-            const SizedBox(height: 24),
-            Center(
-              child: Container(
-                width: 92,
-                height: 92,
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.energy_savings_leaf,
-                  size: 46,
-                  color: Colors.green,
-                ),
-              ),
-            ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 10),
             const Text(
               'Benvingut a BuildRank',
               textAlign: TextAlign.center,
@@ -128,13 +112,6 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Encara no tens compte?',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black54),
-            ),
-            TextButton(onPressed: null, child: const Text('Registra’t')),
           ],
         ),
       ),
