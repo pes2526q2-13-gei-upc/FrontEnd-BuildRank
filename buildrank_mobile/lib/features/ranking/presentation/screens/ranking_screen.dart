@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../shared/widgets/badge_item.dart';
 
 class RankingScreen extends StatefulWidget {
   const RankingScreen({super.key});
@@ -149,27 +150,33 @@ class _RankingScreenState extends State<RankingScreen> {
         const SizedBox(height: 12),
 
         SizedBox(
-          height: 100,
+          height: 110,
           child: ListView(
             scrollDirection: Axis.horizontal,
             children: const [
-              _BadgeItem(
+              BadgeItem(
                 icon: Icons.bolt,
                 label: "Mestre solar",
                 date: "Oct 25",
-                color: Color(0xFFF3E8C9),
+                color: Colors.yellow,
               ),
-              _BadgeItem(
+              BadgeItem(
                 icon: Icons.trending_up,
                 label: "Màxim estalvi",
                 date: "Nov 25",
-                color: Color(0xFFDFF3E7),
+                color: Colors.green,
               ),
-              _BadgeItem(
+              BadgeItem(
                 icon: Icons.apartment,
                 label: "Resilient",
                 date: "Dec 25",
-                color: Color(0xFFDDE8F5),
+                color: Colors.blue,
+              ),
+              BadgeItem(
+                icon: Icons.location_city,
+                label: "Prova",
+                date: "Gen 26",
+                color: Colors.purple,
               ),
             ],
           ),
@@ -274,7 +281,7 @@ class _RankingScreenState extends State<RankingScreen> {
     );
   }
 }
-
+/*
 // BADGE ITEM
 class _BadgeItem extends StatelessWidget {
   final IconData icon;
@@ -312,6 +319,7 @@ class _BadgeItem extends StatelessWidget {
     );
   }
 }
+*/
 
 // RANKING ITEM
 class _RankingItem extends StatelessWidget {

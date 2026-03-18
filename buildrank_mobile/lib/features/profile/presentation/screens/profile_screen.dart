@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/formBuilding/presentation/screens/form_building_screen.dart';
-import 'package:buildrank_mobile/features/main/presentation/screens/building_main_screen.dart';
+import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
+import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -73,28 +74,32 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 10),
 
           // 🔹 BUILDINGS LIST
-          _buildBuildingItem(
-            context,
+          BuildingListItem(
             title: "Torre Crystal Heights",
-            score: "88/100",
+            address: "452 Skyline Blvd, Central District",
+            score: 88,
+            status: "Certificat",
           ),
 
-          _buildBuildingItem(
-            context,
+          BuildingListItem(
             title: "Greenwood Resident",
-            score: "74/100",
+            address: "12 Oakwood Ave, North Sector",
+            score: 74,
+            status: "Verificat",
           ),
 
-          _buildBuildingItem(
-            context,
+          BuildingListItem(
             title: "Industrial Bay Plaza",
-            score: "52/100",
+            address: "Carrer de la Indústria, 123",
+            score: 52,
+            status: "Actiu",
           ),
 
-          _buildBuildingItem(
-            context,
+          BuildingListItem(
             title: "Legacy Heritage Suite",
-            score: "38/100",
+            address: "Carrer de la Indústria, 123",
+            score: 38,
+            status: "Actiu",
           ),
 
           const SizedBox(height: 20),
@@ -107,14 +112,37 @@ class ProfileScreen extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          Row(
-            children: const [
-              Expanded(child: _BadgeCard(title: "Mestre d'eficiència")),
-              SizedBox(width: 10),
-              Expanded(child: _BadgeCard(title: "Pioner Solar")),
-              SizedBox(width: 10),
-              Expanded(child: _BadgeCard(title: "Heroi de CO₂")),
-            ],
+          SizedBox(
+            height: 110,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: const [
+                BadgeItem(
+                  icon: Icons.bolt,
+                  label: "Mestre solar",
+                  date: "Oct 25",
+                  color: Colors.yellow,
+                ),
+                BadgeItem(
+                  icon: Icons.trending_up,
+                  label: "Màxim estalvi",
+                  date: "Nov 25",
+                  color: Colors.green,
+                ),
+                BadgeItem(
+                  icon: Icons.apartment,
+                  label: "Resilient",
+                  date: "Dec 25",
+                  color: Colors.blue,
+                ),
+                BadgeItem(
+                  icon: Icons.location_city,
+                  label: "Prova",
+                  date: "Gen 26",
+                  color: Colors.purple,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -167,38 +195,6 @@ class ProfileScreen extends StatelessWidget {
           SizedBox(height: 8),
           Text("Queden 12 dies"),
         ],
-      ),
-    );
-  }
-
-  // 🔹 BUILDING ITEM
-  Widget _buildBuildingItem(
-    BuildContext context, {
-    required String title,
-    required String score,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const MainScreen()),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
-        ),
-        child: Row(
-          children: [
-            Container(width: 50, height: 50, color: Colors.grey.shade300),
-            const SizedBox(width: 10),
-            Expanded(child: Text(title)),
-            Text(score),
-          ],
-        ),
       ),
     );
   }
