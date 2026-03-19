@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/formBuilding/presentation/screens/form_building_screen.dart';
 import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
 import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
+import 'package:buildrank_mobile/features/myChat/my_chats_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -10,7 +11,12 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BuildRank"),
+        leading: const Padding(
+          padding: EdgeInsets.only(left: 12),
+          child: CircleAvatar(
+            backgroundImage: AssetImage("assets/images/logoSimple.png"),
+          ),
+        ),
         actions: const [
           Icon(Icons.notifications_none),
           SizedBox(width: 12),
@@ -27,26 +33,44 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           // 🔹 ACTION BUTTONS
-          Row(
+          Column(
             children: [
-              Expanded(
-                child: ElevatedButton(
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const BuildingFormScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text("Afegeix Edifici"),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {},
+                      child: const Text("Informes"),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const BuildingFormScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const MyChatsScreen()),
                     );
                   },
-                  child: const Text("Afegeix Edifici"),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  child: const Text("Informes"),
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: const Text("Els meus xats"),
                 ),
               ),
             ],
@@ -214,26 +238,6 @@ class _Metric extends StatelessWidget {
         Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         Text(subtitle, style: const TextStyle(fontSize: 12)),
       ],
-    );
-  }
-}
-
-// 🔹 BADGE CARD
-class _BadgeCard extends StatelessWidget {
-  final String title;
-
-  const _BadgeCard({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 100,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(title, textAlign: TextAlign.center),
     );
   }
 }

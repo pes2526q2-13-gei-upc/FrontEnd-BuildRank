@@ -18,62 +18,73 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leadingWidth: 100,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back),
-            label: const Text("Torna"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leadingWidth: 120,
+            leading: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back),
+                label: const Text("Torna"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                ),
+              ),
+            ),
+
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
+                ),
+              ),
+            ],
+          ),
+
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                _buildHeader(),
+
+                const SizedBox(height: 20),
+
+                _buildPerformance(),
+
+                const SizedBox(height: 20),
+
+                _buildActions(),
+
+                const SizedBox(height: 20),
+
+                _buildTabs(),
+
+                const SizedBox(height: 16),
+
+                _buildDetails(),
+
+                const SizedBox(height: 20),
+
+                const LeagueInfoCard(),
+
+                const SizedBox(height: 20),
+
+                const RevisionCard(),
+
+                const SizedBox(height: 40),
+              ],
             ),
           ),
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
-            ),
-          ),
-        ],
-      ),
-
-      body: ListView(
-        children: [
-          _buildHeader(),
-
-          const SizedBox(height: 20),
-
-          _buildPerformance(),
-
-          const SizedBox(height: 20),
-
-          _buildActions(),
-
-          const SizedBox(height: 20),
-
-          _buildTabs(),
-
-          const SizedBox(height: 16),
-
-          _buildDetails(),
-
-          const SizedBox(height: 20),
-
-          const LeagueInfoCard(),
-
-          const SizedBox(height: 20),
-
-          const RevisionCard(),
-
-          const SizedBox(height: 40),
         ],
       ),
     );

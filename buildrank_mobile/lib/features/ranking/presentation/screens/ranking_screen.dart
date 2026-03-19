@@ -14,33 +14,67 @@ class _RankingScreenState extends State<RankingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 16),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            floating: true,
+            snap: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leadingWidth: 120,
+            leading: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back),
+                label: const Text("Torna"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                ),
+              ),
+            ),
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
+                ),
+              ),
+            ],
+          ),
 
-            _buildLeagueCard(),
-            const SizedBox(height: 20),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _buildLeagueCard(),
+                  const SizedBox(height: 20),
 
-            _buildBadges(),
-            const SizedBox(height: 20),
+                  _buildBadges(),
+                  const SizedBox(height: 20),
 
-            _buildToggle(),
-            const SizedBox(height: 12),
+                  _buildToggle(),
+                  const SizedBox(height: 12),
 
-            _buildSearch(),
-            const SizedBox(height: 16),
+                  _buildSearch(),
+                  const SizedBox(height: 16),
 
-            _buildRanking(),
-            const SizedBox(height: 16),
+                  _buildRanking(),
+                  const SizedBox(height: 16),
 
-            _buildLoadMore(),
+                  _buildLoadMore(),
 
-            const SizedBox(height: 80),
-          ],
-        ),
+                  const SizedBox(height: 80),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -48,22 +82,6 @@ class _RankingScreenState extends State<RankingScreen> {
         backgroundColor: Colors.green,
         child: const Icon(Icons.trending_up),
       ),
-    );
-  }
-
-  // HEADER
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
-        Text(
-          "BuildRank",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        CircleAvatar(
-          backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
-        ),
-      ],
     );
   }
 
@@ -281,45 +299,6 @@ class _RankingScreenState extends State<RankingScreen> {
     );
   }
 }
-/*
-// BADGE ITEM
-class _BadgeItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String date;
-  final Color color;
-
-  const _BadgeItem({
-    required this.icon,
-    required this.label,
-    required this.date,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 90,
-      margin: const EdgeInsets.only(right: 10),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon),
-          ),
-          const SizedBox(height: 6),
-          Text(label, textAlign: TextAlign.center),
-          Text(date, style: const TextStyle(fontSize: 11)),
-        ],
-      ),
-    );
-  }
-}
-*/
 
 // RANKING ITEM
 class _RankingItem extends StatelessWidget {
@@ -347,17 +326,12 @@ class _RankingItem extends StatelessWidget {
       child: Row(
         children: [
           _buildPosition(),
-
           const SizedBox(width: 10),
-
           const CircleAvatar(
             backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
           ),
-
           const SizedBox(width: 10),
-
           Expanded(child: Text(name)),
-
           Text(points),
         ],
       ),
@@ -367,17 +341,11 @@ class _RankingItem extends StatelessWidget {
   Widget _buildPosition() {
     switch (position) {
       case 1:
-        return const Icon(Icons.emoji_events, color: Color(0xFFFFD700)); // Or
+        return const Icon(Icons.emoji_events, color: Color(0xFFFFD700));
       case 2:
-        return const Icon(
-          Icons.emoji_events,
-          color: Color(0xFFC0C0C0),
-        ); // Plata
+        return const Icon(Icons.emoji_events, color: Color(0xFFC0C0C0));
       case 3:
-        return const Icon(
-          Icons.emoji_events,
-          color: Color(0xFFCD7F32),
-        ); // Bronze
+        return const Icon(Icons.emoji_events, color: Color(0xFFCD7F32));
       default:
         return Text(
           "$position",
