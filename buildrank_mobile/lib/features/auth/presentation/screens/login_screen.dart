@@ -1,13 +1,74 @@
-//import 'dart:ffi';
-
+ import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/main/presentation/screens/building_main_screen.dart';
-import 'package:flutter/material.dart';
-//import '../../../home/presentation/screens/home_screen.dart';
-//import '../../../formBuilding/presentation/screens/form_building_screen.dart'; //només per fer proves del formulari d'edifici
-//import '../../../buildingCard/presentation/screens/building_card_screen.dart'; //només per fer proves de la targeta d'edifici
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
+
+  bool _isLoading = false;
+  String? _errorText;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    setState(() {
+      _errorText = null;
+    });
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorText = 'Has d’omplir el correu i la contrasenya.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.login(
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => const MainScreen(),
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _errorText = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +136,10 @@ class LoginScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 24),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
                       labelText: 'Correu electrònic',
                       hintText: 'nom@exemple.com',
                       border: OutlineInputBorder(),
@@ -84,9 +147,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const TextField(
+                  TextField(
+                    controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Contrasenya',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock_outline),
@@ -100,23 +164,37 @@ class LoginScreen extends StatelessWidget {
                       child: const Text('Has oblidat la contrasenya?'),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  if (_errorText != null) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.red.shade200),
+                      ),
+                      child: Text(
+                        _errorText!,
+                        style: TextStyle(color: Colors.red.shade700),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ] else
+                    const SizedBox(height: 8),
                   SizedBox(
                     height: 54,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (_) => const MainScreen(),
-                            //builder: (_) => const BuildingFormScreen(), //només per fer proves del formulari, després canviar a HomeScreen
-                            //builder: (_) => const BuildingDetailScreen(), //només per fer proves de la targeta d'edifici, després canviar a HomeScreen
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Entrar',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      onPressed: _isLoading ? null : _handleLogin,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text(
+                              'Entrar',
+                              style: TextStyle(fontSize: 16),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -134,7 +212,10 @@ class LoginScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black54),
             ),
-            TextButton(onPressed: null, child: const Text('Registra’t')),
+            TextButton(
+              onPressed: null,
+              child: const Text('Registra’t'),
+            ),
           ],
         ),
       ),
