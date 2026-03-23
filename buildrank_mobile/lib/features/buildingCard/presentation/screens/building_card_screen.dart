@@ -19,7 +19,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   final AuthService _authService = AuthService();
   bool _isLoggingOut = false;
 
-    Future<void> _handleLogout() async {
+  Future<void> _handleLogout() async {
     if (_isLoggingOut) return;
 
     setState(() {
@@ -32,20 +32,14 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       if (!mounted) return;
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => const LoginScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
         (route) => false,
       );
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString().replaceFirst('Exception: ', ''),
-          ),
-        ),
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
       );
     } finally {
       if (mounted) {

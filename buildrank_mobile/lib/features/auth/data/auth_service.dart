@@ -11,10 +11,7 @@ class AuthService {
     final response = await http.post(
       Uri.parse(ApiConfig.login),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
+      body: jsonEncode({'email': email, 'password': password}),
     );
 
     final data = jsonDecode(response.body);
@@ -23,10 +20,7 @@ class AuthService {
       final access = data['access'];
       final refresh = data['refresh'];
 
-      await TokenStorage.saveTokens(
-        accessToken: access,
-        refreshToken: refresh,
-      );
+      await TokenStorage.saveTokens(accessToken: access, refreshToken: refresh);
 
       return data;
     } else {
@@ -102,9 +96,7 @@ class AuthService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
       },
-      body: jsonEncode({
-        'refresh': refreshToken,
-      }),
+      body: jsonEncode({'refresh': refreshToken}),
     );
 
     if (response.statusCode == 200) {
