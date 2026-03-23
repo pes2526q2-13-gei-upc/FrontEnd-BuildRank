@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/login_screen.dart';
+import 'package:buildrank_mobile/features/auth/presentation/screens/profile_screen.dart';
 
 import '../../../../shared/widgets/metric_card.dart';
 import '../../../../shared/widgets/action_tile.dart';
@@ -82,10 +83,16 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                 : const Icon(Icons.logout),
             tooltip: 'Tanca la sessió',
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
+          IconButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            },
+            tooltip: 'Veure perfil',
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundImage: NetworkImage('https://i.pravatar.cc/100'),
             ),
           ),
         ],
