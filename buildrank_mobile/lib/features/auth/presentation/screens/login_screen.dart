@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/main/presentation/screens/building_main_screen.dart';
+import 'package:buildrank_mobile/features/auth/presentation/screens/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -207,7 +208,14 @@ class _LoginScreenState extends State<LoginScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black54),
             ),
-            TextButton(onPressed: null, child: const Text('Registra’t')),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                );
+              },
+              child: const Text('Registra’t'),
+            ),
           ],
         ),
       ),
