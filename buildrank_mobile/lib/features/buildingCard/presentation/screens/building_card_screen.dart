@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/features/auth/presentation/screens/login_screen.dart';
 
 import '../../../../shared/widgets/metric_card.dart';
 import '../../../../shared/widgets/action_tile.dart';
@@ -14,6 +16,45 @@ class BuildingDetailScreen extends StatefulWidget {
 
 class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   int _tabIndex = 0;
+  final AuthService _authService = AuthService();
+  bool _isLoggingOut = false;
+
+    Future<void> _handleLogout() async {
+    if (_isLoggingOut) return;
+
+    setState(() {
+      _isLoggingOut = true;
+    });
+
+    try {
+      await _authService.logout();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        ),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString().replaceFirst('Exception: ', ''),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoggingOut = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +76,19 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             ),
           ),
         ),
-        actions: const [
-          Padding(
+        actions: [
+          IconButton(
+            onPressed: _isLoggingOut ? null : _handleLogout,
+            icon: _isLoggingOut
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.logout),
+            tooltip: 'Tanca la sessió',
+          ),
+          const Padding(
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
               backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
