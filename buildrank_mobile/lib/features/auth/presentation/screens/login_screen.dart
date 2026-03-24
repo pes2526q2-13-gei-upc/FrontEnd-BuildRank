@@ -1,11 +1,68 @@
-import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 //import '../../../home/presentation/screens/home_screen.dart';
 //import '../../../formBuilding/presentation/screens/form_building_screen.dart'; //només per fer proves del formulari d'edifici
 //import '../../../buildingCard/presentation/screens/building_card_screen.dart'; //només per fer proves de la targeta d'edifici
+import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _authService = AuthService();
+
+  bool _isLoading = false;
+  String? _errorText;
+
+  Future<void> _handleLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorText = 'Has d’omplir el correu i la contrasenya.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorText = null;
+    });
+
+    try {
+      await _authService.login(email: email, password: password);
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+      );
+    } catch (e) {
+      setState(() {
+        _errorText = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +114,10 @@ class LoginScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 24),
-                  const TextField(
-                    decoration: InputDecoration(
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
                       labelText: 'Correu electrònic',
                       hintText: 'nom@exemple.com',
                       border: OutlineInputBorder(),
@@ -66,9 +125,10 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const TextField(
+                  TextField(
+                    controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Contrasenya',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock_outline),
@@ -82,23 +142,28 @@ class LoginScreen extends StatelessWidget {
                       child: const Text('Has oblidat la contrasenya?'),
                     ),
                   ),
+                  if (_errorText != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _errorText!,
+                      style: const TextStyle(color: Colors.red, fontSize: 13),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 54,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (_) => const ProfileScreen(),
-                            //builder: (_) => const BuildingFormScreen(), //només per fer proves del formulari, després canviar a HomeScreen
-                            //builder: (_) => const BuildingDetailScreen(), //només per fer proves de la targeta d'edifici, després canviar a HomeScreen
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        'Entrar',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      onPressed: _isLoading ? null : _handleLogin,
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text(
+                              'Entrar',
+                              style: TextStyle(fontSize: 16),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 12),
