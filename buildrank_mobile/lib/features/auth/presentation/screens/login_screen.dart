@@ -1,6 +1,4 @@
-//import 'dart:ffi';
-
-import 'package:buildrank_mobile/features/main/presentation/screens/building_main_screen.dart';
+import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 //import '../../../home/presentation/screens/home_screen.dart';
 //import '../../../formBuilding/presentation/screens/form_building_screen.dart'; //només per fer proves del formulari d'edifici
@@ -16,23 +14,7 @@ class LoginScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           children: [
-            const SizedBox(height: 24),
-            Center(
-              child: Container(
-                width: 92,
-                height: 92,
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.energy_savings_leaf,
-                  size: 46,
-                  color: Colors.green,
-                ),
-              ),
-            ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 10),
             const Text(
               'Benvingut a BuildRank',
               textAlign: TextAlign.center,
@@ -107,7 +89,7 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (_) => const MainScreen(),
+                            builder: (_) => const ProfileScreen(),
                             //builder: (_) => const BuildingFormScreen(), //només per fer proves del formulari, després canviar a HomeScreen
                             //builder: (_) => const BuildingDetailScreen(), //només per fer proves de la targeta d'edifici, després canviar a HomeScreen
                           ),
@@ -128,13 +110,6 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Encara no tens compte?',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black54),
-            ),
-            TextButton(onPressed: null, child: const Text('Registra’t')),
           ],
         ),
       ),

@@ -13,7 +13,12 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Votacions'), centerTitle: true),
+      body: Center(
+        child: Text(
+          "Votacions en desenvolupament",
+          style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+        ),
+      ),
     );
   }
 }

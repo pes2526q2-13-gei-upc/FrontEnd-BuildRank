@@ -3,7 +3,7 @@ import '../../../../shared/widgets/main_bottom_navigation.dart';
 import '../../../buildingCard/presentation/screens/building_card_screen.dart';
 import '../../../ranking/presentation/screens/ranking_screen.dart';
 import '../../../simulation/presentation/screens/simulation_screen.dart';
-import '../../../xat/presentation/screens/xat_screen.dart';
+import '../../../xat/presentation/screens/building_chat_screen.dart';
 import '../../../vots/presentation/screens/votacions_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -16,15 +16,17 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
+  static const List<Widget> _pages = [
     BuildingDetailScreen(),
     RankingScreen(),
     SimulationScreen(),
-    XatScreen(),
+    BuildingChatScreen(),
     VotacionsScreen(),
   ];
 
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
+
     setState(() {
       _selectedIndex = index;
     });
@@ -33,8 +35,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
-
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: MainBottomNavigation(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,

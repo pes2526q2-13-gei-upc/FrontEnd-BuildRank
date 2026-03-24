@@ -13,7 +13,12 @@ class _SimulationScreenState extends State<SimulationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Simulacions'), centerTitle: true),
+      body: Center(
+        child: Text(
+          "Simulació en desenvolupament",
+          style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+        ),
+      ),
     );
   }
 }

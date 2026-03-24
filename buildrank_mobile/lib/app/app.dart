@@ -1,5 +1,5 @@
+import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:flutter/material.dart';
-import '../features/auth/presentation/screens/login_screen.dart';
 
 class BuildRankApp extends StatelessWidget {
   const BuildRankApp({super.key});
@@ -13,7 +13,7 @@ class BuildRankApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       ),
-      home: const LoginScreen(),
+      home: const AuthBaseScreen(),
     );
   }
 }
