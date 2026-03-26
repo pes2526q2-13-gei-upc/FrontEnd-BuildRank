@@ -15,8 +15,8 @@ class ApiConfig {
   /// IMPORTANTE:
   /// - NO sirve 127.0.0.1 ni localhost.
   /// - Poner la IP local del ordenador en la red WiFi.
-  /// - Ejemplo: http://192.168.1.34:8000
-  static const String physicalDeviceBaseUrl = 'http://192.168.1.14:8000';
+  /// - Ejemplo: http://192.168.1.134:8000
+  static const String physicalDeviceBaseUrl = 'http://10.228.243.58:8000';
 
   /// URL base activa de la aplicación.
   static const String baseUrl = physicalDeviceBaseUrl;
