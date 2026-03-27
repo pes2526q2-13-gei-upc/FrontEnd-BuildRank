@@ -7,14 +7,17 @@ on:
       - main
     paths:
       - "buildrank_mobile/**"
+      - 'README.md'
       - ".github/workflows/frontend-ci.yml"
 
   push:
     branches:
       - desenvolupament
       - "feature/**"
+      - "docs/**"
     paths:
       - "buildrank_mobile/**"
+      - 'README.md'
       - ".github/workflows/frontend-ci.yml"
 
 concurrency:
