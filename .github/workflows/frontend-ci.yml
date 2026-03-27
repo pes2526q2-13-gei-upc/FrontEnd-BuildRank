@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "buildrank_mobile/**"
+      - 'README.md'
       - ".github/workflows/frontend-ci.yml"
 
   push:
@@ -15,6 +16,7 @@ on:
       - "feature/**"
     paths:
       - "buildrank_mobile/**"
+      - 'README.md'
       - ".github/workflows/frontend-ci.yml"
 
 concurrency:
