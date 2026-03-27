@@ -14,6 +14,7 @@ on:
     branches:
       - desenvolupament
       - "feature/**"
+      - "docs/**"
     paths:
       - "buildrank_mobile/**"
       - 'README.md'
