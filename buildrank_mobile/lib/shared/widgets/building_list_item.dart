@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/main/presentation/screens/building_main_screen.dart';
 
 class BuildingListItem extends StatelessWidget {
+  final int idEdifici;
   final String title;
   final String address;
   final int score;
   final String status;
+  final String userRole;
+  final Map<String, dynamic> building;
 
   const BuildingListItem({
     super.key,
+    required this.idEdifici,
     required this.title,
     required this.address,
     required this.score,
     required this.status,
+    required this.userRole,
+    required this.building,
   });
 
   @override
@@ -20,11 +26,21 @@ class BuildingListItem extends StatelessWidget {
     final grade = _getGrade(score);
     final color = _getColor(score);
 
-    return GestureDetector(
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const MainScreen()),
+          MaterialPageRoute(
+            builder: (_) => MainScreen(
+              idEdifici: idEdifici,
+              building: building,
+              userRole: userRole,
+              title: title,
+              address: address,
+              score: score,
+            ),
+          ),
         );
       },
       child: Container(
@@ -43,23 +59,27 @@ class BuildingListItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // 🔹 IMAGE + GRADE
             Stack(
+              clipBehavior: Clip.none,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Container(
-                    width: 60,
-                    height: 60,
-                    color: Colors.grey.shade300,
+                    width: 64,
+                    height: 64,
+                    color: color.withValues(alpha: 0.12),
+                    child: Icon(
+                      Icons.apartment_outlined,
+                      color: color,
+                      size: 32,
+                    ),
                   ),
                 ),
-
                 Positioned(
-                  top: -4,
-                  left: -4,
+                  top: -5,
+                  left: -5,
                   child: CircleAvatar(
-                    radius: 14,
+                    radius: 15,
                     backgroundColor: color,
                     child: Text(
                       grade,
@@ -76,7 +96,6 @@ class BuildingListItem extends StatelessWidget {
 
             const SizedBox(width: 12),
 
-            // 🔹 INFO
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,10 +105,18 @@ class BuildingListItem extends StatelessWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ),
-                      const Icon(Icons.check_circle_outline, size: 16),
+                      Icon(
+                        status == 'Actiu'
+                            ? Icons.check_circle_outline
+                            : Icons.pause_circle_outline,
+                        size: 17,
+                        color: status == 'Actiu' ? Colors.green : Colors.grey,
+                      ),
                     ],
                   ),
 
@@ -102,6 +129,8 @@ class BuildingListItem extends StatelessWidget {
                       Expanded(
                         child: Text(
                           address,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.black54,
@@ -111,16 +140,18 @@ class BuildingListItem extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
 
-                  Text(
-                    "PUNTUACIÓ",
+                  const Text(
+                    "PUNTUACIÓ BUILDRANK",
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: Colors.black38,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
+
+                  const SizedBox(height: 2),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,19 +159,18 @@ class BuildingListItem extends StatelessWidget {
                       Text(
                         "$score/100",
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           color: color,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
+                          color: Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -159,7 +189,6 @@ class BuildingListItem extends StatelessWidget {
     );
   }
 
-  // 🔹 HELPERS
   String _getGrade(int score) {
     if (score >= 80) return "A";
     if (score >= 65) return "B";

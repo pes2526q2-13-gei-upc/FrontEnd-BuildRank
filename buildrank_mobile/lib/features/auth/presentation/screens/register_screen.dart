@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final void Function(String email)? onRegisterSuccess;
+
+  const RegisterScreen({super.key, this.onRegisterSuccess});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -17,7 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _authService = AuthService();
 
-  String _selectedRole = 'owner';
+  String _selectedRole = 'tenant';
   bool _acceptedTerms = false;
   bool _isLoading = false;
   String? _errorText;
@@ -83,14 +85,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _confirmPasswordController.clear();
 
       setState(() {
-        _selectedRole = 'owner';
+        _selectedRole = 'tenant';
         _acceptedTerms = false;
         _successText = 'Compte creat correctament. Ara ja pots iniciar sessió.';
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registre completat correctament.')),
-      );
+      if (widget.onRegisterSuccess != null) {
+        widget.onRegisterSuccess!(email);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registre completat correctament.')),
+        );
+      }
     } catch (e) {
       setState(() {
         _errorText = e.toString().replaceFirst('Exception: ', '');
@@ -296,11 +302,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Row(
                     children: [
                       _buildRoleCard(
-                        'owner',
+                        'admin',
                         Icons.business_center_outlined,
-                        'Administrador\nde finca',
+                        'Admin.\nfinca',
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
+                      _buildRoleCard(
+                        'owner',
+                        Icons.apartment_outlined,
+                        'Propietari',
+                      ),
+                      const SizedBox(width: 8),
                       _buildRoleCard(
                         'tenant',
                         Icons.person_outline,

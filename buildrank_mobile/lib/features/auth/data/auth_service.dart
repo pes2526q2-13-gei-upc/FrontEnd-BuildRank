@@ -157,4 +157,55 @@ class AuthService {
 
     return firstEntry.value.toString();
   }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+  }) async {
+    final accessToken = await TokenStorage.getAccessToken();
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('No hi ha sessió guardada.');
+    }
+
+    final response = await http.patch(
+      Uri.parse(ApiConfig.me),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode({
+        'first_name': firstName.trim(),
+        'last_name': lastName.trim(),
+        'email': email.trim().toLowerCase(),
+      }),
+    );
+
+    final decoded = response.body.isEmpty ? {} : jsonDecode(response.body);
+
+    if (response.statusCode == 200 && decoded is Map) {
+      return Map<String, dynamic>.from(decoded);
+    }
+
+    if (decoded is Map<String, dynamic>) {
+      if (decoded['detail'] != null) {
+        throw Exception(decoded['detail'].toString());
+      }
+
+      final firstEntry = decoded.entries.isNotEmpty
+          ? decoded.entries.first
+          : null;
+      if (firstEntry != null) {
+        final value = firstEntry.value;
+        if (value is List && value.isNotEmpty) {
+          throw Exception(value.first.toString());
+        }
+        throw Exception(value.toString());
+      }
+    }
+
+    throw Exception('No s’ha pogut actualitzar el perfil.');
+  }
 }

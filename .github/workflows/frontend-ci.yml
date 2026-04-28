@@ -3,6 +3,7 @@ name: Frontend Flutter CI
 on:
   pull_request:
     branches:
+      - Desenvolupament
       - desenvolupament
       - main
     paths:
@@ -12,6 +13,7 @@ on:
 
   push:
     branches:
+      - Desenvolupament
       - desenvolupament
       - "feature/**"
       - "docs/**"
@@ -19,6 +21,8 @@ on:
       - "buildrank_mobile/**"
       - 'README.md'
       - ".github/workflows/frontend-ci.yml"
+
+  workflow_dispatch:
 
 concurrency:
   group: frontend-ci-${{ github.ref }}
@@ -58,8 +62,15 @@ jobs:
       - name: Analyze project
         run: flutter analyze
 
-      - name: Run tests
-        run: flutter test
+      - name: Run tests with coverage
+        run: flutter test --coverage
 
       - name: Build Android APK (debug)
         run: flutter build apk --debug
+
+      - name: Upload Flutter coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: buildrank_mobile/coverage/lcov.info

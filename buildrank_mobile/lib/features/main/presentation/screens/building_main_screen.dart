@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../shared/widgets/main_bottom_navigation.dart';
 import '../../../buildingCard/presentation/screens/building_card_screen.dart';
 import '../../../ranking/presentation/screens/ranking_screen.dart';
@@ -7,7 +8,22 @@ import '../../../xat/presentation/screens/building_chat_screen.dart';
 import '../../../vots/presentation/screens/votacions_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int idEdifici;
+  final Map<String, dynamic> building;
+  final String userRole;
+  final String title;
+  final String address;
+  final int score;
+
+  const MainScreen({
+    super.key,
+    required this.idEdifici,
+    required this.building,
+    required this.userRole,
+    required this.title,
+    required this.address,
+    required this.score,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -16,20 +32,33 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _pages = [
-    BuildingDetailScreen(),
-    RankingScreen(),
-    SimulationScreen(),
-    BuildingChatScreen(),
-    VotacionsScreen(),
-  ];
-
   void _onItemTapped(int index) {
     if (_selectedIndex == index) return;
 
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  List<Widget> get _pages {
+    return [
+      BuildingDetailScreen(
+        idEdifici: widget.idEdifici,
+        building: widget.building,
+        title: widget.title,
+        address: widget.address,
+        score: widget.score,
+      ),
+      const RankingScreen(),
+      SimulationScreen(
+        idEdifici: widget.idEdifici,
+        userRole: widget.userRole,
+        buildingName: widget.title,
+        currentPoints: widget.score,
+      ),
+      const BuildingChatScreen(),
+      const VotacionsScreen(),
+    ];
   }
 
   @override

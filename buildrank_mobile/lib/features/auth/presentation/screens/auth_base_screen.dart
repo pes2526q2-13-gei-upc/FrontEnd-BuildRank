@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'login_screen.dart';
 import 'register_screen.dart';
 
@@ -12,27 +13,46 @@ class AuthBaseScreen extends StatefulWidget {
 class _AuthBaseScreenState extends State<AuthBaseScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [LoginScreen(), RegisterScreen()];
+  void _goToLoginAfterRegister(String email) {
+    setState(() {
+      _selectedIndex = 0;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Compte creat correctament. Ara pots iniciar sessió amb $email.',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      const LoginScreen(),
+      RegisterScreen(onRegisterSuccess: _goToLoginAfterRegister),
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             const SizedBox(height: 30),
 
-            // 🔹 LOGO
-            Image.asset("assets/images/logoBuildRank.png"),
+            Image.asset(
+              'assets/images/logoBuildRank.png',
+              height: 95,
+              fit: BoxFit.contain,
+            ),
 
             const SizedBox(height: 20),
 
-            // 🔹 BOTONS (tabs)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  _buildTabButton("Inicia sessió", 0),
+                  _buildTabButton('Inicia sessió', 0),
                   const SizedBox(width: 10),
                   _buildTabButton("Registra't", 1),
                 ],
@@ -41,8 +61,7 @@ class _AuthBaseScreenState extends State<AuthBaseScreen> {
 
             const SizedBox(height: 20),
 
-            // 🔹 CONTINGUT DINÀMIC
-            Expanded(child: _pages[_selectedIndex]),
+            Expanded(child: pages[_selectedIndex]),
           ],
         ),
       ),
@@ -59,7 +78,9 @@ class _AuthBaseScreenState extends State<AuthBaseScreen> {
             _selectedIndex = index;
           });
         },
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected ? Colors.green : Colors.grey.shade200,
@@ -69,7 +90,7 @@ class _AuthBaseScreenState extends State<AuthBaseScreen> {
             child: Text(
               text,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
+                color: isSelected ? Colors.white : Colors.black87,
                 fontWeight: FontWeight.w600,
               ),
             ),
