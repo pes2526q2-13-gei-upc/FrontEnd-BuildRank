@@ -4,6 +4,7 @@ import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
+import 'package:buildrank_mobile/features/admin/presentation/screens/system_admin_home_screen.dart';
 
 // Decide si la app entra al auth o a la parte principal.
 class SessionGateScreen extends StatefulWidget {
@@ -33,7 +34,13 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
         return const AuthBaseScreen();
       }
 
-      await authService.getMe();
+      final me = await authService.getMe();
+      final isSystemAdmin = me['is_system_admin'] == true;
+
+      if (isSystemAdmin) {
+        return const SystemAdminHomeScreen();
+      }
+
       return const ProfileScreen();
     } catch (_) {
       await TokenStorage.clearTokens();

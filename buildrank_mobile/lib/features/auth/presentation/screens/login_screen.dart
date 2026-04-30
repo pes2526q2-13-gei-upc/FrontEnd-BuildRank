@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 //import '../../../buildingCard/presentation/screens/building_card_screen.dart'; //només per fer proves de la targeta d'edifici
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
+import 'package:buildrank_mobile/features/admin/presentation/screens/system_admin_home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -39,11 +40,20 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await _authService.login(email: email, password: password);
 
+      final me = await _authService.getMe();
+      final isSystemAdmin = me['is_system_admin'] == true;
+
       if (!mounted) return;
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const ProfileScreen()),
-      );
+      if (isSystemAdmin) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const SystemAdminHomeScreen()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const ProfileScreen()),
+        );
+      }
     } catch (e) {
       setState(() {
         _errorText = e.toString().replaceFirst('Exception: ', '');
