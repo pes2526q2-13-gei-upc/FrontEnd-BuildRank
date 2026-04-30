@@ -38,7 +38,7 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
       final isSystemAdmin = me['is_system_admin'] == true;
 
       if (isSystemAdmin) {
-        return const SystemAdminHomeScreen();
+        return const AdminPanelScreen();
       }
 
       return const ProfileScreen();

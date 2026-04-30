@@ -49,7 +49,11 @@ class _MainScreenState extends State<MainScreen> {
         address: widget.address,
         score: widget.score,
       ),
-      const RankingScreen(),
+      RankingScreen(
+        idEdifici: widget.idEdifici,
+        buildingName: widget.title,
+        currentPoints: widget.score,
+      ),
       SimulationScreen(
         idEdifici: widget.idEdifici,
         userRole: widget.userRole,

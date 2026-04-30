@@ -15,6 +15,7 @@ class ApiConfig {
   /// Per defecte usa l'emulador. Si vols provar amb mòbil físic:
   ///
   /// flutter run --dart-define=API_BASE_URL=http://192.168.1.13
+  /// flutter run --dart-define=API_BASE_URL=http://192.168.1.134 --dart-define=XEMA_API_KEY=9a2ce0d3e095178ca40c3d6ffcd4c74f11e3c6b069b9fbde146fd6ca19f1398c
   ///
   /// Important:
   /// - Amb Docker + Nginx no fem servir :8000.
@@ -64,6 +65,65 @@ class ApiConfig {
 
   static String milloresImplementades(int idEdifici) =>
       '$baseUrl/api/buildings/edificis/$idEdifici/millores-implementades/';
+
+  // =========================
+  // Ranking / leagues / seasons endpoints
+  // =========================
+  static const String seasons = '$baseUrl/api/seasons/';
+  static const String leagues = '$baseUrl/api/leagues/';
+  static const String participations = '$baseUrl/api/participations/';
+
+  static Uri leagueRanking({
+    required int leagueId,
+    int? groupId,
+    int page = 1,
+    int pageSize = 10,
+    String? search,
+  }) {
+    return uri(
+      '$leagues$leagueId/ranking/',
+      queryParameters: {
+        'page': page.toString(),
+        'page_size': pageSize.toString(),
+        ...?groupId != null ? {'group': groupId.toString()} : null,
+        ...?search != null && search.trim().isNotEmpty
+            ? {'search': search.trim()}
+            : null,
+      },
+    );
+  }
+
+  static Uri buildingPosition({
+    required int leagueId,
+    required int buildingId,
+    int top = 3,
+    required bool segment,
+  }) {
+    return uri(
+      '$leagues$leagueId/posicio_edifici/',
+      queryParameters: {'edifici': buildingId, 'top': top, 'segment': segment},
+    );
+  }
+
+  // =========================
+  // XEMA Weather API
+  // =========================
+  static const String xemaWeatherBaseUrl =
+      'https://third-party-service-92ob.onrender.com';
+
+  static const String xemaApiKey = String.fromEnvironment('XEMA_API_KEY');
+
+  static Uri xemaCurrentWeather({String city = 'Barcelona'}) {
+    return Uri.parse(
+      '$xemaWeatherBaseUrl/api/weather/current/',
+    ).replace(queryParameters: {'city': city});
+  }
+
+  static Uri xemaDailyWeather({required String city, required String date}) {
+    return Uri.parse(
+      '$xemaWeatherBaseUrl/api/weather/daily/',
+    ).replace(queryParameters: {'city': city, 'date': date});
+  }
 
   /// Helper comú per construir Uri amb query params.
   static Uri uri(String endpoint, {Map<String, dynamic>? queryParameters}) {

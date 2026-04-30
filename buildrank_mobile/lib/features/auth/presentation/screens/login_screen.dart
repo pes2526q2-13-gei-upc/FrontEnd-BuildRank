@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (isSystemAdmin) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const SystemAdminHomeScreen()),
+          MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
         );
       } else {
         Navigator.of(context).pushReplacement(

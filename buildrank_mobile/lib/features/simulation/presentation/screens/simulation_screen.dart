@@ -286,35 +286,88 @@ class _SimulationScreenState extends State<SimulationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isRefreshing = _isLoadingCatalog || _isLoadingHistory;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _refreshAll,
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-            children: [
-              _buildHeader(),
-
-              const SizedBox(height: 16),
-
-              _buildSimulationTabs(),
-
-              const SizedBox(height: 16),
-
-              if (_errorText != null) ...[
-                _ErrorBanner(text: _errorText!, onRetry: _refreshAll),
-                const SizedBox(height: 16),
+      body: RefreshIndicator(
+        onRefresh: _refreshAll,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leadingWidth: 120,
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text("Torna"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                  ),
+                ),
+              ),
+              actions: [
+                IconButton(
+                  tooltip: 'Refrescar',
+                  onPressed: isRefreshing ? null : _refreshAll,
+                  icon: isRefreshing
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.refresh),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
+                  ),
+                ),
               ],
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeader(),
 
-              if (_selectedTab == 0)
-                _buildSimulationTab()
-              else if (_selectedTab == 1)
-                _buildSavedSimulationsTab()
-              else
-                _buildImplementedImprovementsTab(),
-            ],
-          ),
+                    const SizedBox(height: 16),
+
+                    _buildSimulationTabs(),
+
+                    const SizedBox(height: 16),
+
+                    if (_errorText != null) ...[
+                      _ErrorBanner(text: _errorText!, onRetry: _refreshAll),
+                      const SizedBox(height: 16),
+                    ],
+
+                    if (_selectedTab == 0)
+                      _buildSimulationTab()
+                    else if (_selectedTab == 1)
+                      _buildSavedSimulationsTab()
+                    else
+                      _buildImplementedImprovementsTab(),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
