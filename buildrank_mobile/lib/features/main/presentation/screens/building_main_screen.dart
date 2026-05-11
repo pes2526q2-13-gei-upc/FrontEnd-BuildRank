@@ -45,6 +45,7 @@ class _MainScreenState extends State<MainScreen> {
       BuildingDetailScreen(
         idEdifici: widget.idEdifici,
         building: widget.building,
+        userRole: widget.userRole,
         title: widget.title,
         address: widget.address,
         score: widget.score,

@@ -45,6 +45,41 @@ class ApiConfig {
 
   static const String edificis = '$baseUrl/api/buildings/edificis/';
 
+  // =========================
+  // Habitatges endpoints
+  // =========================
+
+  static String edificiHabitatges(int idEdifici) =>
+      '$baseUrl/api/buildings/edificis/$idEdifici/habitatges/';
+
+  static String edificiHabitatgeDetail({
+    required int idEdifici,
+    required String referenciaCadastral,
+  }) =>
+      '$baseUrl/api/buildings/edificis/$idEdifici/habitatges/$referenciaCadastral/';
+
+  static String meHabitatgeUpdate({
+    required int idEdifici,
+    required String referenciaCadastral,
+  }) =>
+      '$baseUrl/api/buildings/edificis/$idEdifici/me/habitatge/$referenciaCadastral/';
+
+  static String habitatgeDetail(String referenciaCadastral) =>
+      '$baseUrl/api/buildings/habitatges/$referenciaCadastral/';
+
+  static String dadesEnergetiquesDetail(int id) =>
+      '$baseUrl/api/buildings/dades_energetiques/$id/';
+
+  static const String searchExistingBuildings =
+      '$baseUrl/api/buildings/search/'; //Falta implementar endpoint real al backend, però el frontend ja el té preparat.
+
+  // Assignacions via accounts
+  static String assignarResident(String refCadastral) =>
+      '$baseUrl/api/accounts/habitatges/$refCadastral/assignar-resident/';
+
+  static String assignarAdminEdifici(int idEdifici) =>
+      '$baseUrl/api/accounts/edificis/$idEdifici/assignar-admin/';
+
   /// Es manté aquest alias perquè el formulari actual encara usa `crearEdifici`.
   /// Internament apunta al mateix endpoint REST real del ViewSet d'edificis.
   static const String crearEdifici = edificis;

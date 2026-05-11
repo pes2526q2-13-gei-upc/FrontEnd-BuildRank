@@ -5,10 +5,13 @@ import '../../../../shared/widgets/metric_card.dart';
 import '../../../../shared/widgets/action_tile.dart';
 import '../../../../shared/widgets/league_info_card.dart';
 import '../../../../shared/widgets/revision_card.dart';
+import 'package:buildrank_mobile/features/buildingRequests/presentation/screens/pending_building_requests_screen.dart';
+import 'package:buildrank_mobile/features/habitatge/presentation/screens/edit_habitatge_screen.dart';
 
 class BuildingDetailScreen extends StatefulWidget {
   final int idEdifici;
   final Map<String, dynamic> building;
+  final String userRole;
   final String title;
   final String address;
   final int score;
@@ -17,6 +20,7 @@ class BuildingDetailScreen extends StatefulWidget {
     super.key,
     required this.idEdifici,
     required this.building,
+    required this.userRole,
     required this.title,
     required this.address,
     required this.score,
@@ -539,36 +543,84 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildActions() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+    final isAdmin = widget.userRole == 'admin';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "ACCIONS RECOMANADES",
             style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
           ),
-          SizedBox(height: 14),
-          ActionTile(
+          const SizedBox(height: 14),
+          const ActionTile(
             icon: Icons.bolt,
             title: "Executa simulació",
             subtitle: "Prova escenaris de millora per aquest edifici",
             color: Color(0xFFE8F4EC),
           ),
-          SizedBox(height: 10),
-          ActionTile(
+          const SizedBox(height: 10),
+          const ActionTile(
             icon: Icons.how_to_vote,
             title: "Votació de la comunitat",
             subtitle: "Funcionalitat preparada per futures propostes",
             color: Color(0xFFE7ECF7),
           ),
-          SizedBox(height: 10),
-          ActionTile(
+          const SizedBox(height: 10),
+          const ActionTile(
             icon: Icons.description,
             title: "Genera informe",
             subtitle: "Exportació documental pendent d’integració",
             color: Color(0xFFF1F1F1),
           ),
+          if (isAdmin) ...[
+            const SizedBox(height: 10),
+            ActionTile(
+              icon: Icons.verified_user_outlined,
+              title: "Gestionar sol·licituds pendents",
+              subtitle: "Revisa i valida noves peticions d’unió a l’edifici",
+              color: const Color(0xFFFFF7ED),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PendingBuildingRequestsScreen(
+                      idEdifici: widget.idEdifici,
+                      buildingTitle: _title,
+                      userRole: widget.userRole,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ] else if (widget.userRole == 'owner') ...[
+            const SizedBox(height: 10),
+            ActionTile(
+              icon: Icons.home_outlined,
+              title: "Editar el meu habitatge",
+              subtitle: "Completa superfície, reforma i dades energètiques",
+              color: const Color(0xFFFFF7ED),
+              onTap: () async {
+                final updated = await Navigator.push<Map<String, dynamic>?>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditHabitatgeScreen(
+                      idEdifici: widget.idEdifici,
+                      buildingTitle: _title,
+                    ),
+                  ),
+                );
+
+                if (!mounted) return;
+
+                if (updated != null) {
+                  await _loadBuildingDetail();
+                }
+              },
+            ),
+          ],
         ],
       ),
     );
