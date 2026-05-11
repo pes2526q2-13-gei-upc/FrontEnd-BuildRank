@@ -42,7 +42,8 @@ void main() {
     expect(find.textContaining('Posició actual: #10'), findsOneWidget);
 
     expect(find.text('La meva lliga'), findsWidgets);
-    expect(find.text('Edificis similars'), findsOneWidget);
+    expect(find.text('Similars de la lliga'), findsOneWidget);
+    expect(find.text('Similars de la temporada'), findsOneWidget);
 
     expect(find.text('Edifici #1'), findsOneWidget);
     expect(find.text('Edifici #2'), findsOneWidget);
@@ -53,16 +54,28 @@ void main() {
     expect(service.calls.first.targetTop, 3);
   });
 
-  testWidgets('canvia a ranking d’edificis similars', (tester) async {
+  testWidgets('canvia a ranking de similars de la lliga', (tester) async {
     final service = FakeRankingService();
 
     await tester.pumpWidget(buildSubject(service));
     await pumpRanking(tester);
 
-    await tester.tap(find.text('Edificis similars'));
+    await tester.tap(find.text('Similars de la lliga'));
     await pumpRanking(tester);
 
-    expect(service.calls.last.scope, RankingScope.comparable);
+    expect(service.calls.last.scope, RankingScope.comparableLeague);
+  });
+
+  testWidgets('canvia a ranking de similars de la temporada', (tester) async {
+    final service = FakeRankingService();
+
+    await tester.pumpWidget(buildSubject(service));
+    await pumpRanking(tester);
+
+    await tester.tap(find.text('Similars de la temporada'));
+    await pumpRanking(tester);
+
+    expect(service.calls.last.scope, RankingScope.comparableSeason);
   });
 
   testWidgets('canvia el top objectiu a Top 5', (tester) async {

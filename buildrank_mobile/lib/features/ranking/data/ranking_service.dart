@@ -46,26 +46,48 @@ class RankingService {
     try {
       final context = await _loadRankingContext(idEdifici: idEdifici);
 
+      final isComparableLeague = scope == RankingScope.comparableLeague;
+      final isComparableSeason = scope == RankingScope.comparableSeason;
+
       final positionJson = await _getJson(
-        ApiConfig.buildingPosition(
-          leagueId: context.leagueId,
-          buildingId: idEdifici,
-          top: targetTop,
-          segment: scope == RankingScope.comparable,
-        ),
+        isComparableSeason
+            ? ApiConfig.seasonBuildingPosition(
+                seasonId: context.seasonId,
+                buildingId: idEdifici,
+                top: targetTop,
+                compareByGroup: true,
+                seasonScope: true,
+              )
+            : ApiConfig.buildingPosition(
+                leagueId: context.leagueId,
+                buildingId: idEdifici,
+                top: targetTop,
+                segment: isComparableLeague,
+              ),
       );
 
       final positionData = Map<String, dynamic>.from(positionJson);
-      final groupId = _readInt(positionData['grup_utilitzat']);
+
+      final groupId =
+          _readInt(positionData['grup_utilitzat']) ??
+          _readInt(context.participation['grup_comparable']);
 
       final rankingJson = await _getJson(
-        ApiConfig.leagueRanking(
-          leagueId: context.leagueId,
-          groupId: scope == RankingScope.comparable ? groupId : null,
-          page: page,
-          pageSize: 10,
-          search: search,
-        ),
+        isComparableSeason
+            ? ApiConfig.seasonRanking(
+                seasonId: context.seasonId,
+                groupId: groupId,
+                page: page,
+                pageSize: 10,
+                search: search,
+              )
+            : ApiConfig.leagueRanking(
+                leagueId: context.leagueId,
+                groupId: isComparableLeague ? groupId : null,
+                page: page,
+                pageSize: 10,
+                search: search,
+              ),
       );
 
       final summary = _buildSummary(
@@ -104,107 +126,57 @@ class RankingService {
 
   Future<_RankingContext> _loadRankingContext({required int idEdifici}) async {
     final seasonsJson = await _getJson(Uri.parse(ApiConfig.seasons));
-    final leaguesJson = await _getJson(Uri.parse(ApiConfig.leagues));
-    final participationsJson = await _getJson(
-      Uri.parse(ApiConfig.participations),
+    final currentParticipationJson = await _getJson(
+      ApiConfig.currentParticipation(buildingId: idEdifici),
     );
 
     final seasons = _extractList(seasonsJson);
-    final leagues = _extractList(leaguesJson);
-    final participations = _extractList(participationsJson);
+    final participation = Map<String, dynamic>.from(currentParticipationJson);
 
-    Map<String, dynamic>? activeSeason;
+    final seasonId = _readInt(participation['temporada']);
 
-    for (final season in seasons) {
-      if (season['activa'] == true) {
-        activeSeason = season;
+    if (seasonId == null) {
+      throw const RankingApiException(
+        'La participació actual no té temporada assignada.',
+      );
+    }
+
+    Map<String, dynamic>? season;
+
+    for (final item in seasons) {
+      final id = _readInt(item['id_temporada'] ?? item['id']);
+
+      if (id == seasonId) {
+        season = item;
         break;
       }
     }
 
-    activeSeason ??= seasons.isNotEmpty ? seasons.first : null;
-
-    if (activeSeason == null) {
-      throw const RankingApiException('No hi ha cap temporada disponible.');
-    }
-
-    final activeSeasonId = _readInt(
-      activeSeason['id_temporada'] ?? activeSeason['id'],
-    );
-
-    if (activeSeasonId == null) {
+    if (season == null) {
       throw const RankingApiException(
-        'La temporada activa no té identificador.',
+        'No s’ha trobat la temporada de la participació actual.',
       );
     }
 
-    final leaguesById = <int, Map<String, dynamic>>{};
-    final activeLeagueIds = <int>{};
+    final leagueId = _readInt(participation['lliga']);
 
-    for (final league in leagues) {
-      final id = _readInt(league['id']);
-      if (id == null) continue;
-
-      leaguesById[id] = league;
-
-      final seasonId = _readInt(league['temporada']);
-      if (seasonId == activeSeasonId) {
-        activeLeagueIds.add(id);
-      }
-    }
-
-    Map<String, dynamic>? selectedParticipation;
-
-    for (final participation in participations) {
-      final buildingId = _readInt(participation['edifici']);
-      final leagueId = _readInt(participation['lliga']);
-
-      if (buildingId == idEdifici &&
-          leagueId != null &&
-          activeLeagueIds.contains(leagueId)) {
-        selectedParticipation = participation;
-        break;
-      }
-    }
-
-    if (selectedParticipation == null) {
-      for (final participation in participations) {
-        if (_readInt(participation['edifici']) == idEdifici) {
-          selectedParticipation = participation;
-          break;
-        }
-      }
-    }
-
-    if (selectedParticipation == null) {
-      throw const RankingApiException(
-        'Aquest edifici encara no té participació assignada a cap lliga.',
-      );
-    }
-
-    final leagueId = _readInt(selectedParticipation['lliga']);
     if (leagueId == null) {
-      throw const RankingApiException('La participació no té lliga assignada.');
-    }
-
-    final league = leaguesById[leagueId];
-    if (league == null) {
       throw const RankingApiException(
-        'No s’ha trobat la lliga de la participació.',
+        'La participació actual no té lliga assignada.',
       );
     }
 
     return _RankingContext(
-      seasonId: activeSeasonId,
-      seasonName: _readString(activeSeason['nom']) ?? 'Temporada activa',
-      seasonEndDate: _readDate(activeSeason['dataFi']),
+      seasonId: seasonId,
+      seasonName:
+          _readString(participation['nom_temporada']) ??
+          _readString(season['nom']) ??
+          'Temporada activa',
+      seasonEndDate: _readDate(season['dataFi']),
       leagueId: leagueId,
-      leagueName:
-          _readString(league['nom']) ??
-          _readString(league['divisio']) ??
-          'La meva lliga',
-      leagueDivision: _readString(league['divisio']),
-      participation: selectedParticipation,
+      leagueName: _readString(participation['nom_lliga']) ?? 'La meva lliga',
+      leagueDivision: _readString(participation['divisio']),
+      participation: participation,
     );
   }
 
@@ -215,25 +187,41 @@ class RankingService {
     required RankingScope scope,
   }) {
     final currentPoints =
+        _readInt(positionData['puntuacio_actual']) ??
         _readInt(positionData['puntuacion_actual']) ??
         _readInt(context.participation['puntuacio']) ??
         fallbackPoints;
 
-    final pointsToTop = _readInt(positionData['punt_per_top']) ?? 0;
+    final pointsToTop =
+        _readInt(positionData['punts_per_top']) ??
+        _readInt(positionData['punt_per_top']) ??
+        0;
+
     final targetPoints = pointsToTop <= 0
         ? currentPoints
         : currentPoints + pointsToTop;
+
     final isInTop = positionData['esta_en_top'] == true;
-    final topTarget = _readInt(positionData['top_objetivo']) ?? 3;
+
+    final topTarget =
+        _readInt(positionData['top_objectiu']) ??
+        _readInt(positionData['top_objetivo']) ??
+        3;
+
     final position =
+        _readInt(positionData['posicio']) ??
         _readInt(positionData['posicion']) ??
         _readInt(context.participation['posicio']) ??
         0;
 
     final daysRemaining = _daysRemaining(context.seasonEndDate);
-    final segmentText = scope == RankingScope.comparable
-        ? ' entre edificis similars'
-        : ' de la lliga';
+
+    final segmentText = switch (scope) {
+      RankingScope.league => ' de la lliga',
+      RankingScope.comparableLeague => ' entre edificis similars de la lliga',
+      RankingScope.comparableSeason =>
+        ' entre edificis similars de la temporada',
+    };
 
     final promotionText = isInTop
         ? 'Ja formes part del Top $topTarget$segmentText.'
@@ -243,7 +231,9 @@ class RankingService {
 
     return RankingSummary(
       seasonName: context.seasonName,
-      leagueName: context.leagueName,
+      leagueName: scope == RankingScope.comparableSeason
+          ? 'Totes les lligues'
+          : context.leagueName,
       currentPoints: currentPoints,
       targetPoints: targetPoints,
       progress: targetPoints <= 0
@@ -331,9 +321,13 @@ class RankingService {
         idEdifici: idEdifici,
         position: 4,
         name: buildingName,
-        address: scope == RankingScope.league
-            ? 'El teu edifici · La meva lliga'
-            : 'El teu edifici · Edificis similars',
+        address: switch (scope) {
+          RankingScope.league => 'El teu edifici · La meva lliga',
+          RankingScope.comparableLeague =>
+            'El teu edifici · Similars de la lliga',
+          RankingScope.comparableSeason =>
+            'El teu edifici · Similars de la temporada',
+        },
         points: currentPoints,
         isCurrentBuilding: true,
       ),

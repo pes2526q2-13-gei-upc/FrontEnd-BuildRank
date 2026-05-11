@@ -483,12 +483,20 @@ class _RankingScreenState extends State<RankingScreen> {
             onTap: () => _changeScope(RankingScope.league),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: _ToggleButton(
-            text: 'Edificis similars',
-            selected: _scope == RankingScope.comparable,
-            onTap: () => _changeScope(RankingScope.comparable),
+            text: 'Similars de la lliga',
+            selected: _scope == RankingScope.comparableLeague,
+            onTap: () => _changeScope(RankingScope.comparableLeague),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _ToggleButton(
+            text: 'Similars de la temporada',
+            selected: _scope == RankingScope.comparableSeason,
+            onTap: () => _changeScope(RankingScope.comparableSeason),
           ),
         ),
       ],
@@ -635,7 +643,12 @@ class _ToggleButton extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: TextStyle(color: selected ? Colors.white : Colors.black),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            style: TextStyle(
+              color: selected ? Colors.white : Colors.black,
+              fontSize: 12,
+            ),
           ),
         ),
       ),

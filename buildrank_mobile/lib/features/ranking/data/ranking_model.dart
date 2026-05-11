@@ -1,12 +1,14 @@
-enum RankingScope { league, comparable }
+enum RankingScope { league, comparableLeague, comparableSeason }
 
 extension RankingScopeLabel on RankingScope {
   String get label {
     switch (this) {
       case RankingScope.league:
         return 'La meva lliga';
-      case RankingScope.comparable:
-        return 'Edificis similars';
+      case RankingScope.comparableLeague:
+        return 'Similars de la lliga';
+      case RankingScope.comparableSeason:
+        return 'Similars de la temporada';
     }
   }
 
@@ -14,8 +16,10 @@ extension RankingScopeLabel on RankingScope {
     switch (this) {
       case RankingScope.league:
         return 'league';
-      case RankingScope.comparable:
-        return 'comparable';
+      case RankingScope.comparableLeague:
+        return 'comparableLeague';
+      case RankingScope.comparableSeason:
+        return 'comparableSeason';
     }
   }
 }
@@ -254,7 +258,9 @@ class RankingEntry {
                 json['puntuacioBase'],
           ) ??
           0,
-      league: _readString(json['league'] ?? json['lliga'] ?? json['liga']),
+      league: _readString(
+        json['nom_lliga'] ?? json['league'] ?? json['lliga'] ?? json['liga'],
+      ),
       scoreDelta: _readInt(
         json['scoreDelta'] ?? json['score_delta'] ?? json['diferencia'],
       ),

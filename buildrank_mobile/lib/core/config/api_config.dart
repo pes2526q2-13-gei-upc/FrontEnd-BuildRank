@@ -15,7 +15,7 @@ class ApiConfig {
   /// Per defecte usa l'emulador. Si vols provar amb mòbil físic:
   ///
   /// flutter run --dart-define=API_BASE_URL=http://192.168.1.13
-  /// flutter run --dart-define=API_BASE_URL=http://192.168.1.134 --dart-define=XEMA_API_KEY=9a2ce0d3e095178ca40c3d6ffcd4c74f11e3c6b069b9fbde146fd6ca19f1398c
+  /// flutter run --dart-define=API_BASE_URL=http://192.168.1.105 --dart-define=XEMA_API_KEY=9a2ce0d3e095178ca40c3d6ffcd4c74f11e3c6b069b9fbde146fd6ca19f1398c
   ///
   /// Important:
   /// - Amb Docker + Nginx no fem servir :8000.
@@ -72,6 +72,12 @@ class ApiConfig {
   static const String seasons = '$baseUrl/api/seasons/';
   static const String leagues = '$baseUrl/api/leagues/';
   static const String participations = '$baseUrl/api/participations/';
+  static Uri currentParticipation({required int buildingId}) {
+    return uri(
+      '${participations}current/',
+      queryParameters: {'edifici': buildingId},
+    );
+  }
 
   static Uri leagueRanking({
     required int leagueId,
@@ -93,6 +99,28 @@ class ApiConfig {
     );
   }
 
+  static Uri seasonRanking({
+    required int seasonId,
+    int? groupId,
+    int? leagueId,
+    int page = 1,
+    int pageSize = 10,
+    String? search,
+  }) {
+    return uri(
+      '$seasons$seasonId/ranking/',
+      queryParameters: {
+        'page': page.toString(),
+        'page_size': pageSize.toString(),
+        ...?groupId != null ? {'group': groupId.toString()} : null,
+        ...?leagueId != null ? {'league': leagueId.toString()} : null,
+        ...?search != null && search.trim().isNotEmpty
+            ? {'search': search.trim()}
+            : null,
+      },
+    );
+  }
+
   static Uri buildingPosition({
     required int leagueId,
     required int buildingId,
@@ -102,6 +130,24 @@ class ApiConfig {
     return uri(
       '$leagues$leagueId/posicio_edifici/',
       queryParameters: {'edifici': buildingId, 'top': top, 'segment': segment},
+    );
+  }
+
+  static Uri seasonBuildingPosition({
+    required int seasonId,
+    required int buildingId,
+    int top = 3,
+    required bool compareByGroup,
+    required bool seasonScope,
+  }) {
+    return uri(
+      '$seasons$seasonId/posicio_edifici/',
+      queryParameters: {
+        'edifici': buildingId,
+        'top': top,
+        'scope': seasonScope ? 'temporada' : 'lliga',
+        'group': compareByGroup,
+      },
     );
   }
 
