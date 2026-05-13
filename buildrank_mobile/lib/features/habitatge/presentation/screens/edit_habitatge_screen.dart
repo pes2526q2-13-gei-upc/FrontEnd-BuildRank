@@ -75,20 +75,54 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
     try {
       Map<String, dynamic>? habitatge = widget.initialHabitatge;
 
-      habitatge ??= await _habitatgeService.getMyHabitatgeForBuilding(
-        widget.idEdifici,
-      );
+      if (habitatge == null) {
+        final habitatges = await _habitatgeService.getMyHabitatgesForBuilding(
+          widget.idEdifici,
+        );
+
+        if (!mounted) return;
+
+        if (habitatges.isEmpty) {
+          setState(() {
+            _loadError =
+                'No s’ha trobat cap habitatge vinculat al teu usuari en aquest edifici.';
+            _isLoading = false;
+          });
+          return;
+        }
+
+        final selectedHabitatge = habitatges.length == 1
+            ? habitatges.first
+            : await _showHabitatgeSelector(habitatges);
+
+        if (!mounted) return;
+
+        if (selectedHabitatge == null) {
+          setState(() {
+            _loadError = 'No s’ha seleccionat cap habitatge per editar.';
+            _isLoading = false;
+          });
+          return;
+        }
+
+        final referenciaCadastral =
+            selectedHabitatge['referenciaCadastral']?.toString().trim() ?? '';
+
+        if (referenciaCadastral.isEmpty) {
+          setState(() {
+            _loadError = 'L’habitatge seleccionat no té referència cadastral.';
+            _isLoading = false;
+          });
+          return;
+        }
+
+        habitatge = await _habitatgeService.getHabitatgeDetail(
+          idEdifici: widget.idEdifici,
+          referenciaCadastral: referenciaCadastral,
+        );
+      }
 
       if (!mounted) return;
-
-      if (habitatge == null) {
-        setState(() {
-          _loadError =
-              'No s’ha trobat cap habitatge vinculat al teu usuari en aquest edifici.';
-          _isLoading = false;
-        });
-        return;
-      }
 
       _fillControllersFromHabitatge(habitatge);
 
@@ -110,6 +144,49 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Future<Map<String, dynamic>?> _showHabitatgeSelector(
+    List<Map<String, dynamic>> habitatges,
+  ) {
+    return showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 12),
+                  child: Text(
+                    'Quin habitatge vols editar?',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                for (final habitatge in habitatges)
+                  ListTile(
+                    leading: const Icon(Icons.home_outlined),
+                    title: Text(
+                      'Planta ${habitatge['planta'] ?? '-'} · Porta ${habitatge['porta'] ?? '-'}',
+                    ),
+                    subtitle: Text(
+                      [
+                        habitatge['referenciaCadastral']?.toString(),
+                        if (habitatge['superficie'] != null)
+                          '${habitatge['superficie']} m²',
+                      ].whereType<String>().join(' · '),
+                    ),
+                    onTap: () => Navigator.pop(context, habitatge),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _fillControllersFromHabitatge(Map<String, dynamic> data) {

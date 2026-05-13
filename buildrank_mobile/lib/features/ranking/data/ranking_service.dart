@@ -48,22 +48,16 @@ class RankingService {
 
       final isComparableLeague = scope == RankingScope.comparableLeague;
       final isComparableSeason = scope == RankingScope.comparableSeason;
+      final usesComparableGroup = isComparableLeague || isComparableSeason;
 
       final positionJson = await _getJson(
-        isComparableSeason
-            ? ApiConfig.seasonBuildingPosition(
-                seasonId: context.seasonId,
-                buildingId: idEdifici,
-                top: targetTop,
-                compareByGroup: true,
-                seasonScope: true,
-              )
-            : ApiConfig.buildingPosition(
-                leagueId: context.leagueId,
-                buildingId: idEdifici,
-                top: targetTop,
-                segment: isComparableLeague,
-              ),
+        ApiConfig.seasonBuildingPosition(
+          seasonId: context.seasonId,
+          buildingId: idEdifici,
+          top: targetTop,
+          compareByGroup: usesComparableGroup,
+          seasonScope: isComparableSeason,
+        ),
       );
 
       final positionData = Map<String, dynamic>.from(positionJson);
@@ -73,21 +67,14 @@ class RankingService {
           _readInt(context.participation['grup_comparable']);
 
       final rankingJson = await _getJson(
-        isComparableSeason
-            ? ApiConfig.seasonRanking(
-                seasonId: context.seasonId,
-                groupId: groupId,
-                page: page,
-                pageSize: 10,
-                search: search,
-              )
-            : ApiConfig.leagueRanking(
-                leagueId: context.leagueId,
-                groupId: isComparableLeague ? groupId : null,
-                page: page,
-                pageSize: 10,
-                search: search,
-              ),
+        ApiConfig.seasonRanking(
+          seasonId: context.seasonId,
+          leagueId: isComparableSeason ? null : context.leagueId,
+          groupId: usesComparableGroup ? groupId : null,
+          page: page,
+          pageSize: 10,
+          search: search,
+        ),
       );
 
       final summary = _buildSummary(

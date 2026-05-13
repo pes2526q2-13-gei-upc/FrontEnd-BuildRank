@@ -6,9 +6,9 @@ extension RankingScopeLabel on RankingScope {
       case RankingScope.league:
         return 'La meva lliga';
       case RankingScope.comparableLeague:
-        return 'Similars de la lliga';
+        return 'Similars lliga';
       case RankingScope.comparableSeason:
-        return 'Similars de la temporada';
+        return 'Similars temporada';
     }
   }
 
@@ -17,9 +17,9 @@ extension RankingScopeLabel on RankingScope {
       case RankingScope.league:
         return 'league';
       case RankingScope.comparableLeague:
-        return 'comparableLeague';
+        return 'comparable_league';
       case RankingScope.comparableSeason:
-        return 'comparableSeason';
+        return 'comparable_season';
     }
   }
 }

@@ -155,9 +155,12 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   void _onSearchChanged(String value) {
+    setState(() {});
+
     _searchDebounce?.cancel();
 
     _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (!mounted) return;
       _loadRanking();
     });
   }
@@ -478,7 +481,7 @@ class _RankingScreenState extends State<RankingScreen> {
       children: [
         Expanded(
           child: _ToggleButton(
-            text: 'La meva lliga',
+            text: RankingScope.league.label,
             selected: _scope == RankingScope.league,
             onTap: () => _changeScope(RankingScope.league),
           ),
@@ -486,7 +489,7 @@ class _RankingScreenState extends State<RankingScreen> {
         const SizedBox(width: 8),
         Expanded(
           child: _ToggleButton(
-            text: 'Similars de la lliga',
+            text: RankingScope.comparableLeague.label,
             selected: _scope == RankingScope.comparableLeague,
             onTap: () => _changeScope(RankingScope.comparableLeague),
           ),
@@ -494,7 +497,7 @@ class _RankingScreenState extends State<RankingScreen> {
         const SizedBox(width: 8),
         Expanded(
           child: _ToggleButton(
-            text: 'Similars de la temporada',
+            text: RankingScope.comparableSeason.label,
             selected: _scope == RankingScope.comparableSeason,
             onTap: () => _changeScope(RankingScope.comparableSeason),
           ),
@@ -508,13 +511,18 @@ class _RankingScreenState extends State<RankingScreen> {
       controller: _searchController,
       onChanged: _onSearchChanged,
       decoration: InputDecoration(
-        hintText: 'Cerca un edifici...',
+        hintText: 'Cerca per carrer...',
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _searchController.text.isEmpty
             ? null
             : IconButton(
                 onPressed: () {
-                  _searchController.clear();
+                  _searchDebounce?.cancel();
+
+                  setState(() {
+                    _searchController.clear();
+                  });
+
                   _loadRanking();
                 },
                 icon: const Icon(Icons.close),
