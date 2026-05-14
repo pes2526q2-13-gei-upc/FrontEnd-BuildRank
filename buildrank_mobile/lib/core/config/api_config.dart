@@ -44,6 +44,7 @@ class ApiConfig {
   static const String localitzacions = '$baseUrl/api/buildings/localitzacions/';
 
   static const String edificis = '$baseUrl/api/buildings/edificis/';
+  static const String edificisMapa = '$baseUrl/api/buildings/edificis/mapa/';
 
   // =========================
   // Habitatges endpoints

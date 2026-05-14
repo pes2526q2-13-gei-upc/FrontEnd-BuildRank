@@ -10,6 +10,7 @@ import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
 import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
 import 'package:buildrank_mobile/features/weather/presentation/widgets/weather_alert_card.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
+import 'package:buildrank_mobile/features/map/presentation/screens/building_map_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -189,6 +190,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await _loadProfile();
   }
 
+  Future<void> _openBuildingMap() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const BuildingMapScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -244,6 +252,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 16),
 
                   _buildRoleActions(),
+
+                  const SizedBox(height: 16),
+
+                  _buildMapAccessCard(),
 
                   const SizedBox(height: 16),
 
@@ -322,6 +334,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontSize: 13,
           height: 1.35,
           color: Colors.green.shade900,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMapAccessCard() {
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: _openBuildingMap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFF8F1),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.green.shade100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.green.shade600,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.map_outlined, color: Colors.white),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Mapa d’edificis',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Visualitza els edificis registrats i consulta’n les estadístiques principals.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black54,
+                      height: 1.25,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 17),
+          ],
         ),
       ),
     );
