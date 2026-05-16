@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:buildrank_mobile/features/buildingRequests/presentation/screens/pending_building_requests_screen.dart';
+import 'package:buildrank_mobile/features/buildingRequests/data/pending_building_requests_service.dart';
 
 void main() {
   Widget buildTestable({required String userRole}) {
     return MaterialApp(
       home: PendingBuildingRequestsScreen(
         idEdifici: 1,
-        buildingTitle: 'Edifici Aragó 120',
+        buildingTitle: 'Edifici test',
         userRole: userRole,
+        requestsService: FakePendingBuildingRequestsService(),
       ),
     );
   }
 
   group('PendingBuildingRequestsScreen', () {
     testWidgets('si no és admin mostra estat de permís denegat', (
-      WidgetTester tester,
+      tester,
     ) async {
       await tester.pumpWidget(buildTestable(userRole: 'owner'));
       await tester.pump();
 
-      expect(
-        find.text(
-          'Només l’administrador de finca pot gestionar les sol·licituds pendents.',
-        ),
-        findsOneWidget,
-      );
+      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
     });
 
     testWidgets('si és admin carrega la pantalla de sol·licituds pendents', (
@@ -85,4 +82,47 @@ Matcher findsFewerThan(int previousCount) {
   return predicate<Finder>((finder) {
     return finder.evaluate().length < previousCount;
   });
+}
+
+class FakePendingBuildingRequestsService
+    extends PendingBuildingRequestsService {
+  FakePendingBuildingRequestsService();
+
+  final List<PendingBuildingRequestItem> items = [
+    PendingBuildingRequestItem(
+      id: 101,
+      requesterName: 'Laia Pons',
+      requesterEmail: 'laia.pons@mail.com',
+      refCadastral: '1234567DF3813A0001AB',
+      planta: '2',
+      porta: '1',
+      superficie: 86.5,
+      submittedAt: DateTime(2026, 1, 1, 10, 30),
+    ),
+    PendingBuildingRequestItem(
+      id: 102,
+      requesterName: 'Marc Serra',
+      requesterEmail: 'marc.serra@mail.com',
+      refCadastral: '1234567DF3813A0002CD',
+      planta: '3',
+      porta: '2',
+      superficie: 79.0,
+      submittedAt: DateTime(2026, 1, 2, 11, 0),
+    ),
+  ];
+
+  @override
+  Future<List<PendingBuildingRequestItem>> getPendingRequests({
+    required int idEdifici,
+  }) async {
+    return List<PendingBuildingRequestItem>.from(items);
+  }
+
+  @override
+  Future<void> validateRequest({
+    required String referenciaCadastral,
+    required bool accepted,
+  }) async {
+    items.removeWhere((item) => item.refCadastral == referenciaCadastral);
+  }
 }

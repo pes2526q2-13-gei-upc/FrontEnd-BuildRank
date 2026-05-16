@@ -1,41 +1,80 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:buildrank_mobile/core/config/api_config.dart';
+import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
+import 'package:http/http.dart' as http;
+
 class AddExistingBuildingService {
+  const AddExistingBuildingService();
+
+  Future<Map<String, String>> _buildHeaders() async {
+    final token = await TokenStorage.getAccessToken();
+
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+  }
+
   Future<List<ExistingBuildingItem>> searchBuildings(String query) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    final trimmed = query.trim();
 
-    final allBuildings = <ExistingBuildingItem>[
-      const ExistingBuildingItem(
-        id: 1,
-        name: 'Edifici Aragó 120',
-        address: 'Carrer d\'Aragó, 120',
-        city: 'Barcelona',
-        acceptsNewRequests: true,
-        isBlock: true,
-      ),
-      const ExistingBuildingItem(
-        id: 2,
-        name: 'Edifici Balmes 44',
-        address: 'Carrer de Balmes, 44',
-        city: 'Barcelona',
-        acceptsNewRequests: true,
-        isBlock: true,
-      ),
-      const ExistingBuildingItem(
-        id: 3,
-        name: 'Casa Mallorca 210',
-        address: 'Carrer de Mallorca, 210',
-        city: 'Barcelona',
-        acceptsNewRequests: false,
-        isBlock: false,
-      ),
-    ];
+    if (trimmed.length < 3) {
+      return const [];
+    }
 
-    final normalized = query.trim().toLowerCase();
+    final uri = ApiConfig.searchExistingBuildings(trimmed);
 
-    return allBuildings.where((building) {
-      return building.name.toLowerCase().contains(normalized) ||
-          building.address.toLowerCase().contains(normalized) ||
-          (building.city?.toLowerCase().contains(normalized) ?? false);
-    }).toList();
+    try {
+      final response = await http
+          .get(uri, headers: await _buildHeaders())
+          .timeout(const Duration(seconds: 10));
+
+      final decoded = _tryDecodeBody(response.body);
+
+      if (response.statusCode != 200) {
+        throw AddExistingBuildingApiException(
+          'No s’han pogut cercar edificis.',
+          statusCode: response.statusCode,
+          details: decoded,
+        );
+      }
+
+      if (decoded is! List) {
+        throw const AddExistingBuildingApiException(
+          'La resposta de cerca d’edificis no té el format esperat.',
+        );
+      }
+
+      return decoded
+          .whereType<Map>()
+          .map(
+            (item) =>
+                ExistingBuildingItem.fromJson(Map<String, dynamic>.from(item)),
+          )
+          .toList();
+    } on TimeoutException {
+      throw const AddExistingBuildingApiException(
+        'La cerca d’edificis ha trigat massa. Torna-ho a provar.',
+      );
+    } on SocketException {
+      throw const AddExistingBuildingApiException(
+        'No s’ha pogut connectar amb el servidor.',
+      );
+    } on FormatException {
+      throw const AddExistingBuildingApiException(
+        'La resposta del servidor no té el format esperat.',
+      );
+    } on AddExistingBuildingApiException {
+      rethrow;
+    } catch (_) {
+      throw const AddExistingBuildingApiException(
+        'S’ha produït un error inesperat cercant edificis.',
+      );
+    }
   }
 
   Future<void> createJoinRequest({
@@ -43,9 +82,151 @@ class AddExistingBuildingService {
     required String userRole,
     required Map<String, dynamic> habitatgePayload,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 800));
+    if (userRole == 'admin') {
+      await _claimBuildingAsAdmin(building);
+      return;
+    }
 
-    // Mock temporal: aquí més endavant hi haurà la crida real al backend.
+    await _createResidentJoinRequest(
+      building: building,
+      habitatgePayload: habitatgePayload,
+    );
+  }
+
+  Future<void> _createResidentJoinRequest({
+    required ExistingBuildingItem building,
+    required Map<String, dynamic> habitatgePayload,
+  }) async {
+    final referencia =
+        _readString(
+          habitatgePayload['referenciaCadastral'] ??
+              habitatgePayload['referencia_cadastral'],
+        ) ??
+        '';
+
+    final planta = _readString(habitatgePayload['planta']) ?? '';
+    final porta = _readString(habitatgePayload['porta']) ?? '';
+    final superficie = _readDouble(habitatgePayload['superficie']);
+
+    if (referencia.isEmpty) {
+      throw const AddExistingBuildingApiException(
+        'La referència cadastral és obligatòria.',
+      );
+    }
+
+    if (planta.isEmpty || porta.isEmpty) {
+      throw const AddExistingBuildingApiException(
+        'La planta i la porta són obligatòries.',
+      );
+    }
+
+    if (superficie == null || superficie <= 0) {
+      throw const AddExistingBuildingApiException(
+        'La superfície ha de ser un número superior a 0.',
+      );
+    }
+
+    final payload = {
+      'referenciaCadastral': referencia,
+      'edifici': building.id,
+      'planta': planta,
+      'porta': porta,
+      'superficie': superficie,
+    };
+
+    try {
+      await _postJson(Uri.parse(ApiConfig.habitatges), payload);
+    } on AddExistingBuildingApiException catch (e) {
+      // Si l’habitatge ja existeix al backend, provem el flux de sol·licitar accés.
+      if (e.statusCode == 400 && _looksLikeDuplicateReference(e.details)) {
+        await _postJson(
+          Uri.parse(ApiConfig.habitatgeSolicitarAcces(referencia)),
+          const {},
+        );
+        return;
+      }
+
+      rethrow;
+    }
+  }
+
+  Future<void> _claimBuildingAsAdmin(ExistingBuildingItem building) async {
+    final carrer = building.carrer;
+    final numero = building.numero;
+    final codiPostal = building.codiPostal;
+
+    if (carrer == null || numero == null || codiPostal == null) {
+      throw const AddExistingBuildingApiException(
+        'Aquest edifici no té prou dades de localització per vincular-lo com a administrador.',
+      );
+    }
+
+    final payload = {
+      'carrer': carrer,
+      'numero': numero,
+      'codiPostal': codiPostal,
+      if (building.anyConstruccio != null)
+        'anyConstruccio': building.anyConstruccio,
+    };
+
+    await _postJson(Uri.parse(ApiConfig.adminFincaEdificiAlta), payload);
+  }
+
+  Future<dynamic> _postJson(Uri uri, Map<String, dynamic> payload) async {
+    try {
+      final response = await http
+          .post(uri, headers: await _buildHeaders(), body: jsonEncode(payload))
+          .timeout(const Duration(seconds: 10));
+
+      final decoded = _tryDecodeBody(response.body);
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw AddExistingBuildingApiException(
+          'No s’ha pogut enviar la sol·licitud.',
+          statusCode: response.statusCode,
+          details: decoded,
+        );
+      }
+
+      return decoded;
+    } on TimeoutException {
+      throw const AddExistingBuildingApiException(
+        'L’enviament de la sol·licitud ha trigat massa.',
+      );
+    } on SocketException {
+      throw const AddExistingBuildingApiException(
+        'No s’ha pogut connectar amb el servidor.',
+      );
+    } on FormatException {
+      throw const AddExistingBuildingApiException(
+        'La resposta del servidor no té el format esperat.',
+      );
+    } on AddExistingBuildingApiException {
+      rethrow;
+    } catch (_) {
+      throw const AddExistingBuildingApiException(
+        'S’ha produït un error inesperat enviant la sol·licitud.',
+      );
+    }
+  }
+
+  dynamic _tryDecodeBody(String body) {
+    if (body.isEmpty) return {};
+
+    try {
+      return jsonDecode(body);
+    } catch (_) {
+      return body;
+    }
+  }
+
+  bool _looksLikeDuplicateReference(dynamic details) {
+    final text = details.toString().toLowerCase();
+
+    return text.contains('referencia') &&
+        (text.contains('existeix') ||
+            text.contains('already exists') ||
+            text.contains('unique'));
   }
 }
 
@@ -57,6 +238,11 @@ class ExistingBuildingItem {
   final bool acceptsNewRequests;
   final bool isBlock;
 
+  final String? carrer;
+  final int? numero;
+  final String? codiPostal;
+  final int? anyConstruccio;
+
   const ExistingBuildingItem({
     required this.id,
     required this.name,
@@ -64,5 +250,90 @@ class ExistingBuildingItem {
     this.city,
     this.acceptsNewRequests = true,
     this.isBlock = true,
+    this.carrer,
+    this.numero,
+    this.codiPostal,
+    this.anyConstruccio,
   });
+
+  factory ExistingBuildingItem.fromJson(Map<String, dynamic> json) {
+    final localitzacioRaw = json['localitzacio'];
+    final localitzacio = localitzacioRaw is Map
+        ? Map<String, dynamic>.from(localitzacioRaw)
+        : <String, dynamic>{};
+
+    final id = _readInt(json['idEdifici'] ?? json['id']) ?? 0;
+    final carrer = _readString(localitzacio['carrer']);
+    final numero = _readInt(localitzacio['numero']);
+    final codiPostal = _readString(localitzacio['codiPostal']);
+    final barri = _readString(localitzacio['barri']);
+    final anyConstruccio = _readInt(json['anyConstruccio']);
+
+    final addressParts = [?carrer, ?numero?.toString()];
+
+    final cityParts = [?barri, ?codiPostal];
+
+    return ExistingBuildingItem(
+      id: id,
+      name: 'Edifici $id',
+      address: addressParts.isEmpty
+          ? 'Adreça no disponible'
+          : addressParts.join(', '),
+      city: cityParts.isEmpty ? 'Barcelona' : cityParts.join(' · '),
+      acceptsNewRequests: true,
+      isBlock: true,
+      carrer: carrer,
+      numero: numero,
+      codiPostal: codiPostal,
+      anyConstruccio: anyConstruccio,
+    );
+  }
+}
+
+class AddExistingBuildingApiException implements Exception {
+  final String message;
+  final int? statusCode;
+  final dynamic details;
+
+  const AddExistingBuildingApiException(
+    this.message, {
+    this.statusCode,
+    this.details,
+  });
+
+  @override
+  String toString() {
+    if (details == null) return message;
+    return '$message Detall: $details';
+  }
+}
+
+String? _readString(dynamic value) {
+  if (value == null) return null;
+
+  final text = value.toString().trim();
+  return text.isEmpty ? null : text;
+}
+
+int? _readInt(dynamic value) {
+  if (value is int) return value;
+  if (value is double) return value.round();
+
+  if (value is String) {
+    final normalized = value.trim();
+    return int.tryParse(normalized) ?? double.tryParse(normalized)?.round();
+  }
+
+  return null;
+}
+
+double? _readDouble(dynamic value) {
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+
+  if (value is String) {
+    return double.tryParse(value.trim().replaceAll(',', '.'));
+  }
+
+  return null;
 }

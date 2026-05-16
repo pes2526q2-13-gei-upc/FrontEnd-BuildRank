@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
+import 'package:buildrank_mobile/features/profile/data/add_existing_building_service.dart';
 
 void main() {
   Widget buildTestable({required String userRole}) {
-    return MaterialApp(home: AddExistingBuildingScreen(userRole: userRole));
+    return MaterialApp(
+      home: AddExistingBuildingScreen(
+        userRole: userRole,
+        service: const FakeAddExistingBuildingService(),
+      ),
+    );
   }
 
   Future<void> searchBuilding(WidgetTester tester, String query) async {
@@ -149,4 +155,53 @@ void main() {
       );
     });
   });
+}
+
+class FakeAddExistingBuildingService extends AddExistingBuildingService {
+  const FakeAddExistingBuildingService();
+
+  @override
+  Future<List<ExistingBuildingItem>> searchBuildings(String query) async {
+    final normalized = query.trim().toLowerCase();
+
+    final allBuildings = <ExistingBuildingItem>[
+      const ExistingBuildingItem(
+        id: 1,
+        name: 'Edifici Aragó 120',
+        address: 'Carrer d\'Aragó, 120',
+        city: 'Barcelona',
+        acceptsNewRequests: true,
+        isBlock: true,
+      ),
+      const ExistingBuildingItem(
+        id: 2,
+        name: 'Edifici Balmes 44',
+        address: 'Carrer de Balmes, 44',
+        city: 'Barcelona',
+        acceptsNewRequests: true,
+        isBlock: true,
+      ),
+      const ExistingBuildingItem(
+        id: 3,
+        name: 'Casa Mallorca 210',
+        address: 'Carrer de Mallorca, 210',
+        city: 'Barcelona',
+        acceptsNewRequests: false,
+        isBlock: false,
+      ),
+    ];
+
+    return allBuildings.where((building) {
+      return building.name.toLowerCase().contains(normalized) ||
+          building.address.toLowerCase().contains(normalized) ||
+          (building.city?.toLowerCase().contains(normalized) ?? false);
+    }).toList();
+  }
+
+  @override
+  Future<void> createJoinRequest({
+    required ExistingBuildingItem building,
+    required String userRole,
+    required Map<String, dynamic> habitatgePayload,
+  }) async {}
 }

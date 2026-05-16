@@ -5,8 +5,13 @@ import 'package:buildrank_mobile/features/profile/data/add_existing_building_ser
 
 class AddExistingBuildingScreen extends StatefulWidget {
   final String userRole;
+  final AddExistingBuildingService service;
 
-  const AddExistingBuildingScreen({super.key, required this.userRole});
+  const AddExistingBuildingScreen({
+    super.key,
+    required this.userRole,
+    this.service = const AddExistingBuildingService(),
+  });
 
   @override
   State<AddExistingBuildingScreen> createState() =>
@@ -19,8 +24,6 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
   final TextEditingController _plantaController = TextEditingController();
   final TextEditingController _portaController = TextEditingController();
   final TextEditingController _superficieController = TextEditingController();
-
-  final AddExistingBuildingService _service = AddExistingBuildingService();
 
   Timer? _debounce;
   bool _isSearching = false;
@@ -98,7 +101,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
     });
 
     try {
-      final results = await _service.searchBuildings(trimmed);
+      final results = await widget.service.searchBuildings(trimmed);
 
       if (!mounted) return;
 
@@ -152,7 +155,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
     };
 
     try {
-      await _service.createJoinRequest(
+      await widget.service.createJoinRequest(
         building: building,
         userRole: widget.userRole,
         habitatgePayload: habitatgePayload,
@@ -237,7 +240,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
               controller: _searchController,
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
-                hintText: 'Escriu carrer i número...',
+                hintText: 'Escriu el carrer del teu edifici...',
                 prefixIcon: const Icon(Icons.location_on_outlined),
                 suffixIcon: _searchController.text.isEmpty
                     ? null

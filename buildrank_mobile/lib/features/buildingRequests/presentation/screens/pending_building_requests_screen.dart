@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/features/buildingRequests/data/pending_building_requests_service.dart';
 
 class PendingBuildingRequestsScreen extends StatefulWidget {
   final int idEdifici;
   final String buildingTitle;
   final String userRole;
+  final PendingBuildingRequestsService requestsService;
 
   const PendingBuildingRequestsScreen({
     super.key,
     required this.idEdifici,
     required this.buildingTitle,
     required this.userRole,
+    this.requestsService = const PendingBuildingRequestsService(),
   });
 
   @override
@@ -33,51 +36,34 @@ class _PendingBuildingRequestsScreenState
     super.initState();
 
     if (_isAdmin) {
-      _loadMockRequests();
+      _loadRequests();
     } else {
       _isLoading = false;
     }
   }
 
-  Future<void> _loadMockRequests() async {
+  Future<void> _loadRequests() async {
     setState(() {
       _isLoading = true;
       _errorText = null;
     });
 
-    await Future.delayed(const Duration(milliseconds: 450));
-
-    if (!mounted) return;
-
     try {
+      final requests = await widget.requestsService.getPendingRequests(
+        idEdifici: widget.idEdifici,
+      );
+
+      if (!mounted) return;
+
       setState(() {
-        _requests = [
-          PendingBuildingRequestItem(
-            id: 101,
-            requesterName: 'Laia Pons',
-            requesterEmail: 'laia.pons@mail.com',
-            refCadastral: '1234567DF3813A0001AB',
-            planta: '2',
-            porta: '1',
-            superficie: 86.5,
-            submittedAt: DateTime.now().subtract(const Duration(hours: 5)),
-          ),
-          PendingBuildingRequestItem(
-            id: 102,
-            requesterName: 'Marc Serra',
-            requesterEmail: 'marc.serra@mail.com',
-            refCadastral: '1234567DF3813A0002CD',
-            planta: '3',
-            porta: '2',
-            superficie: 79.0,
-            submittedAt: DateTime.now().subtract(const Duration(days: 1)),
-          ),
-        ];
+        _requests = requests;
         _isLoading = false;
       });
-    } catch (_) {
+    } catch (e) {
+      if (!mounted) return;
+
       setState(() {
-        _errorText = 'No s’han pogut carregar les sol·licituds pendents.';
+        _errorText = e.toString().replaceFirst('Exception: ', '');
         _isLoading = false;
       });
     }
@@ -89,21 +75,39 @@ class _PendingBuildingRequestsScreenState
       _processingAction = 'accept';
     });
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await widget.requestsService.validateRequest(
+        referenciaCadastral: item.refCadastral,
+        accepted: true,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-      _requests.removeWhere((request) => request.id == item.id);
-      _processingRequestId = null;
-      _processingAction = null;
-    });
+      setState(() {
+        _requests.removeWhere((request) => request.id == item.id);
+        _processingRequestId = null;
+        _processingAction = null;
+      });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('S’ha acceptat la sol·licitud de ${item.requesterName}.'),
-      ),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'S’ha acceptat la sol·licitud de ${item.requesterName}.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _processingRequestId = null;
+        _processingAction = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    }
   }
 
   Future<void> _rejectRequest(PendingBuildingRequestItem item) async {
@@ -112,21 +116,39 @@ class _PendingBuildingRequestsScreenState
       _processingAction = 'reject';
     });
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await widget.requestsService.validateRequest(
+        referenciaCadastral: item.refCadastral,
+        accepted: false,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-      _requests.removeWhere((request) => request.id == item.id);
-      _processingRequestId = null;
-      _processingAction = null;
-    });
+      setState(() {
+        _requests.removeWhere((request) => request.id == item.id);
+        _processingRequestId = null;
+        _processingAction = null;
+      });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('S’ha rebutjat la sol·licitud de ${item.requesterName}.'),
-      ),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'S’ha rebutjat la sol·licitud de ${item.requesterName}.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _processingRequestId = null;
+        _processingAction = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    }
   }
 
   @override
@@ -144,7 +166,7 @@ class _PendingBuildingRequestsScreenState
           : _errorText != null
           ? _buildErrorState()
           : RefreshIndicator(
-              onRefresh: _loadMockRequests,
+              onRefresh: _loadRequests,
               child: _requests.isEmpty
                   ? _buildEmptyState()
                   : ListView(
@@ -251,7 +273,7 @@ class _PendingBuildingRequestsScreenState
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _loadMockRequests,
+              onPressed: _loadRequests,
               child: const Text('Torna-ho a provar'),
             ),
           ],
@@ -484,30 +506,6 @@ class _RequestTypeChip extends StatelessWidget {
       ),
     );
   }
-}
-
-enum BuildingRequestType { resident, administrator }
-
-class PendingBuildingRequestItem {
-  final int id;
-  final String requesterName;
-  final String requesterEmail;
-  final String refCadastral;
-  final String? planta;
-  final String? porta;
-  final double? superficie;
-  final DateTime submittedAt;
-
-  const PendingBuildingRequestItem({
-    required this.id,
-    required this.requesterName,
-    required this.requesterEmail,
-    required this.refCadastral,
-    required this.planta,
-    required this.porta,
-    required this.superficie,
-    required this.submittedAt,
-  });
 }
 
 String _formatDate(DateTime date) {
