@@ -61,7 +61,10 @@ class _MainScreenState extends State<MainScreen> {
         buildingName: widget.title,
         currentPoints: widget.score,
       ),
-      const BuildingChatScreen(),
+      BuildingChatScreen(
+        idEdifici: widget.idEdifici,
+        buildingName: widget.title,
+      ),
       const VotacionsScreen(),
     ];
   }

@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-//import '../../../home/presentation/screens/home_screen.dart';
-//import '../../../formBuilding/presentation/screens/form_building_screen.dart'; //només per fer proves del formulari d'edifici
-//import '../../../buildingCard/presentation/screens/building_card_screen.dart'; //només per fer proves de la targeta d'edifici
+import 'package:buildrank_mobile/core/services/stream_service.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:buildrank_mobile/features/admin/presentation/screens/system_admin_home_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -42,6 +41,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final me = await _authService.getMe();
       final isSystemAdmin = me['is_system_admin'] == true;
+
+      // Connectar a GetStream com el nou usuari
+      try {
+        final userId = 'user_${me['id']}';
+        final userName = '${me['first_name'] ?? ''} ${me['last_name'] ?? ''}'
+            .trim();
+        await StreamService.connectUser(
+          userId: userId,
+          userName: userName.isNotEmpty ? userName : userId,
+        );
+        final token = await FirebaseMessaging.instance.getToken();
+        if (token != null) await StreamService.registerFcmToken(token);
+      } catch (_) {}
 
       if (!mounted) return;
 

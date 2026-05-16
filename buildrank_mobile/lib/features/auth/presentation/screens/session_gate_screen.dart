@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
+import 'package:buildrank_mobile/core/services/stream_service.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
@@ -37,6 +39,10 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
       final me = await authService.getMe();
       final isSystemAdmin = me['is_system_admin'] == true;
 
+      try {
+        await _connectStreamUser(me);
+      } catch (_) {}
+
       if (isSystemAdmin) {
         return const AdminPanelScreen();
       }
@@ -46,6 +52,23 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
       await TokenStorage.clearTokens();
       return const AuthBaseScreen();
     }
+  }
+
+  Future<void> _connectStreamUser(Map<String, dynamic> me) async {
+    final userId = 'user_${me['id']}';
+    final firstName = me['first_name'] as String? ?? '';
+    final lastName = me['last_name'] as String? ?? '';
+    final userName = '$firstName $lastName'.trim().isNotEmpty
+        ? '$firstName $lastName'.trim()
+        : userId;
+
+    await StreamService.connectUser(userId: userId, userName: userName);
+
+    try {
+      await FirebaseMessaging.instance.requestPermission();
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) await StreamService.registerFcmToken(token);
+    } catch (_) {}
   }
 
   @override
