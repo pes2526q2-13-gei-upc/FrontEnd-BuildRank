@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/core/services/stream_service.dart';
+import 'package:buildrank_mobile/features/admin/presentation/screens/system_admin_home_screen.dart';
+import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class RegisterScreen extends StatefulWidget {
   final void Function(String email)? onRegisterSuccess;
@@ -97,6 +101,69 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SnackBar(content: Text('Registre completat correctament.')),
         );
       }
+    } catch (e) {
+      setState(() {
+        _errorText = e.toString().replaceFirst('Exception: ', '');
+        _successText = null;
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _finishAuthenticatedNavigation() async {
+    final me = await _authService.getMe();
+    final isSystemAdmin = me['is_system_admin'] == true;
+
+    try {
+      final userId = 'user_${me['id']}';
+      final userName = '${me['first_name'] ?? ''} ${me['last_name'] ?? ''}'
+          .trim();
+
+      await StreamService.connectUser(
+        userId: userId,
+        userName: userName.isNotEmpty ? userName : userId,
+      );
+
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) await StreamService.registerFcmToken(token);
+    } catch (_) {}
+
+    if (!mounted) return;
+
+    if (isSystemAdmin) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+      );
+    }
+  }
+
+  Future<void> _handleGoogleRegister() async {
+    if (!_acceptedTerms) {
+      setState(() {
+        _errorText = 'Has d’acceptar els termes i condicions.';
+        _successText = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorText = null;
+      _successText = null;
+    });
+
+    try {
+      await _authService.loginWithGoogle(role: _selectedRole);
+      await _finishAuthenticatedNavigation();
     } catch (e) {
       setState(() {
         _errorText = e.toString().replaceFirst('Exception: ', '');
@@ -403,6 +470,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               style: TextStyle(fontSize: 16),
                             ),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: (_isLoading || !_acceptedTerms)
+                        ? null
+                        : _handleGoogleRegister,
+                    icon: const Icon(Icons.g_mobiledata),
+                    label: const Text('Crear compte amb Google'),
                   ),
                 ],
               ),

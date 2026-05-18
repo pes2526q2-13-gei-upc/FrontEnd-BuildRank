@@ -1,3 +1,6 @@
+import 'package:buildrank_mobile/core/services/stream_service.dart';
+import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:flutter/material.dart';
 
 class AdminPanelScreen extends StatefulWidget {
@@ -26,6 +29,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   _AdminTab _selectedTab = _AdminTab.tasks;
   String _search = '';
+  final _authService = AuthService();
+  bool _isLoggingOut = false;
 
   @override
   void initState() {
@@ -43,6 +48,39 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   Future<void> _refresh() async {
     await Future<void>.delayed(const Duration(milliseconds: 300));
+  }
+
+  Future<void> _handleLogout() async {
+    if (_isLoggingOut) return;
+
+    setState(() {
+      _isLoggingOut = true;
+    });
+
+    try {
+      try {
+        await StreamService.disconnectUser();
+      } catch (_) {}
+
+      await _authService.logout();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const AuthBaseScreen()),
+        (_) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      _showSnackBar(e.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoggingOut = false;
+        });
+      }
+    }
   }
 
   @override
@@ -105,20 +143,31 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     return Row(
       children: [
         ElevatedButton.icon(
-          onPressed: () => Navigator.of(context).maybePop(),
+          onPressed: _isLoggingOut ? null : _handleLogout,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF19C463),
             foregroundColor: Colors.white,
+            disabledBackgroundColor: const Color(0xFFB7E8CB),
+            disabledForegroundColor: Colors.white,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          icon: const Icon(Icons.arrow_back, size: 18),
-          label: const Text(
-            'Torna',
-            style: TextStyle(fontWeight: FontWeight.w700),
+          icon: _isLoggingOut
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Icon(Icons.logout, size: 18),
+          label: Text(
+            _isLoggingOut ? 'Sortint...' : 'Tanca sessió',
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ),
         const Spacer(),

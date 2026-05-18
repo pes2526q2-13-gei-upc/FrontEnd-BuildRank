@@ -15,7 +15,7 @@ class ApiConfig {
   /// Per defecte usa l'emulador. Si vols provar amb mòbil físic:
   ///
   /// flutter run --dart-define=API_BASE_URL=http://192.168.1.13
-  /// flutter run --dart-define=API_BASE_URL=http://192.168.1.102 --dart-define=XEMA_API_KEY=9a2ce0d3e095178ca40c3d6ffcd4c74f11e3c6b069b9fbde146fd6ca19f1398c
+  /// flutter run --dart-define=API_BASE_URL=http://192.168.1.109 --dart-define=XEMA_API_KEY=9a2ce0d3e095178ca40c3d6ffcd4c74f11e3c6b069b9fbde146fd6ca19f1398c
   ///
   /// Important:
   /// - Amb Docker + Nginx no fem servir :8000.
@@ -34,6 +34,8 @@ class ApiConfig {
   static const String logout = '$baseUrl/api/accounts/logout/';
   static const String me = '$baseUrl/api/accounts/me/';
   static const String meEdificis = '$baseUrl/api/accounts/me/edificis/';
+
+  static const String googleOAuth = '$baseUrl/api/accounts/oauth/google/';
 
   // =========================
   // Buildings endpoints

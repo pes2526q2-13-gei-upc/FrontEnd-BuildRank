@@ -38,34 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       await _authService.login(email: email, password: password);
-
-      final me = await _authService.getMe();
-      final isSystemAdmin = me['is_system_admin'] == true;
-
-      // Connectar a GetStream com el nou usuari
-      try {
-        final userId = 'user_${me['id']}';
-        final userName = '${me['first_name'] ?? ''} ${me['last_name'] ?? ''}'
-            .trim();
-        await StreamService.connectUser(
-          userId: userId,
-          userName: userName.isNotEmpty ? userName : userId,
-        );
-        final token = await FirebaseMessaging.instance.getToken();
-        if (token != null) await StreamService.registerFcmToken(token);
-      } catch (_) {}
-
-      if (!mounted) return;
-
-      if (isSystemAdmin) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const ProfileScreen()),
-        );
-      }
+      await _finishAuthenticatedNavigation();
     } catch (e) {
       setState(() {
         _errorText = e.toString().replaceFirst('Exception: ', '');
@@ -76,6 +49,59 @@ class _LoginScreenState extends State<LoginScreen> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _handleGoogleLogin() async {
+    setState(() {
+      _isLoading = true;
+      _errorText = null;
+    });
+
+    try {
+      await _authService.loginWithGoogle();
+      await _finishAuthenticatedNavigation();
+    } catch (e) {
+      setState(() {
+        _errorText = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _finishAuthenticatedNavigation() async {
+    final me = await _authService.getMe();
+    final isSystemAdmin = me['is_system_admin'] == true;
+
+    try {
+      final userId = 'user_${me['id']}';
+      final userName = '${me['first_name'] ?? ''} ${me['last_name'] ?? ''}'
+          .trim();
+
+      await StreamService.connectUser(
+        userId: userId,
+        userName: userName.isNotEmpty ? userName : userId,
+      );
+
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) await StreamService.registerFcmToken(token);
+    } catch (_) {}
+
+    if (!mounted) return;
+
+    if (isSystemAdmin) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const AdminPanelScreen()),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+      );
     }
   }
 
@@ -190,9 +216,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    onPressed: null,
-                    icon: const Icon(Icons.person_outline),
-                    label: const Text('Continuar amb un altre mètode'),
+                    onPressed: _isLoading ? null : _handleGoogleLogin,
+                    icon: const Icon(Icons.g_mobiledata),
+                    label: const Text('Continuar amb Google'),
                   ),
                 ],
               ),
