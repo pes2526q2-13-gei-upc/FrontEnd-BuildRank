@@ -34,7 +34,10 @@ class _RankingScreenState extends State<RankingScreen> {
   Timer? _searchDebounce;
 
   RankingScope _scope = RankingScope.league;
+  bool _showProgress = false;
+
   int _targetTop = 3;
+  int _progressSeasonsCount = 3;
   RankingResponse? _ranking;
 
   bool _isLoading = true;
@@ -145,13 +148,23 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   void _changeScope(RankingScope scope) {
-    if (_scope == scope) return;
+    if (!_showProgress && _scope == scope) return;
 
     setState(() {
       _scope = scope;
+      _showProgress = false;
     });
 
     _loadRanking();
+  }
+
+  void _showProgressRanking() {
+    if (_showProgress) return;
+
+    setState(() {
+      _showProgress = true;
+      _errorText = null;
+    });
   }
 
   void _onSearchChanged(String value) {
@@ -245,20 +258,25 @@ class _RankingScreenState extends State<RankingScreen> {
                   child: Column(
                     children: [
                       _buildLeagueCard(),
-                      const SizedBox(height: 12),
-                      _buildTopSelector(),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
+
                       if (widget.showBadges) ...[
                         _buildBadges(),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                       ],
+
                       _buildToggle(),
-                      const SizedBox(height: 12),
-                      _buildSearch(),
                       const SizedBox(height: 16),
-                      _buildRanking(),
-                      const SizedBox(height: 16),
-                      _buildLoadMore(),
+                      if (_showProgress) ...[
+                        _buildProgressControls(),
+                        const SizedBox(height: 16),
+                        _buildProgressRanking(),
+                      ] else ...[
+                        _buildSearch(),
+                        const SizedBox(height: 16),
+                        _buildRanking(),
+                        _buildLoadMore(),
+                      ],
                       const SizedBox(height: 80),
                     ],
                   ),
@@ -309,13 +327,33 @@ class _RankingScreenState extends State<RankingScreen> {
     );
   }
 
+  Color _leagueCardColor(String leagueName) {
+    final normalized = leagueName.toLowerCase();
+
+    if (normalized.contains('gold') ||
+        normalized.contains('or') ||
+        normalized.contains('oro')) {
+      return const Color(0xFFB8860B); // daurat
+    }
+
+    if (normalized.contains('bronze') || normalized.contains('bronce')) {
+      return const Color(0xFF92400E); // bronze
+    }
+
+    if (normalized.contains('silver') || normalized.contains('plata')) {
+      return const Color(0xFF6B7280); // plata / gris actual
+    }
+
+    return const Color(0xFF6B7280); // fallback actual
+  }
+
   Widget _buildLeagueCard() {
     final summary = _summary;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF6B7280),
+        color: _leagueCardColor(summary.leagueName),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -348,6 +386,8 @@ class _RankingScreenState extends State<RankingScreen> {
             'Progrés cap al Top $_targetTop',
             style: const TextStyle(color: Colors.white70),
           ),
+          const SizedBox(height: 16),
+          _buildTargetTopSelectorCompact(),
           const SizedBox(height: 6),
           Text(
             '${_formatPoints(summary.currentPoints)} / ${_formatPoints(summary.targetPoints)} punts',
@@ -376,6 +416,105 @@ class _RankingScreenState extends State<RankingScreen> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressControls() {
+    const options = [3, 5, 10];
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Període de comparació',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              for (final option in options)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: ChoiceChip(
+                      label: Text('Últimes $option'),
+                      selected: _progressSeasonsCount == option,
+                      onSelected: (_) {
+                        setState(() {
+                          _progressSeasonsCount = option;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTargetTopSelectorCompact() {
+    const options = [3, 5, 10];
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        children: [
+          for (final option in options)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(999),
+                  onTap: _targetTop == option
+                      ? null
+                      : () {
+                          setState(() {
+                            _targetTop = option;
+                          });
+
+                          if (!_showProgress) {
+                            _loadRanking();
+                          }
+                        },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.symmetric(vertical: 9),
+                    decoration: BoxDecoration(
+                      color: _targetTop == option
+                          ? Colors.white
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      'Top $option',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: _targetTop == option
+                            ? const Color(0xFF166534)
+                            : Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -432,75 +571,42 @@ class _RankingScreenState extends State<RankingScreen> {
     );
   }
 
-  Widget _buildTopSelector() {
-    const options = [3, 5, 10];
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Comparar posició amb:',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final option in options)
-                ChoiceChip(
-                  label: Text('Top $option'),
-                  selected: _targetTop == option,
-                  onSelected: (selected) {
-                    if (!selected || _targetTop == option) return;
-
-                    setState(() {
-                      _targetTop = option;
-                    });
-
-                    _loadRanking();
-                  },
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildToggle() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _ToggleButton(
-            text: RankingScope.league.label,
-            selected: _scope == RankingScope.league,
-            onTap: () => _changeScope(RankingScope.league),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _ToggleButton(
+                text: RankingScope.league.label,
+                selected: !_showProgress && _scope == RankingScope.league,
+                onTap: () => _changeScope(RankingScope.league),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ToggleButton(
+                text: RankingScope.comparableLeague.label,
+                selected:
+                    !_showProgress && _scope == RankingScope.comparableLeague,
+                onTap: () => _changeScope(RankingScope.comparableLeague),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _ToggleButton(
+                text: RankingScope.comparableSeason.label,
+                selected:
+                    !_showProgress && _scope == RankingScope.comparableSeason,
+                onTap: () => _changeScope(RankingScope.comparableSeason),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _ToggleButton(
-            text: RankingScope.comparableLeague.label,
-            selected: _scope == RankingScope.comparableLeague,
-            onTap: () => _changeScope(RankingScope.comparableLeague),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _ToggleButton(
-            text: RankingScope.comparableSeason.label,
-            selected: _scope == RankingScope.comparableSeason,
-            onTap: () => _changeScope(RankingScope.comparableSeason),
-          ),
+        const SizedBox(height: 10),
+        _ProgressToggleButton(
+          selected: _showProgress,
+          onTap: _showProgressRanking,
         ),
       ],
     );
@@ -604,6 +710,164 @@ class _RankingScreenState extends State<RankingScreen> {
 
     return buffer.toString();
   }
+
+  Widget _buildProgressRanking() {
+    final entries = _mockProgressEntries;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Ranking de progrés',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Millora acumulada durant les últimes $_progressSeasonsCount temporades.',
+          style: const TextStyle(color: Colors.black54, height: 1.35),
+        ),
+        const SizedBox(height: 14),
+        ...entries.map(
+          (entry) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _ProgressRankingCard(
+              entry: entry,
+              onDetail: entry.isCurrentBuilding
+                  ? () => _showProgressDetailModal(entry)
+                  : null,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showProgressDetailModal(_ProgressRankingEntry entry) {
+    final values = _mockProgressSeries(_progressSeasonsCount);
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E7EB),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  'Progrés de ${entry.name}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Evolució de puntuació durant les últimes $_progressSeasonsCount temporades.',
+                  style: const TextStyle(color: Colors.black54, height: 1.35),
+                ),
+                const SizedBox(height: 22),
+                _ProgressBarPlot(values: values),
+                const SizedBox(height: 18),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF8EE),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    'Millora acumulada: +${entry.delta} punts',
+                    style: const TextStyle(
+                      color: Color(0xFF166534),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<int> _mockProgressSeries(int count) {
+    final all = [
+      610,
+      635,
+      660,
+      690,
+      715,
+      735,
+      760,
+      780,
+      805,
+      widget.currentPoints,
+    ];
+
+    return all.sublist(all.length - count);
+  }
+
+  List<_ProgressRankingEntry> get _mockProgressEntries {
+    return [
+      const _ProgressRankingEntry(
+        idEdifici: 101,
+        position: 1,
+        name: 'Green Heights Residencial',
+        startPoints: 620,
+        currentPoints: 840,
+      ),
+      const _ProgressRankingEntry(
+        idEdifici: 102,
+        position: 2,
+        name: 'EcoTower Suites',
+        startPoints: 590,
+        currentPoints: 760,
+      ),
+      _ProgressRankingEntry(
+        idEdifici: widget.idEdifici,
+        position: 3,
+        name: widget.buildingName,
+        startPoints: 640,
+        currentPoints: widget.currentPoints,
+        isCurrentBuilding: true,
+      ),
+      const _ProgressRankingEntry(
+        idEdifici: 103,
+        position: 4,
+        name: 'Solaris Complex',
+        startPoints: 710,
+        currentPoints: 820,
+      ),
+      const _ProgressRankingEntry(
+        idEdifici: 104,
+        position: 5,
+        name: 'Habitatges Maragall',
+        startPoints: 530,
+        currentPoints: 610,
+      ),
+    ];
+  }
 }
 
 class _HeaderChip extends StatelessWidget {
@@ -622,6 +886,233 @@ class _HeaderChip extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(color: Colors.white70, fontSize: 12),
+      ),
+    );
+  }
+}
+
+class _ProgressBarPlot extends StatelessWidget {
+  final List<int> values;
+
+  const _ProgressBarPlot({required this.values});
+
+  @override
+  Widget build(BuildContext context) {
+    final maxValue = values.reduce((a, b) => a > b ? a : b);
+
+    return SizedBox(
+      height: 190,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          for (int i = 0; i < values.length; i++)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      values[i].toString(),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      height: 120 * (values[i] / maxValue),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF22C55E),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'T-${values.length - i - 1}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.black45,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressRankingCard extends StatelessWidget {
+  final _ProgressRankingEntry entry;
+  final VoidCallback? onDetail;
+
+  const _ProgressRankingCard({required this.entry, this.onDetail});
+
+  @override
+  Widget build(BuildContext context) {
+    final deltaText = entry.delta >= 0 ? '+${entry.delta}' : '${entry.delta}';
+    final percentageText = '${(entry.percentage * 100).toStringAsFixed(1)}%';
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: entry.isCurrentBuilding ? const Color(0xFFEAF8EE) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: entry.isCurrentBuilding
+              ? const Color(0xFF86EFAC)
+              : const Color(0xFFE5E7EB),
+          width: entry.isCurrentBuilding ? 1.6 : 1.1,
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: entry.position <= 3
+                ? const Color(0xFFDCFCE7)
+                : const Color(0xFFF3F4F6),
+            child: Text(
+              '#${entry.position}',
+              style: const TextStyle(
+                color: Color(0xFF166534),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${entry.startPoints} → ${entry.currentPoints} punts',
+                  style: const TextStyle(color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '$deltaText pts',
+                style: const TextStyle(
+                  color: Color(0xFF16A34A),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                percentageText,
+                style: const TextStyle(color: Colors.black45, fontSize: 12),
+              ),
+              if (onDetail != null) ...[
+                const SizedBox(height: 6),
+                InkWell(
+                  onTap: onDetail,
+                  child: const Text(
+                    'Veure detall',
+                    style: TextStyle(
+                      color: Color(0xFF166534),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressRankingEntry {
+  final int idEdifici;
+  final int position;
+  final String name;
+  final int startPoints;
+  final int currentPoints;
+  final bool isCurrentBuilding;
+
+  const _ProgressRankingEntry({
+    required this.idEdifici,
+    required this.position,
+    required this.name,
+    required this.startPoints,
+    required this.currentPoints,
+    this.isCurrentBuilding = false,
+  });
+
+  int get delta => currentPoints - startPoints;
+
+  double get percentage {
+    if (startPoints <= 0) return 0;
+    return delta / startPoints;
+  }
+}
+
+class _ProgressToggleButton extends StatelessWidget {
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ProgressToggleButton({required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected ? const Color(0xFF166534) : Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: selected
+                  ? const Color(0xFF166534)
+                  : const Color(0xFFE5E7EB),
+              width: selected ? 1.8 : 1.2,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.trending_up,
+                size: 20,
+                color: selected ? Colors.white : const Color(0xFF166534),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Progrés de temporades',
+                style: TextStyle(
+                  color: selected ? Colors.white : const Color(0xFF166534),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

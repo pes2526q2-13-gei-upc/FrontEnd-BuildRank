@@ -28,10 +28,43 @@ void main() {
     );
   }
 
+  Future<void> pumpSubject(
+    WidgetTester tester,
+    FakeRankingService service,
+  ) async {
+    tester.view.physicalSize = const Size(430, 1100);
+    tester.view.devicePixelRatio = 1.0;
+
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildSubject(service));
+  }
+
+  Finder comparableLeagueFinder() {
+    return find.byWidgetPredicate((widget) {
+      if (widget is! Text) return false;
+
+      final text = widget.data?.toLowerCase() ?? '';
+
+      return text.contains('similars') && text.contains('lliga');
+    });
+  }
+
+  Finder comparableSeasonFinder() {
+    return find.byWidgetPredicate((widget) {
+      if (widget is! Text) return false;
+
+      final text = widget.data?.toLowerCase() ?? '';
+
+      return text.contains('similars') && text.contains('temporada');
+    });
+  }
+
   testWidgets('mostra el ranking carregat correctament', (tester) async {
     final service = FakeRankingService();
 
-    await tester.pumpWidget(buildSubject(service));
+    await pumpSubject(tester, service);
 
     expect(find.byType(CircularProgressIndicator), findsAtLeastNWidgets(1));
 
@@ -42,8 +75,13 @@ void main() {
     expect(find.textContaining('Posició actual: #10'), findsOneWidget);
 
     expect(find.text('La meva lliga'), findsWidgets);
-    expect(find.text(RankingScope.comparableLeague.label), findsOneWidget);
-    expect(find.text(RankingScope.comparableSeason.label), findsOneWidget);
+    expect(comparableLeagueFinder(), findsOneWidget);
+    expect(comparableSeasonFinder(), findsOneWidget);
+    expect(find.text('Progrés de temporades'), findsOneWidget);
+
+    expect(find.text('Top 3'), findsOneWidget);
+    expect(find.text('Top 5'), findsOneWidget);
+    expect(find.text('Top 10'), findsOneWidget);
 
     expect(find.text('Edifici #1'), findsOneWidget);
     expect(find.text('Edifici #2'), findsOneWidget);
@@ -57,10 +95,10 @@ void main() {
   testWidgets('canvia a ranking de similars de la lliga', (tester) async {
     final service = FakeRankingService();
 
-    await tester.pumpWidget(buildSubject(service));
+    await pumpSubject(tester, service);
     await pumpRanking(tester);
 
-    await tester.tap(find.text(RankingScope.comparableLeague.label));
+    await tester.tap(comparableLeagueFinder());
     await pumpRanking(tester);
 
     expect(service.calls.last.scope, RankingScope.comparableLeague);
@@ -69,19 +107,92 @@ void main() {
   testWidgets('canvia a ranking de similars de la temporada', (tester) async {
     final service = FakeRankingService();
 
-    await tester.pumpWidget(buildSubject(service));
+    await pumpSubject(tester, service);
     await pumpRanking(tester);
 
-    await tester.tap(find.text(RankingScope.comparableSeason.label));
+    await tester.tap(comparableSeasonFinder());
     await pumpRanking(tester);
 
     expect(service.calls.last.scope, RankingScope.comparableSeason);
   });
 
+  testWidgets(
+    'mostra la vista de progrés sense fer una nova crida de ranking',
+    (tester) async {
+      final service = FakeRankingService();
+
+      await pumpSubject(tester, service);
+      await pumpRanking(tester);
+
+      final callsBeforeProgress = service.calls.length;
+
+      await tester.tap(find.text('Progrés de temporades'));
+      await tester.pump();
+
+      expect(find.text('Ranking de progrés'), findsOneWidget);
+      expect(find.text('Període de comparació'), findsOneWidget);
+      expect(find.text('Últimes 3'), findsOneWidget);
+      expect(find.text('Últimes 5'), findsOneWidget);
+      expect(find.text('Últimes 10'), findsOneWidget);
+
+      expect(find.text('Veure detall'), findsOneWidget);
+      expect(service.calls.length, callsBeforeProgress);
+    },
+  );
+
+  testWidgets('canvia el període de progrés a últimes 5 temporades', (
+    tester,
+  ) async {
+    final service = FakeRankingService();
+
+    await pumpSubject(tester, service);
+    await pumpRanking(tester);
+
+    await tester.tap(find.text('Progrés de temporades'));
+    await tester.pump();
+
+    await tester.tap(find.text('Últimes 5'));
+    await tester.pump();
+
+    expect(
+      find.text('Millora acumulada durant les últimes 5 temporades.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('obre el modal de detall del progrés del meu edifici', (
+    tester,
+  ) async {
+    final service = FakeRankingService();
+
+    await pumpSubject(tester, service);
+    await pumpRanking(tester);
+
+    await tester.tap(find.text('Progrés de temporades'));
+    await tester.pump();
+
+    final detailFinder = find.text('Veure detall');
+
+    await tester.scrollUntilVisible(
+      detailFinder,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    await tester.pump();
+
+    await tester.tap(detailFinder);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+
+    expect(find.textContaining('Progrés de'), findsWidgets);
+    expect(find.textContaining('Millora acumulada:'), findsOneWidget);
+  });
+
   testWidgets('canvia el top objectiu a Top 5', (tester) async {
     final service = FakeRankingService();
 
-    await tester.pumpWidget(buildSubject(service));
+    await pumpSubject(tester, service);
     await pumpRanking(tester);
 
     await tester.tap(find.text('Top 5'));
@@ -94,7 +205,7 @@ void main() {
   testWidgets('carrega més competidors quan hi ha més pàgines', (tester) async {
     final service = FakeRankingService();
 
-    await tester.pumpWidget(buildSubject(service));
+    await pumpSubject(tester, service);
     await pumpRanking(tester);
 
     final loadMoreFinder = find.text('Carrega més competidors');
@@ -116,7 +227,7 @@ void main() {
   testWidgets('mostra estat d’error si falla el servei', (tester) async {
     final service = FakeRankingService(shouldThrow: true);
 
-    await tester.pumpWidget(buildSubject(service));
+    await pumpSubject(tester, service);
     await pumpRanking(tester);
 
     expect(find.text('No s’ha pogut carregar el rànquing'), findsOneWidget);
@@ -147,7 +258,14 @@ class FakeRankingService extends RankingService {
     int page = 1,
     int targetTop = 3,
   }) async {
-    calls.add(RankingCall(scope: scope, page: page, targetTop: targetTop));
+    calls.add(
+      RankingCall(
+        scope: scope,
+        page: page,
+        targetTop: targetTop,
+        search: search,
+      ),
+    );
 
     if (shouldThrow) {
       throw const RankingApiException('Error fake de ranking');
@@ -220,11 +338,13 @@ class RankingCall {
   final RankingScope scope;
   final int page;
   final int targetTop;
+  final String? search;
 
   const RankingCall({
     required this.scope,
     required this.page,
     required this.targetTop,
+    this.search,
   });
 }
 

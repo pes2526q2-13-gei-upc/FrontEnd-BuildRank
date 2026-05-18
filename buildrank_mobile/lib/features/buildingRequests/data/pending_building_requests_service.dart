@@ -87,7 +87,7 @@ class PendingBuildingRequestsService {
 
       final decoded = _tryDecodeBody(response.body);
 
-      if (response.statusCode != 200 && response.statusCode != 204) {
+      if (response.statusCode < 200 || response.statusCode >= 300) {
         throw PendingBuildingRequestsApiException(
           accepted
               ? 'No s’ha pogut acceptar la sol·licitud.'
@@ -156,16 +156,44 @@ class PendingBuildingRequestItem {
 
   factory PendingBuildingRequestItem.fromJson(Map<String, dynamic> json) {
     final refCadastral = _readString(json['referenciaCadastral']) ?? '';
-    final requesterId = _readInt(json['solicitant']);
+
+    final solicitantRaw = json['solicitant'];
+    final solicitant = solicitantRaw is Map
+        ? Map<String, dynamic>.from(solicitantRaw)
+        : null;
+
+    final requesterId = solicitant != null
+        ? _readInt(solicitant['id'])
+        : _readInt(solicitantRaw);
+
+    final firstName = _readString(solicitant?['first_name']);
+    final lastName = _readString(solicitant?['last_name']);
+    final email = _readString(solicitant?['email']);
+
+    final nameParts = <String>[];
+
+    if (firstName != null) {
+      nameParts.add(firstName);
+    }
+
+    if (lastName != null) {
+      nameParts.add(lastName);
+    }
+
+    final fullName = nameParts.join(' ').trim();
 
     return PendingBuildingRequestItem(
       id: _readInt(json['id']) ?? refCadastral.hashCode,
-      requesterName:
-          _readString(json['solicitantNom']) ??
-          _readString(json['solicitant_name']) ??
-          _readString(json['requesterName']) ??
-          (requesterId != null ? 'Usuari #$requesterId' : 'Usuari pendent'),
+      requesterName: fullName.isNotEmpty
+          ? fullName
+          : _readString(json['solicitantNom']) ??
+                _readString(json['solicitant_name']) ??
+                _readString(json['requesterName']) ??
+                (requesterId != null
+                    ? 'Usuari #$requesterId'
+                    : 'Usuari pendent'),
       requesterEmail:
+          email ??
           _readString(json['solicitantEmail']) ??
           _readString(json['solicitant_email']) ??
           _readString(json['requesterEmail']) ??
@@ -178,12 +206,12 @@ class PendingBuildingRequestItem {
           DateTime.tryParse(
             _readString(json['created_at']) ??
                 _readString(json['dataSolicitud']) ??
+                _readString(json['updated_at']) ??
                 '',
           ) ??
           DateTime.now(),
     );
   }
-
   static String? _readString(dynamic value) {
     if (value == null) return null;
     final text = value.toString().trim();
