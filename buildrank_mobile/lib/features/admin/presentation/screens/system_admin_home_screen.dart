@@ -3,6 +3,7 @@ import 'package:buildrank_mobile/features/admin/presentation/screens/audit_logs_
 import 'package:buildrank_mobile/features/admin/presentation/screens/user_management_screen.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
+import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
 import 'package:flutter/material.dart';
 
 import '../../../myChat/my_chats_screen.dart';
@@ -27,7 +28,8 @@ enum _AdminTab { tasks, seasons, roles }
 
 class _AdminPanelScreenState extends State<AdminPanelScreen> {
   final TextEditingController _searchController = TextEditingController();
-  final List<_VerificationTask> _tasks = _VerificationTask.samples();
+  final AdminVerificationService _verificationService =
+      const AdminVerificationService();
   final List<_SeasonRow> _seasons = _SeasonRow.samples();
   final List<_RoleRow> _roles = _RoleRow.samples();
 
@@ -35,6 +37,14 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   String _search = '';
   final _authService = AuthService();
   bool _isLoggingOut = false;
+  bool _isLoadingVerifications = true;
+  String? _verificationError;
+  List<AdminVerificationItem> _verifications = [];
+  final Set<int> _processingVerificationIds = {};
+
+  List<_VerificationTask> get _tasks {
+    return _verifications.map(_VerificationTask.fromVerification).toList();
+  }
 
   @override
   void initState() {
@@ -42,6 +52,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     _searchController.addListener(() {
       setState(() => _search = _searchController.text.trim().toLowerCase());
     });
+    _loadVerifications();
   }
 
   @override
@@ -51,7 +62,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Future<void> _refresh() async {
-    await Future<void>.delayed(const Duration(milliseconds: 300));
+    await _loadVerifications();
   }
 
   Future<void> _handleLogout() async {
@@ -263,11 +274,11 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Widget _buildMetricCards() {
-    final pending = _tasks
-        .where((task) => task.status == _TaskStatus.pending)
+    final pending = _verifications
+        .where((item) => item.status.toLowerCase() == 'review')
         .length;
-    final verified = _tasks
-        .where((task) => task.status == _TaskStatus.verified)
+    final verified = _verifications
+        .where((item) => item.status.toLowerCase() == 'approved')
         .length;
 
     return SizedBox(
@@ -388,33 +399,53 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Widget _buildVerificationQueue() {
-    final filteredTasks = _tasks.where((task) {
+    final reviewTasks = _tasks
+        .where((task) => task.status == _TaskStatus.pending)
+        .toList();
+
+    final filteredTasks = reviewTasks.where((task) {
       if (_search.isEmpty) return true;
       return task.title.toLowerCase().contains(_search) ||
           task.category.toLowerCase().contains(_search) ||
+          task.requester.toLowerCase().contains(_search) ||
           task.status.label.toLowerCase().contains(_search);
     }).toList();
 
     return _PanelCard(
-      title: 'Cua de verificació',
-      badge: '${filteredTasks.length} actius',
+      title: 'Cua de verificació documental',
+      badge: '${filteredTasks.length} pendents',
       children: [
-        if (filteredTasks.isEmpty)
+        if (_isLoadingVerifications)
+          const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_verificationError != null)
+          _EmptyState(
+            icon: Icons.error_outline,
+            title: 'No s’han pogut carregar les verificacions',
+            subtitle: _verificationError!,
+          )
+        else if (filteredTasks.isEmpty)
           const _EmptyState(
             icon: Icons.fact_check_outlined,
-            title: 'No hi ha tasques coincidents',
-            subtitle: 'Canvia la cerca o el filtre per veure més resultats.',
+            title: 'No hi ha verificacions pendents',
+            subtitle:
+                'Quan una verificació acabi el processament d’IA apareixerà aquí.',
           )
         else
           for (final task in filteredTasks)
             _VerificationTaskTile(
               task: task,
-              onApprove: () => _updateTaskStatus(task.id, _TaskStatus.verified),
-              onReject: () => _updateTaskStatus(task.id, _TaskStatus.rejected),
+              isProcessing: _processingVerificationIds.contains(
+                task.verificationId,
+              ),
+              onApprove: () => _reviewVerification(task.verificationId, true),
+              onReject: () => _reviewVerification(task.verificationId, false),
             ),
         _PanelActionButton(
-          label: 'Veure totes les tasques de verificació',
-          onTap: _showAllTasksSnackBar,
+          label: 'Actualitza verificacions',
+          onTap: _loadVerifications,
         ),
       ],
     );
@@ -696,20 +727,117 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     );
   }
 
-  void _updateTaskStatus(String taskId, _TaskStatus status) {
+  Future<void> _loadVerifications() async {
     setState(() {
-      final index = _tasks.indexWhere((task) => task.id == taskId);
-      if (index == -1) return;
-      _tasks[index] = _tasks[index].copyWith(status: status);
+      _isLoadingVerifications = true;
+      _verificationError = null;
     });
 
-    final message = switch (status) {
-      _TaskStatus.verified => 'Verificació aprovada',
-      _TaskStatus.rejected => 'Verificació rebutjada',
-      _TaskStatus.pending => 'Verificació pendent',
-    };
+    try {
+      final verifications = await _verificationService.listVerifications();
 
-    _showSnackBar(message);
+      if (!mounted) return;
+
+      setState(() {
+        _verifications = verifications;
+      });
+    } on AdminVerificationApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _verificationError = e.message;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _verificationError =
+            'S’ha produït un error inesperat carregant verificacions.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingVerifications = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _reviewVerification(int verificationId, bool approve) async {
+    String? reason;
+
+    if (!approve) {
+      reason = await _askRejectReason();
+      if (reason == null || reason.trim().isEmpty) return;
+    }
+
+    setState(() {
+      _processingVerificationIds.add(verificationId);
+    });
+
+    try {
+      await _verificationService.reviewVerification(
+        verificationId: verificationId,
+        approve: approve,
+        reason: reason,
+      );
+
+      if (!mounted) return;
+
+      _showSnackBar(
+        approve ? 'Verificació aprovada.' : 'Verificació rebutjada.',
+      );
+
+      await _loadVerifications();
+    } on AdminVerificationApiException catch (e) {
+      if (!mounted) return;
+      _showSnackBar(e.message);
+    } catch (_) {
+      if (!mounted) return;
+      _showSnackBar('S’ha produït un error inesperat revisant la verificació.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processingVerificationIds.remove(verificationId);
+        });
+      }
+    }
+  }
+
+  Future<String?> _askRejectReason() async {
+    final controller = TextEditingController();
+
+    try {
+      return showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Motiu de rebuig'),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'Explica breument per què es rebutja...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel·la'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, controller.text),
+                child: const Text('Rebutja'),
+              ),
+            ],
+          );
+        },
+      );
+    } finally {
+      controller.dispose();
+    }
   }
 
   void _showSnackBar(String message) {
@@ -725,9 +853,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   void _showFiltersSnackBar() =>
       _showSnackBar('Filtres avançats pendents d’integració.');
-
-  void _showAllTasksSnackBar() =>
-      _showSnackBar('Vista completa de tasques pendent d’integració.');
 
   void _showCreateSeasonSnackBar() =>
       _showSnackBar('Creació de temporada pendent d’integració.');
@@ -946,11 +1071,13 @@ class _PanelCard extends StatelessWidget {
 
 class _VerificationTaskTile extends StatelessWidget {
   final _VerificationTask task;
+  final bool isProcessing;
   final VoidCallback onApprove;
   final VoidCallback onReject;
 
   const _VerificationTaskTile({
     required this.task,
+    required this.isProcessing,
     required this.onApprove,
     required this.onReject,
   });
@@ -996,11 +1123,19 @@ class _VerificationTaskTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${task.category} • Fa ${task.age}',
+                  '${task.category} • ${task.requester}',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF6B7280),
                     fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  task.scoreLabel,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1011,19 +1146,42 @@ class _VerificationTaskTile extends StatelessWidget {
           const SizedBox(width: 10),
           Column(
             children: [
-              _CircleActionButton(
-                icon: Icons.check_circle_outline,
-                color: const Color(0xFF1F2937),
-                onTap: onApprove,
-                tooltip: 'Aprova',
-              ),
-              const SizedBox(height: 8),
-              _CircleActionButton(
-                icon: Icons.cancel_outlined,
-                color: const Color(0xFFFF5555),
-                onTap: onReject,
-                tooltip: 'Rebutja',
-              ),
+              if (isProcessing)
+                const SizedBox(
+                  width: 34,
+                  height: 34,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else if (task.canReview) ...[
+                _CircleActionButton(
+                  icon: Icons.check_circle_outline,
+                  color: const Color(0xFF1F2937),
+                  onTap: onApprove,
+                  tooltip: 'Aprova',
+                ),
+                const SizedBox(height: 8),
+                _CircleActionButton(
+                  icon: Icons.cancel_outlined,
+                  color: const Color(0xFFFF5555),
+                  onTap: onReject,
+                  tooltip: 'Rebutja',
+                ),
+              ] else ...[
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: const Icon(
+                    Icons.hourglass_top,
+                    color: Colors.black45,
+                    size: 22,
+                  ),
+                ),
+              ],
             ],
           ),
         ],
@@ -1327,8 +1485,8 @@ class _EmptyState extends StatelessWidget {
 }
 
 enum _TaskStatus {
-  pending('Pendent'),
-  verified('Verificat'),
+  pending('Revisió'),
+  verified('Aprovat'),
   rejected('Rebutjat');
 
   final String label;
@@ -1337,53 +1495,57 @@ enum _TaskStatus {
 
 class _VerificationTask {
   final String id;
+  final int verificationId;
   final String title;
   final String category;
-  final String age;
+  final String requester;
+  final String scoreLabel;
   final _TaskStatus status;
+  final String rawStatus;
+
+  bool get canReview => rawStatus.toLowerCase() == 'review';
 
   const _VerificationTask({
     required this.id,
+    required this.verificationId,
     required this.title,
     required this.category,
-    required this.age,
+    required this.requester,
+    required this.scoreLabel,
     required this.status,
+    required this.rawStatus,
   });
 
-  _VerificationTask copyWith({_TaskStatus? status}) {
-    return _VerificationTask(
-      id: id,
-      title: title,
-      category: category,
-      age: age,
-      status: status ?? this.status,
-    );
-  }
+  factory _VerificationTask.fromVerification(AdminVerificationItem item) {
+    final normalizedStatus = item.status.toLowerCase();
 
-  static List<_VerificationTask> samples() {
-    return const [
-      _VerificationTask(
-        id: 'skyline-plaza',
-        title: 'Skyline Plaza',
-        category: 'Comercial',
-        age: '2h',
-        status: _TaskStatus.pending,
-      ),
-      _VerificationTask(
-        id: 'green-valley',
-        title: 'Green Valley Apts',
-        category: 'Residencial',
-        age: '5h',
-        status: _TaskStatus.pending,
-      ),
-      _VerificationTask(
-        id: 'tech-hub-v3',
-        title: 'Tech Hub V3',
-        category: 'Oficina',
-        age: '1d',
-        status: _TaskStatus.verified,
-      ),
-    ];
+    final status = switch (normalizedStatus) {
+      'review' => _TaskStatus.pending,
+      'approved' => _TaskStatus.verified,
+      'rejected' => _TaskStatus.rejected,
+      _ => _TaskStatus.pending,
+    };
+
+    final scoreText = item.score == null
+        ? 'Score pendent'
+        : 'Score IA ${(item.score! * 100).toStringAsFixed(0)}%';
+
+    final docText = item.documents.isEmpty
+        ? 'sense documents'
+        : '${item.documents.length} document(s)';
+
+    return _VerificationTask(
+      id: item.id.toString(),
+      verificationId: item.id,
+      title: item.edificiTitle,
+      category: '${item.status} · $docText',
+      requester: '${item.requesterName} · ${item.requesterEmail}',
+      scoreLabel: item.suggeriment == null || item.suggeriment!.trim().isEmpty
+          ? scoreText
+          : '$scoreText · ${item.suggeriment}',
+      status: status,
+      rawStatus: item.status,
+    );
   }
 }
 

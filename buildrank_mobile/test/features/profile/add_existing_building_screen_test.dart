@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
 import 'package:buildrank_mobile/features/profile/data/add_existing_building_service.dart';
+import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
 
 void main() {
   Widget buildTestable({required String userRole}) {
@@ -203,5 +204,6 @@ class FakeAddExistingBuildingService extends AddExistingBuildingService {
     required ExistingBuildingItem building,
     required String userRole,
     required Map<String, dynamic> habitatgePayload,
+    List<AdminVerificationDocumentInput> verificationDocuments = const [],
   }) async {}
 }

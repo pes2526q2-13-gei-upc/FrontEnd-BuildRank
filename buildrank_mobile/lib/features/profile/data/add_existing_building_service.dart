@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:buildrank_mobile/core/config/api_config.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
+import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
 import 'package:http/http.dart' as http;
 
 class AddExistingBuildingService {
@@ -81,9 +82,13 @@ class AddExistingBuildingService {
     required ExistingBuildingItem building,
     required String userRole,
     required Map<String, dynamic> habitatgePayload,
+    List<AdminVerificationDocumentInput> verificationDocuments = const [],
   }) async {
     if (userRole == 'admin') {
-      await _claimBuildingAsAdmin(building);
+      await const AdminVerificationService().createVerification(
+        idEdifici: building.id,
+        documents: verificationDocuments,
+      );
       return;
     }
 
@@ -148,28 +153,6 @@ class AddExistingBuildingService {
 
       rethrow;
     }
-  }
-
-  Future<void> _claimBuildingAsAdmin(ExistingBuildingItem building) async {
-    final carrer = building.carrer;
-    final numero = building.numero;
-    final codiPostal = building.codiPostal;
-
-    if (carrer == null || numero == null || codiPostal == null) {
-      throw const AddExistingBuildingApiException(
-        'Aquest edifici no té prou dades de localització per vincular-lo com a administrador.',
-      );
-    }
-
-    final payload = {
-      'carrer': carrer,
-      'numero': numero,
-      'codiPostal': codiPostal,
-      if (building.anyConstruccio != null)
-        'anyConstruccio': building.anyConstruccio,
-    };
-
-    await _postJson(Uri.parse(ApiConfig.adminFincaEdificiAlta), payload);
   }
 
   Future<dynamic> _postJson(Uri uri, Map<String, dynamic> payload) async {

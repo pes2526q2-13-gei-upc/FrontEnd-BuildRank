@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:buildrank_mobile/features/formBuilding/data/building_form_data.dart';
+import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
+import 'package:buildrank_mobile/features/verification/presentation/widgets/admin_verification_documents_section.dart';
 import 'package:buildrank_mobile/features/formBuilding/data/building_service.dart';
 
 class BuildingFormScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class BuildingFormScreen extends StatefulWidget {
 
 class _BuildingFormScreenState extends State<BuildingFormScreen> {
   late final BuildingService _buildingService;
+  late final AdminVerificationService _verificationService;
 
   int _currentStep = 1;
   bool _isSubmitting = false;
@@ -37,6 +40,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
   List<Map<String, dynamic>> _streetSuggestions = [];
   Map<String, dynamic>? _selectedStreetSuggestion;
   String? _streetSuggestionsMessage;
+  List<AdminVerificationDocumentInput> _verificationDocuments = [];
 
   String _selectedBuildingType = 'Residencial';
   String _selectedOrientation = '';
@@ -81,6 +85,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
     super.initState();
 
     _buildingService = BuildingService();
+    _verificationService = const AdminVerificationService();
   }
 
   @override
@@ -347,6 +352,14 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
     return null;
   }
 
+  String? _validateStep4() {
+    if (_verificationDocuments.isEmpty) {
+      return 'Cal adjuntar almenys un document de verificació.';
+    }
+
+    return null;
+  }
+
   void _goToStep2() {
     final error = _validateStep1();
 
@@ -373,8 +386,21 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
     });
   }
 
-  Future<void> _submit() async {
+  void _goToStep4() {
     final error = _validateStep3();
+
+    if (error != null) {
+      _showMessage(error);
+      return;
+    }
+
+    setState(() {
+      _currentStep = 4;
+    });
+  }
+
+  Future<void> _submit() async {
+    final error = _validateStep4();
 
     if (error != null) {
       _showMessage(error);
@@ -391,10 +417,27 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
         edificiPayload: _formData.toEdificiJson(),
       );
 
+      final idEdifici = _extractCreatedBuildingId(createdBuilding);
+
+      if (idEdifici == null) {
+        throw const BuildingApiException(
+          'L’edifici s’ha creat però la resposta no conté cap identificador reconeixible.',
+        );
+      }
+
+      await _verificationService.createVerification(
+        idEdifici: idEdifici,
+        documents: _verificationDocuments,
+      );
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Edifici desat correctament.')),
+        const SnackBar(
+          content: Text(
+            'Edifici creat i documentació enviada. Queda pendent de revisió.',
+          ),
+        ),
       );
 
       Navigator.pop(context, createdBuilding);
@@ -422,6 +465,16 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
     setState(() {
       _currentStep -= 1;
     });
+  }
+
+  int? _extractCreatedBuildingId(Map<String, dynamic> json) {
+    final value =
+        json['idEdifici'] ?? json['id'] ?? json['edifici_id'] ?? json['pk'];
+
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+
+    return null;
   }
 
   void _showMessage(String message) {
@@ -467,7 +520,9 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                 ? "Comencem per la ubicació de l'edifici."
                 : _currentStep == 2
                 ? "Ara completa la informació general."
-                : "Finalment, afegeix les dades tècniques bàsiques.",
+                : _currentStep == 3
+                ? "Afegeix les dades tècniques bàsiques."
+                : "Adjunta la documentació per validar-te com a administrador de finca.",
             style: const TextStyle(color: Colors.black54, height: 1.4),
           ),
           const SizedBox(height: 24),
@@ -861,10 +916,65 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
             const SizedBox(height: 40),
 
             ElevatedButton(
+              onPressed: _isSubmitting ? null : _goToStep4,
+              style: _primaryButtonStyle(),
+              child: const Text(
+                'Continua →',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+
+          if (_currentStep == 4) ...[
+            const _SectionTitle(title: 'DOCUMENTACIÓ'),
+            const SizedBox(height: 12),
+
+            _SummaryCard(
+              title: 'Edifici a verificar',
+              rows: [
+                _SummaryRowData(
+                  icon: Icons.location_on_outlined,
+                  label: 'Adreça',
+                  value: locationDescription.isEmpty
+                      ? '-'
+                      : locationDescription,
+                ),
+                _SummaryRowData(
+                  icon: Icons.apartment_outlined,
+                  label: 'Tipologia',
+                  value: _selectedBuildingType,
+                ),
+                _SummaryRowData(
+                  icon: Icons.square_foot_outlined,
+                  label: 'Superfície',
+                  value: _surfaceController.text.trim().isEmpty
+                      ? '-'
+                      : '${_surfaceController.text.trim()} m²',
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            AdminVerificationDocumentsSection(
+              documents: _verificationDocuments,
+              enabled: !_isSubmitting,
+              onChanged: (documents) {
+                setState(() {
+                  _verificationDocuments = documents;
+                });
+              },
+            ),
+
+            const SizedBox(height: 40),
+
+            ElevatedButton(
               onPressed: _isSubmitting ? null : _submit,
               style: _primaryButtonStyle(),
               child: Text(
-                _isSubmitting ? 'Desant edifici...' : 'Crear edifici',
+                _isSubmitting
+                    ? 'Enviant documentació...'
+                    : 'Crear edifici i enviar verificació',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -930,7 +1040,17 @@ class _StepIndicator extends StatelessWidget {
             color: currentStep > 2 ? Colors.green : Colors.grey.shade300,
           ),
         ),
-        _StepCircle(number: 3, active: currentStep == 3, completed: false),
+        _StepCircle(
+          number: 3,
+          active: currentStep == 3,
+          completed: currentStep > 3,
+        ),
+        Expanded(
+          child: Divider(
+            color: currentStep > 3 ? Colors.green : Colors.grey.shade300,
+          ),
+        ),
+        _StepCircle(number: 4, active: currentStep == 4, completed: false),
       ],
     );
   }

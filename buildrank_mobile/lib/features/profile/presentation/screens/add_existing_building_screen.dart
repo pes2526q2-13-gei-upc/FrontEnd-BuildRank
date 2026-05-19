@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/profile/data/add_existing_building_service.dart';
+import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
+import 'package:buildrank_mobile/features/verification/presentation/widgets/admin_verification_documents_section.dart';
 
 class AddExistingBuildingScreen extends StatefulWidget {
   final String userRole;
@@ -32,6 +34,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
 
   List<ExistingBuildingItem> _results = [];
   ExistingBuildingItem? _selectedBuilding;
+  List<AdminVerificationDocumentInput> _verificationDocuments = [];
 
   bool get _isAdminRole => widget.userRole == 'admin';
 
@@ -46,7 +49,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
     if (_selectedBuilding == null || _isSubmitting) return false;
 
     if (_isAdminRole) {
-      return true;
+      return _verificationDocuments.isNotEmpty;
     }
 
     return _canShowHabitatgeForm && _isHabitatgeFormValid;
@@ -100,6 +103,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
       _selectedBuilding = null;
       _results = [];
       _clearHabitatgeForm();
+      _verificationDocuments = [];
     });
 
     if (trimmed.length < 3) {
@@ -145,6 +149,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
       _selectedBuilding = building;
       _errorMessage = null;
       _clearHabitatgeForm();
+      _verificationDocuments = [];
     });
   }
 
@@ -176,6 +181,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
         building: building,
         userRole: widget.userRole,
         habitatgePayload: habitatgePayload,
+        verificationDocuments: _verificationDocuments,
       );
 
       if (!mounted) return;
@@ -269,6 +275,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                             _selectedBuilding = null;
                             _errorMessage = null;
                             _clearHabitatgeForm();
+                            _verificationDocuments = [];
                           });
                         },
                         icon: const Icon(Icons.close),
@@ -467,6 +474,18 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                     ),
                   ],
                 ),
+              ),
+            ],
+            if (_isAdminRole && _selectedBuilding != null) ...[
+              const SizedBox(height: 16),
+              AdminVerificationDocumentsSection(
+                documents: _verificationDocuments,
+                enabled: !_isSubmitting,
+                onChanged: (documents) {
+                  setState(() {
+                    _verificationDocuments = documents;
+                  });
+                },
               ),
             ],
             const SizedBox(height: 16),
