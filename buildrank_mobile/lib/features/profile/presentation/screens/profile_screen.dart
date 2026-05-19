@@ -5,6 +5,8 @@ import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_sc
 import 'package:buildrank_mobile/features/formBuilding/data/building_service.dart';
 import 'package:buildrank_mobile/features/formBuilding/presentation/screens/form_building_screen.dart';
 import 'package:buildrank_mobile/features/myChat/my_chats_screen.dart';
+import 'package:buildrank_mobile/features/notifications/data/notifications_service.dart';
+import 'package:buildrank_mobile/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
 import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
@@ -19,15 +21,18 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with WidgetsBindingObserver {
   final _authService = AuthService();
   final _buildingService = BuildingService();
+  final _notificacionsService = NotificacionsService();
 
   bool _showWeatherAlert = true;
 
   bool _isLoading = true;
   bool _isLoggingOut = false;
   String? _errorText;
+  int _noLlegides = 0;
 
   Map<String, dynamic>? _userData;
   List<Map<String, dynamic>> _buildings = [];
@@ -35,7 +40,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadProfile();
+    _loadNoLlegides();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _loadNoLlegides();
+  }
+
+  Future<void> _loadNoLlegides() async {
+    final count = await _notificacionsService.getNoLlegides();
+    if (mounted) setState(() => _noLlegides = count);
+  }
+
+  Future<void> _openNotifications() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NotificationsScreen(
+          userRole: _role,
+          onBadgeUpdate: _loadNoLlegides,
+        ),
+      ),
+    );
   }
 
   String get _role => (_userData?['role'] ?? '').toString();
@@ -208,6 +243,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Notificacions',
+            onPressed: _openNotifications,
+            icon: Badge(
+              label: Text('$_noLlegides'),
+              isLabelVisible: _noLlegides > 0,
+              child: const Icon(Icons.notifications_outlined),
+            ),
+          ),
           IconButton(
             tooltip: 'Refrescar',
             onPressed: _isLoading ? null : _loadProfile,

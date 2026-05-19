@@ -10,13 +10,18 @@ class StreamService {
 
   static String? _lastUserId;
   static String? _lastUserName;
+  static String? _lastToken;
+
+  static String? get lastUserName => _lastUserName;
 
   static Future<void> connectUser({
     required String userId,
     required String userName,
+    String? token,
   }) async {
     _lastUserId = userId;
     _lastUserName = userName;
+    if (token != null) _lastToken = token;
 
     // Ja connectat com el mateix usuari
     if (client.state.currentUser?.id == userId &&
@@ -31,13 +36,17 @@ class StreamService {
 
     await client.connectUser(
       User(id: userId, name: userName),
-      client.devToken(userId).rawValue,
+      token ?? _lastToken ?? client.devToken(userId).rawValue,
     );
   }
 
   static Future<void> reconnect() async {
     if (_lastUserId == null) return;
-    await connectUser(userId: _lastUserId!, userName: _lastUserName!);
+    await connectUser(
+      userId: _lastUserId!,
+      userName: _lastUserName!,
+      token: _lastToken,
+    );
   }
 
   static Future<void> registerFcmToken(String token) async {

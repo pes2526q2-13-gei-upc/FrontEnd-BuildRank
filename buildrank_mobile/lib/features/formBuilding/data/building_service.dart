@@ -4,26 +4,13 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:buildrank_mobile/core/config/api_config.dart';
-import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
+import 'package:buildrank_mobile/core/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
 class BuildingService {
-  Future<Map<String, String>> _buildHeaders() async {
-    final accessToken = await TokenStorage.getAccessToken();
-
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (accessToken != null && accessToken.isNotEmpty)
-        'Authorization': 'Bearer $accessToken',
-    };
-  }
-
   Future<List<Map<String, dynamic>>> getMyBuildings() async {
     try {
-      final response = await http
-          .get(Uri.parse(ApiConfig.meEdificis), headers: await _buildHeaders())
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(Uri.parse(ApiConfig.meEdificis));
 
       final decoded = _tryDecodeBody(response.body);
 
@@ -71,12 +58,9 @@ class BuildingService {
 
   Future<Map<String, dynamic>> getBuildingDetail(int idEdifici) async {
     try {
-      final response = await http
-          .get(
-            ApiConfig.uri(ApiConfig.edificiDetail(idEdifici)),
-            headers: await _buildHeaders(),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(
+        ApiConfig.uri(ApiConfig.edificiDetail(idEdifici)),
+      );
 
       final data = _decodeBody(response);
 
@@ -126,18 +110,11 @@ class BuildingService {
     );
 
     try {
-      final headers = await _buildHeaders();
-
       if (kDebugMode) {
         debugPrint('[BuildingService] GET $uri');
-        debugPrint(
-          '[BuildingService] Auth header present: ${headers.containsKey('Authorization')}',
-        );
       }
 
-      final response = await http
-          .get(uri, headers: headers)
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(uri);
 
       if (kDebugMode) {
         debugPrint('[BuildingService] Status: ${response.statusCode}');
@@ -199,13 +176,10 @@ class BuildingService {
     Map<String, dynamic> payload,
   ) async {
     try {
-      final response = await http
-          .post(
-            ApiConfig.uri(ApiConfig.localitzacions),
-            headers: await _buildHeaders(),
-            body: jsonEncode(payload),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.post(
+        ApiConfig.uri(ApiConfig.localitzacions),
+        body: jsonEncode(payload),
+      );
 
       final data = _decodeBody(response);
 
@@ -242,13 +216,10 @@ class BuildingService {
     Map<String, dynamic> payload,
   ) async {
     try {
-      final response = await http
-          .post(
-            ApiConfig.uri(ApiConfig.crearEdifici),
-            headers: await _buildHeaders(),
-            body: jsonEncode(payload),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.post(
+        ApiConfig.uri(ApiConfig.crearEdifici),
+        body: jsonEncode(payload),
+      );
 
       final data = _decodeBody(response);
 

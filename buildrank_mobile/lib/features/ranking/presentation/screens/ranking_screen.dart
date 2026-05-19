@@ -286,6 +286,7 @@ class _RankingScreenState extends State<RankingScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'ranking_fab',
         onPressed: _isLoading ? null : _loadRanking,
         backgroundColor: Colors.green,
         child: const Icon(Icons.refresh),

@@ -20,22 +20,22 @@ class MainBottomNavigation extends StatelessWidget {
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: "Inici"),
+        BottomNavigationBarItem(icon: Icon(Icons.grid_view), label: 'Inici'),
         BottomNavigationBarItem(
           icon: Icon(Icons.emoji_events_outlined),
-          label: "Lligues",
+          label: 'Lligues',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.bolt_outlined),
-          label: "Simula",
+          label: 'Simula',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat_bubble_outline),
-          label: "Xat",
+          label: 'Xat',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.how_to_vote_outlined),
-          label: "Votacions",
+          label: 'Votacions',
         ),
       ],
     );

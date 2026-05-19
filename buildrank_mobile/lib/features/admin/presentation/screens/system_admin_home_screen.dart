@@ -1,7 +1,11 @@
 import 'package:buildrank_mobile/core/services/stream_service.dart';
+import 'package:buildrank_mobile/features/admin/presentation/screens/audit_logs_screen.dart';
+import 'package:buildrank_mobile/features/admin/presentation/screens/user_management_screen.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../../../myChat/my_chats_screen.dart';
 
 class AdminPanelScreen extends StatefulWidget {
   final String adminName;
@@ -129,6 +133,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
               const SizedBox(height: 16),
               _buildSelectedPanel(),
               const SizedBox(height: 24),
+              _buildChatModerationCard(),
+              const SizedBox(height: 14),
+              _buildUserManagementCard(),
+              const SizedBox(height: 22),
               _buildIntegrityAlert(),
               const SizedBox(height: 36),
               _buildFooter(),
@@ -442,6 +450,154 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     );
   }
 
+  Widget _buildChatModerationCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFDDE2E8)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x09000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5F9ED),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.forum_outlined,
+                    color: Color(0xFF19C463),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Moderació de xats',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF111827),
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Accedeix als xats dels edificis i aplica accions de moderació.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: Color(0xFFE2E6EA)),
+          _PanelActionButton(
+            label: 'Accedir als xats dels edificis',
+            icon: Icons.chat_bubble_outline,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MyChatsScreen()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserManagementCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFDDE2E8)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x09000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF2FF),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.manage_accounts_outlined,
+                    color: Color(0xFF2563EB),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Gestió d\'usuaris',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF111827),
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Bloqueja, suspèn i gestiona els comptes dels usuaris.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: Color(0xFFE2E6EA)),
+          _PanelActionButton(
+            label: 'Accedir a la gestió d\'usuaris',
+            icon: Icons.manage_accounts,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const UserManagementScreen()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildIntegrityAlert() {
     return Container(
       width: double.infinity,
@@ -562,8 +718,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     );
   }
 
-  void _showAuditSnackBar() =>
-      _showSnackBar('S’ha iniciat l’auditoria d’integritat.');
+  void _showAuditSnackBar() => Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const AuditLogsScreen()),
+  );
 
   void _showFiltersSnackBar() =>
       _showSnackBar('Filtres avançats pendents d’integració.');

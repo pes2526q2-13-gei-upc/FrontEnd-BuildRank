@@ -5,31 +5,14 @@ import 'dart:io';
 import 'package:buildrank_mobile/features/simulation/data/saved_simulation_model.dart';
 import 'package:buildrank_mobile/features/simulation/data/implemented_improvement_model.dart';
 import 'package:buildrank_mobile/core/config/api_config.dart';
-import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
+import 'package:buildrank_mobile/core/services/api_client.dart';
 import 'package:buildrank_mobile/features/simulation/data/improvement_model.dart';
 import 'package:buildrank_mobile/features/simulation/data/simulation_result_model.dart';
-import 'package:http/http.dart' as http;
 
 class SimulationService {
-  Future<Map<String, String>> _buildHeaders() async {
-    final accessToken = await TokenStorage.getAccessToken();
-
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (accessToken != null && accessToken.isNotEmpty)
-        'Authorization': 'Bearer $accessToken',
-    };
-  }
-
   Future<List<ImprovementModel>> getImprovements() async {
     try {
-      final response = await http
-          .get(
-            ApiConfig.uri(ApiConfig.millores),
-            headers: await _buildHeaders(),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(ApiConfig.uri(ApiConfig.millores));
 
       final decoded = _tryDecodeBody(response.body);
 
@@ -114,13 +97,11 @@ class SimulationService {
     required String fallbackError,
   }) async {
     try {
-      final response = await http
-          .post(
-            ApiConfig.uri(endpoint),
-            headers: await _buildHeaders(),
-            body: jsonEncode({'descripcio': descripcio, 'millores': millores}),
-          )
-          .timeout(const Duration(seconds: 15));
+      final response = await ApiClient.post(
+        ApiConfig.uri(endpoint),
+        body: jsonEncode({'descripcio': descripcio, 'millores': millores}),
+        timeout: const Duration(seconds: 15),
+      );
 
       final decoded = _tryDecodeBody(response.body);
 
@@ -202,12 +183,9 @@ class SimulationService {
 
   Future<List<SavedSimulationModel>> getSavedSimulations(int idEdifici) async {
     try {
-      final response = await http
-          .get(
-            ApiConfig.uri(ApiConfig.simulacions(idEdifici)),
-            headers: await _buildHeaders(),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(
+        ApiConfig.uri(ApiConfig.simulacions(idEdifici)),
+      );
 
       final decoded = _tryDecodeBody(response.body);
 
@@ -248,12 +226,9 @@ class SimulationService {
     int idEdifici,
   ) async {
     try {
-      final response = await http
-          .get(
-            ApiConfig.uri(ApiConfig.milloresImplementades(idEdifici)),
-            headers: await _buildHeaders(),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(
+        ApiConfig.uri(ApiConfig.milloresImplementades(idEdifici)),
+      );
 
       final decoded = _tryDecodeBody(response.body);
 

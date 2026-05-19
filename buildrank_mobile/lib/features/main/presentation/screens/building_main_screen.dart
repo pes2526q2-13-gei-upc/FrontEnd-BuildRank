@@ -34,10 +34,7 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onItemTapped(int index) {
     if (_selectedIndex == index) return;
-
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
   }
 
   List<Widget> get _pages {

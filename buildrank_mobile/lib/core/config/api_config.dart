@@ -39,6 +39,36 @@ class ApiConfig {
   static const String passwordResetConfirm =
       '$baseUrl/api/accounts/password-reset-confirm/';
 
+  // Admin user management (requires is_superuser)
+  static const String adminUsers = '$baseUrl/api/accounts/users/';
+  static String adminUser(int id) => '$adminUsers$id/';
+  static String adminBlockUser(int id) => '$adminUsers$id/block/';
+  static String adminUnblockUser(int id) => '$adminUsers$id/unblock/';
+  static String adminSuspendUser(int id) => '$adminUsers$id/suspend/';
+  static String adminUnsuspendUser(int id) => '$adminUsers$id/unsuspend/';
+
+  // Audit logs (requires is_superuser)
+  static Uri auditLogs({
+    int? userId,
+    String? method,
+    String? resourceType,
+    int? statusCode,
+    String? fromDate,
+    String? toDate,
+    int page = 1,
+  }) {
+    final params = <String, dynamic>{'page': page};
+    if (userId != null) params['user_id'] = userId;
+    if (method?.isNotEmpty ?? false) params['method'] = method;
+    if (resourceType?.isNotEmpty ?? false) {
+      params['resource_type'] = resourceType;
+    }
+    if (statusCode != null) params['status_code'] = statusCode;
+    if (fromDate?.isNotEmpty ?? false) params['from_date'] = fromDate;
+    if (toDate?.isNotEmpty ?? false) params['to_date'] = toDate;
+    return uri('$baseUrl/api/audit/logs/', queryParameters: params);
+  }
+
   // =========================
   // Buildings endpoints
   // =========================
@@ -226,6 +256,17 @@ class ApiConfig {
     );
   }
 
+  // Community / Votacions endpoints
+  // =========================
+  static const String votacions = '$baseUrl/api/community/votacions/';
+
+  static Uri votacionsEdifici({required int idEdifici}) =>
+      uri(votacions, queryParameters: {'edifici': idEdifici});
+
+  static String votacioDetall(int id) => '$votacions$id/';
+  static String votacioVotar(int id) => '${votacioDetall(id)}votar/';
+  static String votacioResultats(int id) => '${votacioDetall(id)}resultats/';
+
   // =========================
   // Votacions de simulacions
   // =========================
@@ -251,9 +292,19 @@ class ApiConfig {
       '$baseUrl/api/buildings/edificis/$idEdifici/simulacions/$simulacioId/acreditar-implementacio/';
 
   // =========================
-  // Chat / Twin Building endpoints
+  // Notifications endpoints
+  // =========================
+  static const String notifications = '$baseUrl/api/notifications/';
+  static const String notificationsNoLlegides = '${notifications}no-llegides/';
+  static const String notificationsLlegirTotes =
+      '${notifications}llegir-totes/';
+  static String notificationLlegir(int id) => '$notifications$id/llegir/';
+
+  // =========================
+  // Chat core & Twin Building endpoints
   // =========================
   static const String chatToken = '$baseUrl/api/chat/token/';
+  static const String chatProvision = '$baseUrl/api/chat/channels/provision/';
   static const String chatChannels = '$baseUrl/api/chat/channels/';
   static const String chatChannelsProvision =
       '$baseUrl/api/chat/channels/provision/';
@@ -263,6 +314,39 @@ class ApiConfig {
 
   static String twinBuildingChannel(int idEdifici) =>
       '$baseUrl/api/chat/twin-buildings/$idEdifici/channels/';
+
+  // =========================
+  // Chat moderation endpoints
+  // =========================
+  static String moderationFlagMessage(String messageId) =>
+      '$baseUrl/api/chat/moderation/messages/$messageId/flag/';
+  static String moderationHideMessage(String messageId) =>
+      '$baseUrl/api/chat/moderation/messages/$messageId/hide/';
+  static String moderationDeleteMessage(String messageId) =>
+      '$baseUrl/api/chat/moderation/messages/$messageId/';
+  static String moderationRestoreMessage(String messageId) =>
+      '$baseUrl/api/chat/moderation/messages/$messageId/restore/';
+  static String moderationDismissFlag(String messageId) =>
+      '$baseUrl/api/chat/moderation/messages/$messageId/dismiss-flag/';
+
+  static String moderationWarnUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/warn/';
+  static String moderationMuteUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/mute/';
+  static String moderationUnmuteUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/unmute/';
+  static String moderationBanUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/ban/';
+  static String moderationUnbanUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/unban/';
+  static String moderationGlobalBanUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/global-ban/';
+  static String moderationGlobalUnbanUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/global-unban/';
+  static String moderationShadowBanUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/shadow-ban/';
+  static String moderationShadowUnbanUser(int userId) =>
+      '$baseUrl/api/chat/moderation/users/$userId/shadow-unban/';
 
   // =========================
   // XEMA Weather API

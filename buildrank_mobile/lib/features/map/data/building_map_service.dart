@@ -3,22 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:buildrank_mobile/core/config/api_config.dart';
-import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
+import 'package:buildrank_mobile/core/services/api_client.dart';
 import 'package:buildrank_mobile/features/map/data/building_map_feature_model.dart';
-import 'package:http/http.dart' as http;
 
 class BuildingMapService {
   const BuildingMapService();
-
-  Future<Map<String, String>> _buildHeaders() async {
-    final token = await TokenStorage.getAccessToken();
-
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
-  }
 
   Future<BuildingMapResponse> getBuildingsForMap({
     String scope = 'public',
@@ -41,9 +30,10 @@ class BuildingMapService {
     );
 
     try {
-      final response = await http
-          .get(uri, headers: await _buildHeaders())
-          .timeout(const Duration(seconds: 12));
+      final response = await ApiClient.get(
+        uri,
+        timeout: const Duration(seconds: 12),
+      );
 
       final decoded = _tryDecodeBody(response.body);
 

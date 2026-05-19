@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:buildrank_mobile/core/services/stream_service.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/features/xat/data/chat_service.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
@@ -55,18 +56,19 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
   }
 
   Future<void> _connectStreamUser(Map<String, dynamic> me) async {
+    final email = me['email'] as String? ?? '';
     final userId = 'user_${me['id']}';
-    final firstName = me['first_name'] as String? ?? '';
-    final lastName = me['last_name'] as String? ?? '';
-    final userName = '$firstName $lastName'.trim().isNotEmpty
-        ? '$firstName $lastName'.trim()
-        : userId;
+    final userName = email.isNotEmpty ? email.split('@').first : userId;
 
-    await StreamService.connectUser(userId: userId, userName: userName);
+    await ChatService.provisionAndReconnect(userName: userName);
 
     try {
-      await FirebaseMessaging.instance.requestPermission();
-      final token = await FirebaseMessaging.instance.getToken();
+      await FirebaseMessaging.instance.requestPermission().timeout(
+        const Duration(seconds: 5),
+      );
+      final token = await FirebaseMessaging.instance.getToken().timeout(
+        const Duration(seconds: 5),
+      );
       if (token != null) await StreamService.registerFcmToken(token);
     } catch (_) {}
   }

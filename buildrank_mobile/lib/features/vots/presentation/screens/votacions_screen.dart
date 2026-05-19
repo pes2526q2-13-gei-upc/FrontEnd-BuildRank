@@ -1,5 +1,9 @@
+import 'package:buildrank_mobile/features/vots/data/votacions_model.dart';
+import 'package:buildrank_mobile/features/vots/data/votacions_service.dart';
 import 'package:buildrank_mobile/features/vots/data/votation_model.dart';
 import 'package:buildrank_mobile/features/vots/data/votation_service.dart';
+import 'package:buildrank_mobile/features/vots/presentation/screens/crear_votacio_screen.dart';
+import 'package:buildrank_mobile/features/vots/presentation/screens/votacio_detall_screen.dart';
 import 'package:flutter/material.dart';
 
 class VotacionsScreen extends StatefulWidget {
@@ -20,12 +24,14 @@ class VotacionsScreen extends StatefulWidget {
 
 class _VotacionsScreenState extends State<VotacionsScreen> {
   final _service = VotationService();
+  final _legacyService = VotacionsService();
 
   bool _loading = true;
   bool _voting = false;
   String? _error;
   int _tab = 0;
   List<VotationModel> _votacions = [];
+  List<VotacioResumModel> _comunitats = [];
 
   bool get _isAdmin => widget.userRole == 'admin';
 
@@ -42,9 +48,19 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
     });
 
     try {
-      final votacions = await _service.getVotacions(widget.idEdifici);
+      final simsFuture = _service.getVotacions(widget.idEdifici);
+      final comsFuture = _legacyService
+          .getVotacions(idEdifici: widget.idEdifici)
+          .catchError((_) => <VotacioResumModel>[]);
+
+      final sims = await simsFuture;
+      final coms = await comsFuture;
+
       if (!mounted) return;
-      setState(() => _votacions = votacions);
+      setState(() {
+        _votacions = sims;
+        _comunitats = coms;
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
@@ -63,6 +79,19 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
         return _votacions.where((v) => _isAdmin || v.potVotar).toList();
       default:
         return _votacions;
+    }
+  }
+
+  List<VotacioResumModel> get _filteredComunitats {
+    switch (_tab) {
+      case 0:
+        return _comunitats.where((v) => v.estat == 'oberta').toList();
+      case 1:
+        return _comunitats.where((v) => v.estat != 'oberta').toList();
+      case 2:
+        return _isAdmin ? _comunitats : [];
+      default:
+        return _comunitats;
     }
   }
 
@@ -108,6 +137,13 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F5),
+      floatingActionButton: _isAdmin
+          ? FloatingActionButton(
+              onPressed: _createVotacio,
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _load,
@@ -125,9 +161,22 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
                 )
               else if (_error != null)
                 _buildError()
-              else if (_filtered.isEmpty)
+              else if (_filtered.isEmpty && _filteredComunitats.isEmpty)
                 _buildEmpty()
-              else
+              else ...[
+                if (_filteredComunitats.isNotEmpty) ...[
+                  _buildSectionLabel('VOTACIONS GENERALS'),
+                  const SizedBox(height: 8),
+                  for (final v in _filteredComunitats) ...[
+                    _ComunityCard(votacio: v, onTap: () => _openDetall(v)),
+                    const SizedBox(height: 10),
+                  ],
+                  if (_filtered.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    _buildSectionLabel('VOTACIONS DE SIMULACIÓ'),
+                    const SizedBox(height: 8),
+                  ],
+                ],
                 for (final votacio in _filtered) ...[
                   _VotationCard(
                     votacio: votacio,
@@ -136,11 +185,24 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
                   ),
                   const SizedBox(height: 14),
                 ],
+              ],
               const SizedBox(height: 10),
               _buildInfoBox(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionLabel(String label) {
+    return Text(
+      label,
+      style: const TextStyle(
+        color: Colors.black54,
+        fontSize: 11,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.1,
       ),
     );
   }
@@ -173,9 +235,39 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
     );
   }
 
+  Future<void> _createVotacio() async {
+    final result = await Navigator.push<Object>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CrearVotacioScreen(
+          idEdifici: widget.idEdifici,
+          service: _legacyService,
+        ),
+      ),
+    );
+    if (result != null && mounted) _load();
+  }
+
+  void _openDetall(VotacioResumModel v) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VotacioDetallScreen(
+          idVotacio: v.id,
+          service: _legacyService,
+          userRole: widget.userRole,
+        ),
+      ),
+    ).then((_) => _load());
+  }
+
   Widget _buildTabs() {
-    final activeCount = _votacions.where((v) => v.isActive).length;
-    final completedCount = _votacions.where((v) => v.isCompleted).length;
+    final activeCount =
+        _votacions.where((v) => v.isActive).length +
+        _comunitats.where((v) => v.estat == 'oberta').length;
+    final completedCount =
+        _votacions.where((v) => v.isCompleted).length +
+        _comunitats.where((v) => v.estat != 'oberta').length;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -255,7 +347,7 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
           ),
           const SizedBox(height: 6),
           const Text(
-            'Quan l’administrador sotmeti una simulació a votació, apareixerà aquí.',
+            'Quan l\'administrador sotmeti una simulació a votació, apareixerà aquí.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.black54, height: 1.35),
           ),
@@ -408,7 +500,7 @@ class _VotationCard extends StatelessWidget {
                   selected: votacio.elMeuVot == 'contra',
                   enabled: votacio.isActive && votacio.potVotar && !voting,
                   onTap: () => onVote('contra'),
-                  subtitle: 'Mantenir l’estat actual',
+                  subtitle: 'Mantenir l\'estat actual',
                 ),
               ],
             ),
@@ -628,6 +720,100 @@ class _StatusPill extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ComunityCard extends StatelessWidget {
+  final VotacioResumModel votacio;
+  final VoidCallback onTap;
+
+  const _ComunityCard({required this.votacio, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isOberta = votacio.estat == 'oberta';
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE5E7E3)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.04),
+              blurRadius: 8,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isOberta ? Colors.green.shade50 : Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                isOberta ? 'Oberta' : _formatEstat(votacio.estat),
+                style: TextStyle(
+                  color: isOberta
+                      ? Colors.green.shade700
+                      : Colors.grey.shade600,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 11,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                votacio.titol,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${votacio.numVotsTotal} vots',
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right,
+                  color: Colors.black38,
+                  size: 20,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatEstat(String estat) {
+    switch (estat) {
+      case 'tancada':
+        return 'Tancada';
+      case 'arxivada':
+        return 'Arxivada';
+      default:
+        return estat;
+    }
   }
 }
 

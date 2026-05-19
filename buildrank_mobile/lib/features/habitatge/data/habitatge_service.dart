@@ -3,30 +3,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:buildrank_mobile/core/config/api_config.dart';
-import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
+import 'package:buildrank_mobile/core/services/api_client.dart';
 import 'package:buildrank_mobile/features/habitatge/data/habitatge_form_data.dart';
-import 'package:http/http.dart' as http;
 
 class HabitatgeService {
-  Future<Map<String, String>> _buildHeaders() async {
-    final token = await TokenStorage.getAccessToken();
-
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
-  }
-
   Future<List<Map<String, dynamic>>> getMyHabitatgesForBuilding(
     int idEdifici,
   ) async {
     final uri = Uri.parse(ApiConfig.edificiHabitatges(idEdifici));
 
     try {
-      final response = await http
-          .get(uri, headers: await _buildHeaders())
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(uri);
 
       final decoded = _tryDecodeBody(response.body);
 
@@ -102,15 +89,13 @@ class HabitatgeService {
     );
 
     try {
-      final response = await http
-          .get(uri, headers: await _buildHeaders())
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.get(uri);
 
       final decoded = _tryDecodeBody(response.body);
 
       if (response.statusCode != 200) {
         throw HabitatgeApiException(
-          'No s’ha pogut carregar el detall de l’habitatge.',
+          "No s’ha pogut carregar el detall de l’habitatge.",
           statusCode: response.statusCode,
           details: decoded,
         );
@@ -172,9 +157,7 @@ class HabitatgeService {
     );
 
     try {
-      final response = await http
-          .patch(uri, headers: await _buildHeaders(), body: jsonEncode(payload))
-          .timeout(const Duration(seconds: 10));
+      final response = await ApiClient.patch(uri, body: jsonEncode(payload));
 
       final decoded = _tryDecodeBody(response.body);
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:buildrank_mobile/core/config/api_config.dart';
+import 'package:buildrank_mobile/core/services/api_client.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -179,19 +180,7 @@ class AuthService {
 
   // Me: devuelve datos del usuario autenticado.
   Future<Map<String, dynamic>> getMe() async {
-    final accessToken = await TokenStorage.getAccessToken();
-
-    if (accessToken == null || accessToken.isEmpty) {
-      throw Exception('No hi ha sessió guardada.');
-    }
-
-    final response = await http.get(
-      Uri.parse(ApiConfig.me),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
+    final response = await ApiClient.get(Uri.parse(ApiConfig.me));
 
     final data = _decodeBody(response);
 
@@ -203,40 +192,30 @@ class AuthService {
   }
 
   // Logout: invalida refresh en backend y limpia tokens locales.
+  // Sempre neteja la sessió local independentment de la resposta del backend.
   Future<void> logout() async {
-    final accessToken = await TokenStorage.getAccessToken();
     final refreshToken = await TokenStorage.getRefreshToken();
+    final accessToken = await TokenStorage.getAccessToken();
 
-    Future<void> clearLocalSession() async {
-      await TokenStorage.clearTokens();
-
+    if (refreshToken != null && refreshToken.isNotEmpty) {
       try {
-        await GoogleSignIn.instance.signOut();
-      } catch (_) {}
+        await http
+            .post(
+              Uri.parse(ApiConfig.logout),
+              headers: {
+                'Content-Type': 'application/json',
+                if (accessToken != null && accessToken.isNotEmpty)
+                  'Authorization': 'Bearer $accessToken',
+              },
+              body: jsonEncode({'refresh': refreshToken}),
+            )
+            .timeout(const Duration(seconds: 10));
+      } catch (_) {
+        // Error de xarxa: continua per netejar la sessió local igualment.
+      }
     }
 
-    if (refreshToken == null || refreshToken.isEmpty) {
-      await clearLocalSession();
-      return;
-    }
-
-    final response = await http.post(
-      Uri.parse(ApiConfig.logout),
-      headers: {
-        'Content-Type': 'application/json',
-        if (accessToken != null && accessToken.isNotEmpty)
-          'Authorization': 'Bearer $accessToken',
-      },
-      body: jsonEncode({'refresh': refreshToken}),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      await clearLocalSession();
-      return;
-    }
-
-    final data = _decodeBody(response);
-    throw Exception(_extractErrorMessage(data));
+    await TokenStorage.clearTokens();
   }
 
   // Comprueba si hay token guardado.
@@ -281,19 +260,8 @@ class AuthService {
     required String lastName,
     required String email,
   }) async {
-    final accessToken = await TokenStorage.getAccessToken();
-
-    if (accessToken == null || accessToken.isEmpty) {
-      throw Exception('No hi ha sessió guardada.');
-    }
-
-    final response = await http.patch(
+    final response = await ApiClient.patch(
       Uri.parse(ApiConfig.me),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
       body: jsonEncode({
         'first_name': firstName.trim(),
         'last_name': lastName.trim(),

@@ -50,18 +50,26 @@ class VotationModel {
               Map<String, dynamic>.from(simulacioRaw),
             )
           : null,
-      dataInici: _readDate(json['dataInici']),
-      dataFi: _readDate(json['dataFi']),
-      quorumPercent: _readDouble(json['quorumPercent'], fallback: 75),
-      majoriaPercent: _readDouble(json['majoriaPercent'], fallback: 50),
+      dataInici: _readDate(json['data_inici'] ?? json['dataInici']),
+      dataFi: _readDate(json['data_fi'] ?? json['dataFi']),
+      quorumPercent: _readDouble(
+        json['quorum_percent'] ?? json['quorumPercent'],
+        fallback: 75,
+      ),
+      majoriaPercent: _readDouble(
+        json['majoria_percent'] ?? json['majoriaPercent'],
+        fallback: 50,
+      ),
       estat: json['estat']?.toString() ?? 'activa',
-      totalVots: _readInt(json['totalVots']),
-      votsFavor: _readInt(json['votsFavor']),
-      votsContra: _readInt(json['votsContra']),
-      participacioPercent: _readDouble(json['participacioPercent']),
-      favorPercent: _readDouble(json['favorPercent']),
-      potVotar: json['potVotar'] == true,
-      elMeuVot: json['elMeuVot']?.toString(),
+      totalVots: _readInt(json['total_vots'] ?? json['totalVots']),
+      votsFavor: _readInt(json['vots_favor'] ?? json['votsFavor']),
+      votsContra: _readInt(json['vots_contra'] ?? json['votsContra']),
+      participacioPercent: _readDouble(
+        json['participacio_percent'] ?? json['participacioPercent'],
+      ),
+      favorPercent: _readDouble(json['favor_percent'] ?? json['favorPercent']),
+      potVotar: json['pot_votar'] == true || json['potVotar'] == true,
+      elMeuVot: (json['el_meu_vot'] ?? json['elMeuVot'])?.toString(),
     );
   }
 
@@ -121,11 +129,17 @@ class VotationSimulationModel {
     return VotationSimulationModel(
       id: _readInt(json['id']),
       descripcio: json['descripcio']?.toString() ?? 'Simulació',
-      estatAplicacio: json['estatAplicacio']?.toString() ?? '',
-      costEstimat: _readDouble(json['costEstimat']),
-      estalviAnual: _readDouble(json['estalviAnual']),
-      reduccioConsumPrevista: _readDouble(json['reduccioConsumPrevista']),
-      reduccioEmissionsPrevista: _readDouble(json['reduccioEmissionsPrevista']),
+      estatAplicacio:
+          (json['estat_aplicacio'] ?? json['estatAplicacio'])?.toString() ?? '',
+      costEstimat: _readDouble(json['cost_estimat'] ?? json['costEstimat']),
+      estalviAnual: _readDouble(json['estalvi_anual'] ?? json['estalviAnual']),
+      reduccioConsumPrevista: _readDouble(
+        json['reduccio_consum_prevista'] ?? json['reduccioConsumPrevista'],
+      ),
+      reduccioEmissionsPrevista: _readDouble(
+        json['reduccio_emissions_prevista'] ??
+            json['reduccioEmissionsPrevista'],
+      ),
       items: rawItems is List
           ? rawItems
                 .whereType<Map>()
@@ -158,8 +172,8 @@ class VotationSimulationItemModel {
     return VotationSimulationItemModel(
       nom:
           milloraMap['nom']?.toString() ?? json['nom']?.toString() ?? 'Millora',
-      costEstimat: _readDouble(json['costEstimat']),
-      impactePunts: _readDouble(json['impactePunts']),
+      costEstimat: _readDouble(json['cost_estimat'] ?? json['costEstimat']),
+      impactePunts: _readDouble(json['impacte_punts'] ?? json['impactePunts']),
     );
   }
 }
