@@ -378,7 +378,7 @@ class _RankingScreenState extends State<RankingScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            widget.buildingName,
+            _cleanBuildingDisplayName(widget.buildingName),
             style: const TextStyle(color: Colors.white70, height: 1.3),
           ),
           const SizedBox(height: 14),
@@ -774,7 +774,7 @@ class _RankingScreenState extends State<RankingScreen> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Progrés de ${entry.name}',
+                  'Progrés de ${_cleanBuildingDisplayName(entry.name)}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -847,7 +847,7 @@ class _RankingScreenState extends State<RankingScreen> {
       _ProgressRankingEntry(
         idEdifici: widget.idEdifici,
         position: 3,
-        name: widget.buildingName,
+        name: _cleanBuildingDisplayName(widget.buildingName),
         startPoints: 640,
         currentPoints: widget.currentPoints,
         isCurrentBuilding: true,
@@ -989,7 +989,7 @@ class _ProgressRankingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.name,
+                  _cleanBuildingDisplayName(entry.name),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -1195,7 +1195,7 @@ class _RankingItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.name,
+                  _cleanBuildingDisplayName(entry.name),
                   style: TextStyle(
                     fontWeight: entry.isCurrentBuilding
                         ? FontWeight.w800
@@ -1254,4 +1254,13 @@ class _RankingItem extends StatelessWidget {
 
     return buffer.toString();
   }
+}
+
+String _cleanBuildingDisplayName(String value) {
+  return value
+      .replaceFirst(
+        RegExp(r'^Edifici\s*#?\s*\d+\s*[-–—]\s*', caseSensitive: false),
+        '',
+      )
+      .trim();
 }

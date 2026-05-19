@@ -33,11 +33,24 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
   List<ExistingBuildingItem> _results = [];
   ExistingBuildingItem? _selectedBuilding;
 
-  String get _membershipRole =>
-      widget.userRole == 'admin' ? 'administrator' : 'resident';
+  bool get _isAdminRole => widget.userRole == 'admin';
+
+  String get _membershipRole => _isAdminRole ? 'administrator' : 'resident';
 
   bool get _canShowHabitatgeForm =>
-      _selectedBuilding != null && _selectedBuilding!.acceptsNewRequests;
+      !_isAdminRole &&
+      _selectedBuilding != null &&
+      _selectedBuilding!.acceptsNewRequests;
+
+  bool get _canSubmitRequest {
+    if (_selectedBuilding == null || _isSubmitting) return false;
+
+    if (_isAdminRole) {
+      return true;
+    }
+
+    return _canShowHabitatgeForm && _isHabitatgeFormValid;
+  }
 
   bool get _requiresBlockFields =>
       _selectedBuilding != null && _selectedBuilding!.isBlock;
@@ -144,15 +157,19 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
       _errorMessage = null;
     });
 
-    final habitatgePayload = {
-      'building_id': building.id,
-      'referencia_cadastral': _refCadastralController.text.trim(),
-      'planta': _requiresBlockFields ? _plantaController.text.trim() : null,
-      'porta': _requiresBlockFields ? _portaController.text.trim() : null,
-      'superficie': _superficieController.text.trim(),
-      'valid': false,
-      'requested_membership_role': _membershipRole,
-    };
+    final habitatgePayload = _isAdminRole
+        ? <String, dynamic>{}
+        : {
+            'building_id': building.id,
+            'referencia_cadastral': _refCadastralController.text.trim(),
+            'planta': _requiresBlockFields
+                ? _plantaController.text.trim()
+                : null,
+            'porta': _requiresBlockFields ? _portaController.text.trim() : null,
+            'superficie': _superficieController.text.trim(),
+            'valid': false,
+            'requested_membership_role': _membershipRole,
+          };
 
     try {
       await widget.service.createJoinRequest(
@@ -340,14 +357,15 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                   border: Border.all(color: const Color(0xFF86EFAC)),
                 ),
                 child: Text(
-                  'Seleccionat: ${_selectedBuilding!.name} · Rol sol·licitat: $_membershipRole',
+                  'Seleccionat: ${_selectedBuilding!.name} · Rol sol·licitat: ${_isAdminRole ? 'administrador de finca' : 'resident'}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF166534),
                   ),
                 ),
               ),
-            if (_selectedBuilding != null &&
+            if (!_isAdminRole &&
+                _selectedBuilding != null &&
                 !_selectedBuilding!.acceptsNewRequests) ...[
               const SizedBox(height: 16),
               Container(
@@ -455,12 +473,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
             SizedBox(
               height: 54,
               child: ElevatedButton(
-                onPressed:
-                    (_canShowHabitatgeForm &&
-                        _isHabitatgeFormValid &&
-                        !_isSubmitting)
-                    ? _submitJoinRequest
-                    : null,
+                onPressed: _canSubmitRequest ? _submitJoinRequest : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF22C55E),
                   foregroundColor: Colors.white,

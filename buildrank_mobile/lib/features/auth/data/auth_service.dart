@@ -133,6 +133,50 @@ class AuthService {
     throw Exception(_extractErrorMessage(data));
   }
 
+  Future<Map<String, dynamic>> requestPasswordReset({
+    required String email,
+  }) async {
+    final response = await http.post(
+      Uri.parse(ApiConfig.passwordReset),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email.trim().toLowerCase()}),
+    );
+
+    final data = _decodeBody(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(_extractErrorMessage(data));
+  }
+
+  Future<Map<String, dynamic>> confirmPasswordReset({
+    required String uid,
+    required String token,
+    required String password,
+    required String passwordConfirm,
+  }) async {
+    final response = await http.post(
+      Uri.parse(ApiConfig.passwordResetConfirm),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'uid': uid,
+        'token': token,
+        'password': password,
+        'password_confirm': passwordConfirm,
+      }),
+    );
+
+    final data = _decodeBody(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(_extractErrorMessage(data));
+  }
+
   // Me: devuelve datos del usuario autenticado.
   Future<Map<String, dynamic>> getMe() async {
     final accessToken = await TokenStorage.getAccessToken();

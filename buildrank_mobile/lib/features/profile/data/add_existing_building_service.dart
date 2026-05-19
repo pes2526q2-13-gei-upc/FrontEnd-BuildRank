@@ -270,15 +270,16 @@ class ExistingBuildingItem {
     final anyConstruccio = _readInt(json['anyConstruccio']);
 
     final addressParts = [?carrer, ?numero?.toString()];
-
     final cityParts = [?barri, ?codiPostal];
+
+    final displayAddress = addressParts.isEmpty
+        ? 'Adreça no disponible'
+        : addressParts.join(', ');
 
     return ExistingBuildingItem(
       id: id,
-      name: 'Edifici $id',
-      address: addressParts.isEmpty
-          ? 'Adreça no disponible'
-          : addressParts.join(', '),
+      name: displayAddress,
+      address: displayAddress,
       city: cityParts.isEmpty ? 'Barcelona' : cityParts.join(' · '),
       acceptsNewRequests: true,
       isBlock: true,

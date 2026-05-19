@@ -233,6 +233,19 @@ class RankingEntry {
           json['building_name'],
     );
 
+    final address = _readString(
+      json['address'] ?? json['adreca'] ?? json['localitzacio'],
+    );
+
+    final cleanExplicitName = explicitName == null
+        ? null
+        : _cleanBuildingDisplayName(explicitName);
+
+    final displayName =
+        cleanExplicitName != null && !_isGenericBuildingName(cleanExplicitName)
+        ? cleanExplicitName
+        : address ?? cleanExplicitName ?? 'Edifici #$id';
+
     return RankingEntry(
       idEdifici: id,
       position:
@@ -244,10 +257,8 @@ class RankingEntry {
                 json['ranking'],
           ) ??
           0,
-      name: explicitName ?? 'Edifici #$id',
-      address: _readString(
-        json['address'] ?? json['adreca'] ?? json['localitzacio'],
-      ),
+      name: displayName,
+      address: address,
       points:
           _readInt(
             json['points'] ??
@@ -303,6 +314,22 @@ String? _readString(dynamic value) {
 
   final text = value.toString().trim();
   return text.isEmpty ? null : text;
+}
+
+String _cleanBuildingDisplayName(String value) {
+  return value
+      .replaceFirst(
+        RegExp(r'^Edifici\s*#?\s*\d+\s*[-–—]\s*', caseSensitive: false),
+        '',
+      )
+      .trim();
+}
+
+bool _isGenericBuildingName(String value) {
+  return RegExp(
+    r'^Edifici\s*#?\s*\d+$',
+    caseSensitive: false,
+  ).hasMatch(value.trim());
 }
 
 int? _readInt(dynamic value) {
