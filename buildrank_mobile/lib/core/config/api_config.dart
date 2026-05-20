@@ -284,6 +284,7 @@ class ApiConfig {
     );
   }
 
+  // =========================
   // Community / Votacions endpoints
   // =========================
   static const String votacions = '$baseUrl/api/community/votacions/';

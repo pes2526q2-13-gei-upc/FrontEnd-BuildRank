@@ -23,8 +23,9 @@ class StreamService {
     _lastUserName = userName;
     if (token != null) _lastToken = token;
 
-    // Ja connectat com el mateix usuari
+    // Ja connectat com el mateix usuari i amb el mateix nom
     if (client.state.currentUser?.id == userId &&
+        client.state.currentUser?.name == userName &&
         client.wsConnectionStatus == ConnectionStatus.connected) {
       return;
     }
@@ -58,6 +59,9 @@ class StreamService {
   }
 
   static Future<void> disconnectUser() async {
+    _lastUserId = null;
+    _lastUserName = null;
+    _lastToken = null;
     await client.disconnectUser();
   }
 }
