@@ -29,8 +29,19 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
   int? _selectedOpcioId;
   bool _showResults = false;
 
+  String get _normalizedRole =>
+      widget.userRole.trim().toLowerCase().replaceAll('-', '_');
+
   bool get _canManage =>
-      widget.userRole == 'admin' || widget.userRole == 'owner';
+      _normalizedRole == 'admin' ||
+      _normalizedRole == 'admin_finca' ||
+      _normalizedRole == 'administrador_finca';
+
+  bool get _canVoteCommunity =>
+      _canManage ||
+      _normalizedRole == 'owner' ||
+      _normalizedRole == 'propietari' ||
+      _normalizedRole == 'propietario';
 
   @override
   void initState() {
@@ -358,7 +369,8 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
   }
 
   Widget _buildVoteOptions(VotacioDetallModel votacio) {
-    final canVote = votacio.estat == 'oberta' && !votacio.haVotat;
+    final canVote =
+        _canVoteCommunity && votacio.estat == 'oberta' && !votacio.haVotat;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,6 +381,13 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
         ),
         const SizedBox(height: 8),
         ...votacio.opcions.map((opcio) => _buildOpcioTile(opcio, canVote)),
+        if (!_canVoteCommunity && votacio.estat == 'oberta') ...[
+          const SizedBox(height: 12),
+          _PermissionInfoBox(
+            text:
+                'Només els propietaris i administradors de finca vinculats a aquest edifici poden emetre vot.',
+          ),
+        ],
         if (canVote) ...[
           const SizedBox(height: 16),
           SizedBox(
@@ -563,5 +582,40 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+}
+
+class _PermissionInfoBox extends StatelessWidget {
+  final String text;
+
+  const _PermissionInfoBox({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline, size: 18, color: Colors.blueGrey),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.black54,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

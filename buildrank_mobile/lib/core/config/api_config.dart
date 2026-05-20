@@ -138,6 +138,12 @@ class ApiConfig {
   static String edificiDetail(int idEdifici) =>
       '$baseUrl/api/buildings/edificis/$idEdifici/';
 
+  static String edificiBadges(int idEdifici) =>
+      '$baseUrl/api/buildings/edificis/$idEdifici/badges/';
+
+  static String edificiBadgesRecalcular(int idEdifici) =>
+      '$baseUrl/api/buildings/edificis/$idEdifici/badges/recalcular/';
+
   static const String habitatges = '$baseUrl/api/buildings/habitatges/';
 
   static String habitatgeSolicitarAcces(String referenciaCadastral) =>

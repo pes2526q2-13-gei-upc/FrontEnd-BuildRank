@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/features/legal/presentation/screens/legal_document_screen.dart';
 
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/core/services/stream_service.dart';
@@ -229,17 +230,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  void _openLegalDocument(LegalDocumentType type) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => LegalDocumentScreen(type: type)));
+  }
+
   Widget _buildTermsBlock() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _acceptedTerms = !_acceptedTerms;
-        });
-      },
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AnimatedContainer(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _acceptedTerms = !_acceptedTerms;
+            });
+          },
+          child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             curve: Curves.easeOut,
             margin: const EdgeInsets.only(top: 2),
@@ -265,35 +272,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   : const SizedBox(key: ValueKey('empty')),
             ),
           ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text.rich(
-              TextSpan(
-                text: 'Accepto els ',
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Text(
+                'Accepto els ',
                 style: TextStyle(fontSize: 14, color: Colors.black87),
-                children: [
-                  TextSpan(
-                    text: 'Termes del Servei',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  TextSpan(text: ' i la '),
-                  TextSpan(
-                    text: 'Política de Privacitat',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  TextSpan(text: '.'),
-                ],
               ),
-            ),
+              InkWell(
+                onTap: () => _openLegalDocument(LegalDocumentType.terms),
+                child: const Text(
+                  'Termes del Servei',
+                  style: TextStyle(
+                    fontSize: 14,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Text(
+                ' i la ',
+                style: TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+              InkWell(
+                onTap: () => _openLegalDocument(LegalDocumentType.privacy),
+                child: const Text(
+                  'Política de Privacitat',
+                  style: TextStyle(
+                    fontSize: 14,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const Text(
+                '.',
+                style: TextStyle(fontSize: 14, color: Colors.black87),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

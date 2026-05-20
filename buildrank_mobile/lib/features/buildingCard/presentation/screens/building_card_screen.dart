@@ -38,11 +38,21 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   String? _errorText;
   Map<String, dynamic>? _buildingDetail;
 
+  bool _badgesLoading = true;
+  String? _badgesErrorText;
+  List<BuildingBadgeItem> _badges = [];
+
   @override
   void initState() {
     super.initState();
     _buildingDetail = widget.building;
     _loadBuildingDetail();
+    _loadBuildingBadges();
+  }
+
+  Future<void> _refreshAll() async {
+    await _loadBuildingDetail();
+    await _loadBuildingBadges();
   }
 
   Future<void> _loadBuildingDetail() async {
@@ -75,6 +85,49 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadBuildingBadges({bool recalculate = false}) async {
+    setState(() {
+      _badgesLoading = true;
+      _badgesErrorText = null;
+    });
+
+    try {
+      final response = recalculate
+          ? await _buildingService.recalculateBuildingBadges(widget.idEdifici)
+          : await _buildingService.getBuildingBadges(widget.idEdifici);
+
+      if (!mounted) return;
+
+      setState(() {
+        _badges = response.badges;
+      });
+
+      if (recalculate && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Insígnies recalculades correctament.')),
+        );
+      }
+    } on BuildingApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _badgesErrorText = e.message;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _badgesErrorText = 'No s’han pogut carregar les insígnies.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _badgesLoading = false;
         });
       }
     }
@@ -250,7 +303,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: _loadBuildingDetail,
+        onRefresh: _refreshAll,
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -280,7 +333,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
               actions: [
                 IconButton(
                   tooltip: 'Refrescar',
-                  onPressed: _isLoading ? null : _loadBuildingDetail,
+                  onPressed: _isLoading ? null : _refreshAll,
                   icon: _isLoading
                       ? const SizedBox(
                           width: 18,
@@ -310,6 +363,8 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                     _buildHeader(),
                     const SizedBox(height: 20),
                     _buildPerformance(),
+                    const SizedBox(height: 20),
+                    _buildBadgesSection(),
                     const SizedBox(height: 20),
                     _buildActions(),
                     const SizedBox(height: 20),
@@ -542,6 +597,78 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     );
   }
 
+  Widget _buildBadgesSection() {
+    final isAdmin = widget.userRole == 'admin';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.amber.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: Colors.amber.withValues(alpha: 0.18)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.emoji_events_outlined, color: Colors.amber),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'INSÍGNIES DE L’EDIFICI',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.7,
+                    ),
+                  ),
+                ),
+                if (isAdmin)
+                  TextButton.icon(
+                    onPressed: _badgesLoading
+                        ? null
+                        : () => _loadBuildingBadges(recalculate: true),
+                    icon: const Icon(Icons.refresh, size: 18),
+                    label: const Text('Recalcular'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (_badgesLoading)
+              const LinearProgressIndicator()
+            else if (_badgesErrorText != null)
+              _BadgeStateMessage(
+                icon: Icons.info_outline,
+                text: _badgesErrorText!,
+              )
+            else if (_badges.isEmpty)
+              const _BadgeStateMessage(
+                icon: Icons.emoji_events_outlined,
+                text:
+                    'Aquest edifici encara no té insígnies assignades. Es mostraran quan compleixi alguna fita.',
+              )
+            else
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final badge in _badges)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _BuildingBadgeCard(badge: badge),
+                      ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildActions() {
     final isAdmin = widget.userRole == 'admin';
 
@@ -571,8 +698,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
           const SizedBox(height: 10),
           const ActionTile(
             icon: Icons.description,
-            title: "Genera informe",
-            subtitle: "Exportació documental pendent d’integració",
+            title: "Informe de junta (properament)",
+            subtitle:
+                "La generació d’informes encara no està disponible en aquest MVP",
             color: Color(0xFFF1F1F1),
           ),
           if (isAdmin) ...[
@@ -657,9 +785,10 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       case 2:
         return _buildPlaceholderTab(
           icon: Icons.folder_outlined,
-          title: 'Documents pendents d’integració',
+          title: 'Documents i informes (properament)',
           text:
-              'Aquí es podran consultar certificats, informes i documents associats a l’edifici.',
+              'Aquesta secció queda preparada per a una futura integració documental. '
+              'En aquest MVP no es mostren documents ni informes generats.',
         );
       case 0:
       default:
@@ -834,6 +963,136 @@ class _DetailItem extends StatelessWidget {
         Text(
           value,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class _BuildingBadgeCard extends StatelessWidget {
+  final BuildingBadgeItem badge;
+
+  const _BuildingBadgeCard({required this.badge});
+
+  Color get _color {
+    final text = '${badge.code} ${badge.category}'.toLowerCase();
+
+    if (text.contains('emiss')) return Colors.green;
+    if (text.contains('dades') || text.contains('data')) return Colors.blue;
+    if (text.contains('millora')) return Colors.deepPurple;
+    if (text.contains('ranking') ||
+        text.contains('or') ||
+        text.contains('gold')) {
+      return Colors.amber;
+    }
+
+    return Colors.orange;
+  }
+
+  IconData get _icon {
+    final text = '${badge.code} ${badge.category}'.toLowerCase();
+
+    if (text.contains('emiss')) return Icons.co2_outlined;
+    if (text.contains('dades') || text.contains('data')) {
+      return Icons.verified_outlined;
+    }
+    if (text.contains('millora')) return Icons.construction_outlined;
+    if (text.contains('bhs') || text.contains('score')) return Icons.speed;
+    if (text.contains('ranking') ||
+        text.contains('or') ||
+        text.contains('gold')) {
+      return Icons.emoji_events_outlined;
+    }
+
+    return Icons.workspace_premium_outlined;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _color;
+
+    return Container(
+      width: 190,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 10,
+            offset: Offset(0, 4),
+            color: Color.fromRGBO(0, 0, 0, 0.06),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            backgroundColor: color.withValues(alpha: 0.14),
+            foregroundColor: color,
+            child: Icon(_icon),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            badge.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            badge.subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: Colors.black54),
+          ),
+          if (badge.description.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              badge.description,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.black87,
+                height: 1.25,
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
+          Text(
+            badge.awardedText,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BadgeStateMessage extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _BadgeStateMessage({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.black45),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.black54, height: 1.35),
+          ),
         ),
       ],
     );

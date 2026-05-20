@@ -8,7 +8,6 @@ import 'package:buildrank_mobile/features/myChat/my_chats_screen.dart';
 import 'package:buildrank_mobile/features/notifications/data/notifications_service.dart';
 import 'package:buildrank_mobile/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/edit_profile_screen.dart';
-import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
 import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
 import 'package:buildrank_mobile/features/weather/presentation/widgets/weather_alert_card.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
@@ -322,6 +321,16 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  void _showReportsSoon() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Els informes per a juntes encara no estan disponibles en aquest MVP.",
+        ),
+      ),
+    );
+  }
+
   Widget _buildRoleActions() {
     if (_isAdminFinca) {
       return Column(
@@ -338,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: _showReportsSoon,
                   icon: const Icon(Icons.description_outlined),
                   label: const Text("Informes"),
                 ),
@@ -626,47 +635,39 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildBadgesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Insígnies actives",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 110,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: const [
-              BadgeItem(
-                icon: Icons.bolt,
-                label: "Mestre solar",
-                date: "Oct 25",
-                color: Colors.yellow,
-              ),
-              BadgeItem(
-                icon: Icons.trending_up,
-                label: "Màxim estalvi",
-                date: "Nov 25",
-                color: Colors.green,
-              ),
-              BadgeItem(
-                icon: Icons.apartment,
-                label: "Resilient",
-                date: "Dec 25",
-                color: Colors.blue,
-              ),
-              BadgeItem(
-                icon: Icons.location_city,
-                label: "Prova",
-                date: "Gen 26",
-                color: Colors.purple,
-              ),
-            ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE7EADF)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.emoji_events_outlined, color: Colors.green.shade700),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Insígnies d’edificis",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  "Les insígnies reals es mostren dins de la fitxa de cada edifici. "
+                  "Quan un edifici compleixi criteris de puntuació, qualitat de dades o millora, "
+                  "apareixeran en el seu detall.",
+                  style: TextStyle(color: Colors.black54, height: 1.35),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

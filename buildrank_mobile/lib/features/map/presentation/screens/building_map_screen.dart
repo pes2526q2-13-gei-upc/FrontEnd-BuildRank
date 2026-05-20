@@ -104,6 +104,8 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
   }
 
   String _scoreGrade(BuildingMapFeature feature) {
+    if (!feature.hasScore) return '—';
+
     final score = feature.roundedScore;
 
     if (score >= 80) return 'A';
@@ -263,7 +265,7 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
           ),
         Positioned(
           right: 8,
-          bottom: _selectedFeature == null ? 8 : 158,
+          bottom: _selectedFeature == null ? 8 : 218,
           child: _buildAttribution(),
         ),
         if (_selectedFeature != null)
@@ -417,8 +419,28 @@ class _BuildingMapDetailCard extends StatelessWidget {
     required this.grade,
   });
 
+  List<Widget> _buildStats() {
+    final stats = <Widget>[
+      _MiniStat(icon: Icons.speed_outlined, text: feature.scoreText),
+      _MiniStat(
+        icon: Icons.energy_savings_leaf_outlined,
+        text: 'Classe ${feature.energyClassText}',
+      ),
+      _MiniStat(icon: Icons.dataset_outlined, text: feature.sourceText),
+    ];
+
+    final heatRisk = feature.heatRiskText;
+    if (heatRisk != null && heatRisk.isNotEmpty) {
+      stats.add(_MiniStat(icon: Icons.thermostat_outlined, text: heatRisk));
+    }
+
+    return stats;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final visibleBadges = feature.visibleBadges;
+
     return Card(
       elevation: 8,
       shadowColor: Colors.black26,
@@ -462,29 +484,65 @@ class _BuildingMapDetailCard extends StatelessWidget {
                     style: const TextStyle(fontSize: 12, color: Colors.black54),
                   ),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    children: [
-                      _MiniStat(
-                        icon: Icons.speed_outlined,
-                        text: feature.scoreText,
-                      ),
-                      _MiniStat(
-                        icon: Icons.energy_savings_leaf_outlined,
-                        text: 'Classe ${feature.energyClassText}',
-                      ),
-                      _MiniStat(
-                        icon: Icons.dataset_outlined,
-                        text: feature.sourceText,
-                      ),
-                    ],
-                  ),
+                  Wrap(spacing: 8, runSpacing: 6, children: _buildStats()),
+                  if (visibleBadges.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        for (final badge in visibleBadges)
+                          _MapBadgeChip(label: badge.label),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _MapBadgeChip extends StatelessWidget {
+  final String label;
+
+  const _MapBadgeChip({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.amber.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.emoji_events_outlined,
+            size: 13,
+            color: Colors.brown,
+          ),
+          const SizedBox(width: 4),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 120),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.brown,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -33,7 +33,20 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
   List<VotationModel> _votacions = [];
   List<VotacioResumModel> _comunitats = [];
 
-  bool get _isAdmin => widget.userRole == 'admin';
+  String get _normalizedRole =>
+      widget.userRole.trim().toLowerCase().replaceAll('-', '_');
+
+  bool get _isAdmin =>
+      _normalizedRole == 'admin' ||
+      _normalizedRole == 'admin_finca' ||
+      _normalizedRole == 'administrador_finca';
+
+  bool get _isOwner =>
+      _normalizedRole == 'owner' ||
+      _normalizedRole == 'propietari' ||
+      _normalizedRole == 'propietario';
+
+  bool get _canVoteCommunity => _isAdmin || _isOwner;
 
   @override
   void initState() {
@@ -368,10 +381,12 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
         children: [
           Icon(Icons.info_outline, size: 34, color: Colors.grey.shade600),
           const SizedBox(height: 10),
-          const Text(
-            'Només els propietaris i administradors poden votar propostes de millora.',
+          Text(
+            _canVoteCommunity
+                ? 'Pots participar en les votacions de la comunitat vinculades a aquest edifici.'
+                : 'Només propietaris i administradors de finca vinculats a l’edifici poden votar.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.w700,
               color: Colors.black54,
             ),

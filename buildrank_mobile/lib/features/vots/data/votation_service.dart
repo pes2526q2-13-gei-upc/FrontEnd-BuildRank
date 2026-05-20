@@ -37,13 +37,9 @@ class VotationService {
         );
       }
 
-      if (decoded is! List) {
-        throw const VotationApiException(
-          'La resposta de votacions no té el format esperat.',
-        );
-      }
+      final items = _extractVotationItems(decoded);
 
-      return decoded
+      return items
           .whereType<Map>()
           .map(
             (item) => VotationModel.fromJson(Map<String, dynamic>.from(item)),
@@ -171,6 +167,39 @@ class VotationService {
   dynamic _decode(String body) {
     if (body.isEmpty) return {};
     return jsonDecode(body);
+  }
+
+  List<dynamic> _extractVotationItems(dynamic decoded) {
+    if (decoded is List) {
+      return decoded;
+    }
+
+    if (decoded is Map) {
+      final map = Map<String, dynamic>.from(decoded);
+
+      for (final key in ['results', 'data', 'items', 'votacions']) {
+        final value = map[key];
+        if (value is List) {
+          return value;
+        }
+      }
+
+      final looksLikeSingleVotation =
+          map.containsKey('id') ||
+          map.containsKey('titol') ||
+          map.containsKey('simulacio') ||
+          map.containsKey('edifici');
+
+      if (looksLikeSingleVotation) {
+        return [map];
+      }
+
+      return <dynamic>[];
+    }
+
+    throw const VotationApiException(
+      'La resposta de votacions no té el format esperat.',
+    );
   }
 
   String _extractError(dynamic decoded, String fallback) {

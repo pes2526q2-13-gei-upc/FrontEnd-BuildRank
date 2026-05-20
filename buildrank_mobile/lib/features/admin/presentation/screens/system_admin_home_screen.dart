@@ -5,6 +5,7 @@ import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/features/legal/presentation/screens/legal_document_screen.dart';
 
 import '../../../myChat/my_chats_screen.dart';
 
@@ -700,26 +701,51 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Widget _buildFooter() {
-    return const Column(
+    return Column(
       children: [
-        Divider(height: 1, color: Color(0xFFE2E6EA)),
-        SizedBox(height: 18),
+        const Divider(height: 1, color: Color(0xFFE2E6EA)),
+        const SizedBox(height: 18),
         Wrap(
           alignment: WrapAlignment.center,
-          spacing: 20,
+          spacing: 12,
           runSpacing: 8,
           children: [
-            Text(
-              '© 2026 BuildRank Performance Systems.',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                '© 2026 BuildRank Performance Systems.',
+                style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+              ),
             ),
-            Text(
-              'Política de privacitat',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentScreen(
+                      type: LegalDocumentType.privacy,
+                    ),
+                  ),
+                );
+              },
+              child: const Text(
+                'Política de privacitat',
+                style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+              ),
             ),
-            Text(
-              'Termes del servei',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentScreen(
+                      type: LegalDocumentType.terms,
+                    ),
+                  ),
+                );
+              },
+              child: const Text(
+                'Termes del servei',
+                style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+              ),
             ),
           ],
         ),

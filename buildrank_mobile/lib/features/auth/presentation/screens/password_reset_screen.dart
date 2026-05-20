@@ -12,6 +12,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   final _authService = AuthService();
 
   final _emailController = TextEditingController();
+  final _resetLinkController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -42,24 +43,17 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     });
 
     try {
-      final data = await _authService.requestPasswordReset(email: email);
+      await _authService.requestPasswordReset(email: email);
 
-      final uid = data['uid']?.toString();
-      final token = data['token']?.toString();
+      if (!mounted) return;
 
-      if (uid != null && uid.isNotEmpty && token != null && token.isNotEmpty) {
-        setState(() {
-          _uid = uid;
-          _token = token;
-          _successText = 'Compte trobat. Introdueix la nova contrasenya.';
-        });
-      } else {
-        setState(() {
-          _successText =
-              'Si el correu existeix, s’han generat instruccions per restablir la contrasenya.';
-        });
-      }
+      setState(() {
+        _successText =
+            'Si el correu existeix, rebràs un enllaç per restablir la contrasenya. Enganxa’l aquí quan el tinguis.';
+      });
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _errorText = e.toString().replaceFirst('Exception: ', '');
         _successText = null;
@@ -71,6 +65,64 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         });
       }
     }
+  }
+
+  void _continueWithResetLink() {
+    final rawLink = _resetLinkController.text.trim();
+
+    if (rawLink.isEmpty) {
+      setState(() {
+        _errorText = 'Enganxa l’enllaç de recuperació rebut per email.';
+        _successText = null;
+      });
+      return;
+    }
+
+    final credentials = _extractCredentialsFromLink(rawLink);
+
+    if (credentials == null) {
+      setState(() {
+        _errorText =
+            'No s’han pogut trobar els paràmetres uid i token dins l’enllaç.';
+        _successText = null;
+      });
+      return;
+    }
+
+    setState(() {
+      _uid = credentials.uid;
+      _token = credentials.token;
+      _errorText = null;
+      _successText = 'Enllaç validat. Introdueix la nova contrasenya.';
+    });
+  }
+
+  _ResetCredentials? _extractCredentialsFromLink(String rawLink) {
+    final parsed = Uri.tryParse(rawLink);
+
+    if (parsed != null) {
+      final uid = parsed.queryParameters['uid'];
+      final token = parsed.queryParameters['token'];
+
+      if (uid != null && uid.isNotEmpty && token != null && token.isNotEmpty) {
+        return _ResetCredentials(uid: uid, token: token);
+      }
+    }
+
+    final uidMatch = RegExp(r'uid=([^&\s]+)').firstMatch(rawLink);
+    final tokenMatch = RegExp(r'token=([^&\s]+)').firstMatch(rawLink);
+
+    final uid = uidMatch?.group(1);
+    final token = tokenMatch?.group(1);
+
+    if (uid != null && uid.isNotEmpty && token != null && token.isNotEmpty) {
+      return _ResetCredentials(
+        uid: Uri.decodeComponent(uid),
+        token: Uri.decodeComponent(token),
+      );
+    }
+
+    return null;
   }
 
   Future<void> _confirmReset() async {
@@ -115,6 +167,8 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
       Navigator.of(context).pop();
     } catch (e) {
+      if (!mounted) return;
+
       setState(() {
         _errorText = e.toString().replaceFirst('Exception: ', '');
         _successText = null;
@@ -128,9 +182,21 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     }
   }
 
+  void _backToEmailStep() {
+    setState(() {
+      _uid = null;
+      _token = null;
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+      _errorText = null;
+      _successText = null;
+    });
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
+    _resetLinkController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -144,7 +210,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
     final subtitle = _isConfirmStep
         ? 'Introdueix una nova contrasenya per al teu compte.'
-        : 'Escriu el correu associat al teu compte de BuildRank.';
+        : 'Escriu el correu associat al teu compte i enganxa l’enllaç rebut per email.';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
@@ -215,9 +281,52 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                                 ),
                               )
                             : const Text(
-                                'Continuar',
+                                'Enviar instruccions',
                                 style: TextStyle(fontSize: 16),
                               ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Ja tens l’enllaç?',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Enganxa aquí l’enllaç rebut per email. BuildRank n’extraurà automàticament el uid i el token.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.4,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _resetLinkController,
+                      minLines: 1,
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Enllaç de recuperació',
+                        hintText:
+                            'https://.../reset-password?uid=...&token=...',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.link),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 54,
+                      child: OutlinedButton(
+                        onPressed: _isLoading ? null : _continueWithResetLink,
+                        child: const Text(
+                          'Continuar amb l’enllaç',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ),
                   ] else ...[
@@ -259,6 +368,11 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                               ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: _isLoading ? null : _backToEmailStep,
+                      child: const Text('Tornar a enganxar un altre enllaç'),
+                    ),
                   ],
                   if (_errorText != null) ...[
                     const SizedBox(height: 12),
@@ -282,4 +396,11 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
       ),
     );
   }
+}
+
+class _ResetCredentials {
+  final String uid;
+  final String token;
+
+  const _ResetCredentials({required this.uid, required this.token});
 }
