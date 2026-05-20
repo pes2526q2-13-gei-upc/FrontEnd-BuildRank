@@ -18,7 +18,10 @@ class AuthService {
     _isGoogleSignInInitialized = true;
   }
 
-  Future<Map<String, dynamic>> loginWithGoogle({String? role}) async {
+  Future<Map<String, dynamic>> loginWithGoogle({
+    String mode = 'login',
+    String? role,
+  }) async {
     try {
       await _ensureGoogleSignInInitialized();
 
@@ -41,7 +44,9 @@ class AuthService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'id_token': idToken,
-          if (role != null && role.isNotEmpty) 'role': role,
+          'mode': mode,
+          if (mode == 'register' && role != null && role.isNotEmpty)
+            'role': role,
         }),
       );
 

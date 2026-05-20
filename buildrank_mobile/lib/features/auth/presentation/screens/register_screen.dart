@@ -162,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      await _authService.loginWithGoogle(role: _selectedRole);
+      await _authService.loginWithGoogle(mode: 'register', role: _selectedRole);
       await _finishAuthenticatedNavigation();
     } catch (e) {
       setState(() {

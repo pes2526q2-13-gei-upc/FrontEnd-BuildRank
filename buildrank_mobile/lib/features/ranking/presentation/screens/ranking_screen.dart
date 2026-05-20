@@ -39,6 +39,9 @@ class _RankingScreenState extends State<RankingScreen> {
   int _targetTop = 3;
   int _progressSeasonsCount = 3;
   RankingResponse? _ranking;
+  List<RankingProgressPoint> _progressEvolution = const [];
+  bool _isLoadingProgress = false;
+  String? _progressErrorText;
 
   bool _isLoading = true;
   bool _isLoadingMore = false;
@@ -165,6 +168,43 @@ class _RankingScreenState extends State<RankingScreen> {
       _showProgress = true;
       _errorText = null;
     });
+
+    _loadProgressEvolution();
+  }
+
+  Future<void> _loadProgressEvolution() async {
+    setState(() {
+      _isLoadingProgress = true;
+      _progressErrorText = null;
+    });
+
+    try {
+      final result = await widget.rankingService.getProgressEvolution(
+        idEdifici: widget.idEdifici,
+        seasonsCount: _progressSeasonsCount,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _progressEvolution = result;
+        _isLoadingProgress = false;
+      });
+    } on RankingApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _progressErrorText = e.message;
+        _isLoadingProgress = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _progressErrorText = 'No s’ha pogut carregar l’evolució de progrés.';
+        _isLoadingProgress = false;
+      });
+    }
   }
 
   void _onSearchChanged(String value) {
@@ -306,10 +346,13 @@ class _RankingScreenState extends State<RankingScreen> {
             color: Colors.black45,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No s’ha pogut carregar el rànquing',
+          Text(
+            _errorText ==
+                    'Aquest edifici encara no participa en cap temporada activa.'
+                ? 'Rànquing no disponible'
+                : 'No s’ha pogut carregar el rànquing',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
@@ -453,6 +496,8 @@ class _RankingScreenState extends State<RankingScreen> {
                         setState(() {
                           _progressSeasonsCount = option;
                         });
+
+                        _loadProgressEvolution();
                       },
                     ),
                   ),
@@ -713,38 +758,80 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildProgressRanking() {
-    final entries = _mockProgressEntries;
+    if (_isLoadingProgress) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 28),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_progressErrorText != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Text(
+          _progressErrorText!,
+          style: const TextStyle(color: Colors.black54, height: 1.35),
+        ),
+      );
+    }
+
+    if (_progressEvolution.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: const Text(
+          'Encara no hi ha historial de progrés per aquest edifici.',
+          style: TextStyle(color: Colors.black54, height: 1.35),
+        ),
+      );
+    }
+
+    final first = _progressEvolution.first;
+    final last = _progressEvolution.last;
+
+    final entry = _ProgressRankingEntry(
+      idEdifici: widget.idEdifici,
+      position: last.position,
+      name: _cleanBuildingDisplayName(widget.buildingName),
+      startPoints: first.points,
+      currentPoints: last.points,
+      isCurrentBuilding: true,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Ranking de progrés',
+          'Progrés de temporades',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
         Text(
-          'Millora acumulada durant les últimes $_progressSeasonsCount temporades.',
+          'Evolució real durant les últimes ${_progressEvolution.length} temporades disponibles.',
           style: const TextStyle(color: Colors.black54, height: 1.35),
         ),
         const SizedBox(height: 14),
-        ...entries.map(
-          (entry) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: _ProgressRankingCard(
-              entry: entry,
-              onDetail: entry.isCurrentBuilding
-                  ? () => _showProgressDetailModal(entry)
-                  : null,
-            ),
-          ),
+        _ProgressRankingCard(
+          entry: entry,
+          onDetail: () => _showProgressDetailModal(entry),
         ),
       ],
     );
   }
 
   void _showProgressDetailModal(_ProgressRankingEntry entry) {
-    final values = _mockProgressSeries(_progressSeasonsCount);
+    final values = _progressEvolution.map((item) => item.points).toList();
 
     showModalBottomSheet<void>(
       context: context,
@@ -810,64 +897,6 @@ class _RankingScreenState extends State<RankingScreen> {
         );
       },
     );
-  }
-
-  List<int> _mockProgressSeries(int count) {
-    final all = [
-      610,
-      635,
-      660,
-      690,
-      715,
-      735,
-      760,
-      780,
-      805,
-      widget.currentPoints,
-    ];
-
-    return all.sublist(all.length - count);
-  }
-
-  List<_ProgressRankingEntry> get _mockProgressEntries {
-    return [
-      const _ProgressRankingEntry(
-        idEdifici: 101,
-        position: 1,
-        name: 'Green Heights Residencial',
-        startPoints: 620,
-        currentPoints: 840,
-      ),
-      const _ProgressRankingEntry(
-        idEdifici: 102,
-        position: 2,
-        name: 'EcoTower Suites',
-        startPoints: 590,
-        currentPoints: 760,
-      ),
-      _ProgressRankingEntry(
-        idEdifici: widget.idEdifici,
-        position: 3,
-        name: _cleanBuildingDisplayName(widget.buildingName),
-        startPoints: 640,
-        currentPoints: widget.currentPoints,
-        isCurrentBuilding: true,
-      ),
-      const _ProgressRankingEntry(
-        idEdifici: 103,
-        position: 4,
-        name: 'Solaris Complex',
-        startPoints: 710,
-        currentPoints: 820,
-      ),
-      const _ProgressRankingEntry(
-        idEdifici: 104,
-        position: 5,
-        name: 'Habitatges Maragall',
-        startPoints: 530,
-        currentPoints: 610,
-      ),
-    ];
   }
 }
 

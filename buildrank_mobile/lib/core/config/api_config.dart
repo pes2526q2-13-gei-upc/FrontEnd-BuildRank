@@ -178,6 +178,16 @@ class ApiConfig {
     );
   }
 
+  static Uri rankingEvolution({
+    required int buildingId,
+    String categoria = 'PROGRES',
+  }) {
+    return uri(
+      '${leagues}evolucio/',
+      queryParameters: {'edifici': buildingId, 'categoria': categoria},
+    );
+  }
+
   /// Legacy: millor no usar-lo a la pantalla de ranking perquè no retorna
   /// el mateix payload que el ranking per temporada i no suporta search.
   static Uri leagueRanking({

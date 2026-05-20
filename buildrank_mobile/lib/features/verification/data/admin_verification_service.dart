@@ -360,13 +360,22 @@ class AdminVerificationItem {
   bool get isReadyForReview => status.toLowerCase() == 'review';
 
   factory AdminVerificationItem.fromJson(Map<String, dynamic> json) {
-    final user = _readMap(json['user'] ?? json['usuari']);
-    final edifici = _readMap(json['edifici']);
-    final localitzacio = _readMap(edifici?['localitzacio']);
+    final userDetail =
+        _readMap(json['user_detail']) ??
+        _readMap(json['user'] ?? json['usuari']);
 
-    final firstName = _readString(user?['first_name']);
-    final lastName = _readString(user?['last_name']);
-    final email = _readString(user?['email']);
+    final edificiDetail =
+        _readMap(json['edifici_detail']) ?? _readMap(json['edifici']);
+
+    final localitzacio = _readMap(edificiDetail?['localitzacio']);
+
+    final userId = _readInt(
+      userDetail?['id'] ?? json['user'] ?? json['usuari'],
+    );
+
+    final firstName = _readString(userDetail?['first_name']);
+    final lastName = _readString(userDetail?['last_name']);
+    final email = _readString(userDetail?['email']);
 
     final requesterName = [?firstName, ?lastName].join(' ').trim();
 
@@ -377,6 +386,11 @@ class AdminVerificationItem {
     final addressParts = [?carrer, ?numero];
 
     final postalSuffix = codiPostal == null ? '' : ' ($codiPostal)';
+    final adreca = _readString(edificiDetail?['adreca']);
+
+    final fallbackEdificiTitle = addressParts.isEmpty
+        ? null
+        : '${addressParts.join(', ')}$postalSuffix';
 
     final documentsRaw = json['documents'];
 
@@ -386,16 +400,22 @@ class AdminVerificationItem {
       score: _readDouble(json['score']),
       suggeriment: _readString(json['suggeriment']),
       scoreFlags: _readStringList(json['score_flags']),
-      requesterName: requesterName.isNotEmpty ? requesterName : 'Usuari',
+      requesterName: requesterName.isNotEmpty
+          ? requesterName
+          : userId == null
+          ? 'Usuari'
+          : 'Usuari #$userId',
       requesterEmail: email ?? 'Correu no disponible',
-      edificiId: _readInt(edifici?['idEdifici'] ?? json['edifici']),
+      edificiId: _readInt(
+        edificiDetail?['idEdifici'] ?? edificiDetail?['id'] ?? json['edifici'],
+      ),
       edificiTitle:
-          _readString(
-            edifici?['titol'] ?? edifici?['name'] ?? json['edifici'],
-          ) ??
-          (addressParts.isEmpty
+          adreca ??
+          _readString(edificiDetail?['titol'] ?? edificiDetail?['name']) ??
+          fallbackEdificiTitle ??
+          (_readInt(json['edifici']) == null
               ? 'Edifici pendent'
-              : '${addressParts.join(', ')}$postalSuffix'),
+              : 'Edifici #${_readInt(json['edifici'])}'),
       documents: documentsRaw is List
           ? documentsRaw
                 .whereType<Map>()

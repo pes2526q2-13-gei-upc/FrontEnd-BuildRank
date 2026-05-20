@@ -102,9 +102,23 @@ class RankingService {
 
   Future<_RankingContext> _loadRankingContext({required int idEdifici}) async {
     final seasonsJson = await _getJson(Uri.parse(ApiConfig.seasons));
-    final currentParticipationJson = await _getJson(
-      ApiConfig.currentParticipation(buildingId: idEdifici),
-    );
+
+    late final Map<String, dynamic> currentParticipationJson;
+
+    try {
+      currentParticipationJson = await _getJson(
+        ApiConfig.currentParticipation(buildingId: idEdifici),
+      );
+    } on RankingApiException catch (e) {
+      if (e.statusCode == 404) {
+        throw const RankingApiException(
+          'Aquest edifici encara no participa en cap temporada activa.',
+          statusCode: 404,
+        );
+      }
+
+      rethrow;
+    }
 
     final seasons = _extractList(seasonsJson);
     final participation = Map<String, dynamic>.from(currentParticipationJson);
@@ -219,6 +233,91 @@ class RankingService {
       promotionText: promotionText,
       currentPosition: position,
     );
+  }
+
+  Future<List<RankingProgressPoint>> getProgressEvolution({
+    required int idEdifici,
+    int seasonsCount = 3,
+  }) async {
+    if (useMockData) {
+      await Future.delayed(const Duration(milliseconds: 350));
+
+      final mock = [
+        const RankingProgressPoint(
+          seasonId: 1,
+          seasonName: 'T-5',
+          category: 'PROGRES',
+          points: 610,
+          position: 8,
+          division: 'Bronze',
+        ),
+        const RankingProgressPoint(
+          seasonId: 2,
+          seasonName: 'T-4',
+          category: 'PROGRES',
+          points: 650,
+          position: 7,
+          division: 'Bronze',
+        ),
+        const RankingProgressPoint(
+          seasonId: 3,
+          seasonName: 'T-3',
+          category: 'PROGRES',
+          points: 700,
+          position: 5,
+          division: 'Silver',
+        ),
+        const RankingProgressPoint(
+          seasonId: 4,
+          seasonName: 'T-2',
+          category: 'PROGRES',
+          points: 760,
+          position: 4,
+          division: 'Silver',
+        ),
+        const RankingProgressPoint(
+          seasonId: 5,
+          seasonName: 'T-1',
+          category: 'PROGRES',
+          points: 820,
+          position: 3,
+          division: 'Gold',
+        ),
+      ];
+
+      return mock.length <= seasonsCount
+          ? mock
+          : mock.sublist(mock.length - seasonsCount);
+    }
+
+    try {
+      final decoded = await _getJson(
+        ApiConfig.rankingEvolution(buildingId: idEdifici),
+      );
+
+      final items = _extractList(decoded)
+          .map(RankingProgressPoint.fromJson)
+          .where((item) => item.seasonId != 0)
+          .toList();
+
+      if (items.length <= seasonsCount) return items;
+
+      return items.sublist(items.length - seasonsCount);
+    } on TimeoutException {
+      throw const RankingApiException(
+        'La consulta de progrés ha trigat massa. Torna-ho a provar.',
+      );
+    } on SocketException {
+      throw const RankingApiException(
+        'No s’ha pogut connectar amb el servidor.',
+      );
+    } on RankingApiException {
+      rethrow;
+    } catch (_) {
+      throw const RankingApiException(
+        'S’ha produït un error carregant l’evolució de progrés.',
+      );
+    }
   }
 
   Future<Map<String, dynamic>> _getJson(Uri uri) async {

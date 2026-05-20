@@ -843,6 +843,14 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         ),
         const SizedBox(height: 12),
         _BuildTextField(
+          controller: _valorFinestresController,
+          label: 'Valor finestres',
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
           controller: _normativaController,
           label: 'Normativa',
           required: true,

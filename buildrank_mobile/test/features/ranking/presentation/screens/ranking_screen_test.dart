@@ -128,8 +128,9 @@ void main() {
 
       await tester.tap(find.text('Progrés de temporades'));
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('Ranking de progrés'), findsOneWidget);
+      expect(find.text('Progrés de temporades'), findsWidgets);
       expect(find.text('Període de comparació'), findsOneWidget);
       expect(find.text('Últimes 3'), findsOneWidget);
       expect(find.text('Últimes 5'), findsOneWidget);
@@ -137,6 +138,7 @@ void main() {
 
       expect(find.text('Veure detall'), findsOneWidget);
       expect(service.calls.length, callsBeforeProgress);
+      expect(service.progressEvolutionCalls, 1);
     },
   );
 
@@ -150,16 +152,18 @@ void main() {
 
     await tester.tap(find.text('Progrés de temporades'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(service.progressEvolutionCalls, 1);
 
     await tester.tap(find.text('Últimes 5'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    expect(
-      find.text('Millora acumulada durant les últimes 5 temporades.'),
-      findsOneWidget,
-    );
+    expect(service.progressEvolutionCalls, 2);
+
+    expect(find.textContaining('últimes 5 temporades'), findsOneWidget);
   });
-
   testWidgets('obre el modal de detall del progrés del meu edifici', (
     tester,
   ) async {
@@ -170,6 +174,7 @@ void main() {
 
     await tester.tap(find.text('Progrés de temporades'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     final detailFinder = find.text('Veure detall');
 
@@ -247,6 +252,63 @@ class FakeRankingService extends RankingService {
   final List<RankingCall> calls = [];
 
   FakeRankingService({this.shouldThrow = false}) : super(useMockData: true);
+
+  int progressEvolutionCalls = 0;
+
+  @override
+  Future<List<RankingProgressPoint>> getProgressEvolution({
+    required int idEdifici,
+    int seasonsCount = 3,
+  }) async {
+    progressEvolutionCalls++;
+
+    final items = [
+      const RankingProgressPoint(
+        seasonId: 1,
+        seasonName: 'T-5',
+        category: 'PROGRES',
+        points: 610,
+        position: 8,
+        division: 'Bronze',
+      ),
+      const RankingProgressPoint(
+        seasonId: 2,
+        seasonName: 'T-4',
+        category: 'PROGRES',
+        points: 650,
+        position: 7,
+        division: 'Bronze',
+      ),
+      const RankingProgressPoint(
+        seasonId: 3,
+        seasonName: 'T-3',
+        category: 'PROGRES',
+        points: 700,
+        position: 5,
+        division: 'Silver',
+      ),
+      const RankingProgressPoint(
+        seasonId: 4,
+        seasonName: 'T-2',
+        category: 'PROGRES',
+        points: 760,
+        position: 4,
+        division: 'Silver',
+      ),
+      const RankingProgressPoint(
+        seasonId: 5,
+        seasonName: 'T-1',
+        category: 'PROGRES',
+        points: 820,
+        position: 3,
+        division: 'Gold',
+      ),
+    ];
+
+    return items.length <= seasonsCount
+        ? items
+        : items.sublist(items.length - seasonsCount);
+  }
 
   @override
   Future<RankingResponse> getRanking({
