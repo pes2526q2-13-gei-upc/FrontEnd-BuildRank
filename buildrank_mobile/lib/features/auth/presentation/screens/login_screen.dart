@@ -1,8 +1,9 @@
 import 'package:buildrank_mobile/core/services/stream_service.dart';
-import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
-import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
 import 'package:buildrank_mobile/features/admin/presentation/screens/system_admin_home_screen.dart';
+import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/password_reset_screen.dart';
+import 'package:buildrank_mobile/features/profile/presentation/screens/profile_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -22,12 +23,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorText;
 
   Future<void> _handleLogin() async {
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
       setState(() {
-        _errorText = 'Has d’omplir el correu i la contrasenya.';
+        _errorText = l10n.loginMissingFieldsError;
       });
       return;
     }
@@ -117,22 +119,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           children: [
             const SizedBox(height: 10),
-            const Text(
-              'Benvingut a BuildRank',
+            Text(
+              l10n.loginWelcomeTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Gestiona el teu edifici, consulta el rànquing energètic i segueix la teva evolució des d’un únic lloc.',
+            Text(
+              l10n.loginWelcomeSubtitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 height: 1.4,
                 color: Colors.black54,
@@ -155,34 +159,37 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Inicia sessió',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  Text(
+                    l10n.loginCardTitle,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Accedeix amb el teu compte per veure la informació del teu edifici.',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                  Text(
+                    l10n.loginCardSubtitle,
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                   const SizedBox(height: 24),
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Correu electrònic',
-                      hintText: 'nom@exemple.com',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.email_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.emailLabel,
+                      hintText: l10n.emailHint,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Contrasenya',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock_outline),
+                    decoration: InputDecoration(
+                      labelText: l10n.passwordLabel,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock_outline),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -198,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             },
-                      child: const Text('Has oblidat la contrasenya?'),
+                      child: Text(l10n.loginForgotPassword),
                     ),
                   ),
                   if (_errorText != null) ...[
@@ -219,9 +226,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 22,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text(
-                              'Entrar',
-                              style: TextStyle(fontSize: 16),
+                          : Text(
+                              l10n.loginButton,
+                              style: const TextStyle(fontSize: 16),
                             ),
                     ),
                   ),
@@ -229,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   OutlinedButton.icon(
                     onPressed: _isLoading ? null : _handleGoogleLogin,
                     icon: const Icon(Icons.g_mobiledata),
-                    label: const Text('Continuar amb Google'),
+                    label: Text(l10n.loginGoogleButton),
                   ),
                 ],
               ),

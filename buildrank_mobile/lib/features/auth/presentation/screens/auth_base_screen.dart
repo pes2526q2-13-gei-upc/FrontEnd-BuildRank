@@ -1,3 +1,5 @@
+import 'package:buildrank_mobile/core/localization/locale_controller.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import 'login_screen.dart';
@@ -18,17 +20,15 @@ class _AuthBaseScreenState extends State<AuthBaseScreen> {
       _selectedIndex = 0;
     });
 
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Compte creat correctament. Ara pots iniciar sessió amb $email.',
-        ),
-      ),
+      SnackBar(content: Text(l10n.authRegisterSuccessWithEmail(email))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final pages = [
       const LoginScreen(),
       RegisterScreen(onRegisterSuccess: _goToLoginAfterRegister),
@@ -46,15 +46,19 @@ class _AuthBaseScreenState extends State<AuthBaseScreen> {
               fit: BoxFit.contain,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+
+            _LanguageSelector(l10n: l10n),
+
+            const SizedBox(height: 16),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  _buildTabButton('Inicia sessió', 0),
+                  _buildTabButton(l10n.authLoginTab, 0),
                   const SizedBox(width: 10),
-                  _buildTabButton("Registra't", 1),
+                  _buildTabButton(l10n.authRegisterTab, 1),
                 ],
               ),
             ),
@@ -95,6 +99,54 @@ class _AuthBaseScreenState extends State<AuthBaseScreen> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageSelector extends StatelessWidget {
+  final AppLocalizations l10n;
+
+  const _LanguageSelector({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final localeController = LocaleControllerScope.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: DropdownButton<Locale>(
+          value: localeController.locale,
+          underline: const SizedBox.shrink(),
+          icon: const Icon(Icons.language),
+          onChanged: (locale) {
+            if (locale != null) {
+              localeController.setLocale(locale);
+            }
+          },
+          items: [
+            DropdownMenuItem(
+              value: const Locale('ca'),
+              child: Text(
+                '${l10n.authLanguageLabel}: ${l10n.authLanguageCatalan}',
+              ),
+            ),
+            DropdownMenuItem(
+              value: const Locale('es'),
+              child: Text(
+                '${l10n.authLanguageLabel}: ${l10n.authLanguageSpanish}',
+              ),
+            ),
+            DropdownMenuItem(
+              value: const Locale('en'),
+              child: Text(
+                '${l10n.authLanguageLabel}: ${l10n.authLanguageEnglish}',
+              ),
+            ),
+          ],
         ),
       ),
     );

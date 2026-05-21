@@ -1,4 +1,5 @@
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class AccountBlockedScreen extends StatelessWidget {
@@ -6,6 +7,8 @@ class AccountBlockedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
       body: SafeArea(
@@ -29,19 +32,19 @@ class AccountBlockedScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Compte bloquejat',
-                  style: TextStyle(
+                Text(
+                  l10n.accountBlockedTitle,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF14181F),
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'El teu compte ha estat bloquejat permanentment. Contacta amb l\'administrador per obtenir més informació.',
+                Text(
+                  l10n.accountBlockedBody,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                     color: Color(0xFF6B7280),
                     height: 1.5,
@@ -59,7 +62,7 @@ class AccountBlockedScreen extends StatelessWidget {
                         (_) => false,
                       );
                     },
-                    child: const Text('Torna a l\'inici de sessió'),
+                    child: Text(l10n.accountBackToLogin),
                   ),
                 ),
               ],

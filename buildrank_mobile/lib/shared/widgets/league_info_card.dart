@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class LeagueInfoCard extends StatelessWidget {
   const LeagueInfoCard({super.key});
@@ -20,32 +21,14 @@ class LeagueInfoCard extends StatelessWidget {
           const SizedBox(width: 12),
 
           Expanded(
-            child: RichText(
-              text: const TextSpan(
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  height: 1.4,
-                ),
-                children: [
-                  TextSpan(text: "Aquest edifici és actualment a la "),
-                  TextSpan(
-                    text: "Silver League",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text:
-                        ". Millora la qualificació energètica per passar a la ",
-                  ),
-                  TextSpan(
-                    text: "Gold League",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFE0A100),
-                    ),
-                  ),
-                  TextSpan(text: "."),
-                ],
+            child: Text(
+              AppLocalizations.of(
+                context,
+              ).leagueInfoBody('Silver League', 'Gold League'),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                height: 1.4,
               ),
             ),
           ),

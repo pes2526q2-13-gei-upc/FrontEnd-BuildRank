@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/buildingRequests/data/pending_building_requests_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 
 class PendingBuildingRequestsScreen extends StatefulWidget {
   final int idEdifici;
@@ -89,11 +90,10 @@ class _PendingBuildingRequestsScreenState
         _processingAction = null;
       });
 
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'S’ha acceptat la sol·licitud de ${item.requesterName}.',
-          ),
+          content: Text(l10n.pendingRequestsAccepted(item.requesterName)),
         ),
       );
     } catch (e) {
@@ -130,11 +130,10 @@ class _PendingBuildingRequestsScreenState
         _processingAction = null;
       });
 
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'S’ha rebutjat la sol·licitud de ${item.requesterName}.',
-          ),
+          content: Text(l10n.pendingRequestsRejected(item.requesterName)),
         ),
       );
     } catch (e) {
@@ -153,26 +152,25 @@ class _PendingBuildingRequestsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
-      appBar: AppBar(
-        title: const Text('Sol·licituds pendents'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(l10n.pendingRequestsTitle), centerTitle: true),
       body: !_isAdmin
-          ? _buildForbiddenState()
+          ? _buildForbiddenState(l10n)
           : _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorText != null
-          ? _buildErrorState()
+          ? _buildErrorState(l10n)
           : RefreshIndicator(
               onRefresh: _loadRequests,
               child: _requests.isEmpty
-                  ? _buildEmptyState()
+                  ? _buildEmptyState(l10n)
                   : ListView(
                       padding: const EdgeInsets.all(16),
                       children: [
-                        _buildHeaderCard(),
+                        _buildHeaderCard(l10n),
                         const SizedBox(height: 18),
                         ..._requests.map(
                           (item) => Padding(
@@ -192,7 +190,7 @@ class _PendingBuildingRequestsScreenState
     );
   }
 
-  Widget _buildHeaderCard() {
+  Widget _buildHeaderCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -202,18 +200,18 @@ class _PendingBuildingRequestsScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Sol·licituds pendents',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+          Text(
+            l10n.pendingRequestsTitle,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
-            'Aquí pots revisar i validar les sol·licituds d’unió com a resident per a ${widget.buildingTitle}.',
+            l10n.pendingRequestsIntro(widget.buildingTitle),
             style: const TextStyle(color: Colors.black54, height: 1.4),
           ),
           const SizedBox(height: 12),
           Text(
-            '${_requests.length} pendents',
+            l10n.pendingRequestsCount(_requests.length),
             style: const TextStyle(
               color: Color(0xFF166534),
               fontWeight: FontWeight.w700,
@@ -224,11 +222,11 @@ class _PendingBuildingRequestsScreenState
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _buildHeaderCard(),
+        _buildHeaderCard(l10n),
         const SizedBox(height: 18),
         Container(
           padding: const EdgeInsets.all(18),
@@ -237,19 +235,26 @@ class _PendingBuildingRequestsScreenState
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE5E7EB)),
           ),
-          child: const Column(
+          child: Column(
             children: [
-              Icon(Icons.verified_outlined, size: 42, color: Colors.green),
-              SizedBox(height: 12),
-              Text(
-                'No hi ha sol·licituds pendents',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              const Icon(
+                Icons.verified_outlined,
+                size: 42,
+                color: Colors.green,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
-                'Quan altres usuaris demanin unir-se a aquest edifici, apareixeran aquí.',
+                l10n.pendingRequestsEmptyTitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.pendingRequestsEmptyBody,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black54, height: 1.4),
+                style: const TextStyle(color: Colors.black54, height: 1.4),
               ),
             ],
           ),
@@ -258,7 +263,7 @@ class _PendingBuildingRequestsScreenState
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(AppLocalizations l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -268,13 +273,13 @@ class _PendingBuildingRequestsScreenState
             const Icon(Icons.error_outline, size: 42),
             const SizedBox(height: 12),
             Text(
-              _errorText ?? 'S’ha produït un error inesperat.',
+              _errorText ?? l10n.pendingRequestsUnexpectedError,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadRequests,
-              child: const Text('Torna-ho a provar'),
+              child: Text(l10n.commonRetry),
             ),
           ],
         ),
@@ -282,19 +287,19 @@ class _PendingBuildingRequestsScreenState
     );
   }
 
-  Widget _buildForbiddenState() {
-    return const Center(
+  Widget _buildForbiddenState(AppLocalizations l10n) {
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.lock_outline, size: 42),
-            SizedBox(height: 12),
+            const Icon(Icons.lock_outline, size: 42),
+            const SizedBox(height: 12),
             Text(
-              'Només l’administrador de finca pot gestionar les sol·licituds pendents.',
+              l10n.pendingRequestsForbidden,
               textAlign: TextAlign.center,
-              style: TextStyle(height: 1.4),
+              style: const TextStyle(height: 1.4),
             ),
           ],
         ),
@@ -320,6 +325,7 @@ class _PendingRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isAccepting = isProcessing && processingAction == 'accept';
     final isRejecting = isProcessing && processingAction == 'reject';
 
@@ -356,17 +362,29 @@ class _PendingRequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const _RequestTypeChip(label: 'Resident'),
+              _RequestTypeChip(label: l10n.pendingRequestsResidentChip),
             ],
           ),
           const SizedBox(height: 14),
-          _InfoRow(label: 'Tipus de sol·licitud', value: 'Unió com a resident'),
-          _InfoRow(label: 'Data', value: _formatDate(item.submittedAt)),
-          _InfoRow(label: 'Referència cadastral', value: item.refCadastral),
-          _InfoRow(label: 'Habitatge', value: _buildHabitatgeLabel(item)),
+          _InfoRow(
+            label: l10n.pendingRequestsRequestTypeLabel,
+            value: l10n.pendingRequestsResidentJoinType,
+          ),
+          _InfoRow(
+            label: l10n.pendingRequestsDateLabel,
+            value: _formatDate(item.submittedAt),
+          ),
+          _InfoRow(
+            label: l10n.pendingRequestsCadastralReferenceLabel,
+            value: item.refCadastral,
+          ),
+          _InfoRow(
+            label: l10n.pendingRequestsHomeLabel,
+            value: _buildHabitatgeLabel(context, item),
+          ),
           if (item.superficie != null)
             _InfoRow(
-              label: 'Superfície',
+              label: l10n.pendingRequestsSurfaceLabel,
               value: '${item.superficie!.toStringAsFixed(1)} m²',
             ),
           const SizedBox(height: 16),
@@ -389,9 +407,9 @@ class _PendingRequestCard extends StatelessWidget {
                           height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text(
-                          'Rebutjar',
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                      : Text(
+                          l10n.pendingRequestsReject,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                 ),
               ),
@@ -416,9 +434,9 @@ class _PendingRequestCard extends StatelessWidget {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Acceptar',
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                      : Text(
+                          l10n.pendingRequestsAccept,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                 ),
               ),
@@ -429,27 +447,31 @@ class _PendingRequestCard extends StatelessWidget {
     );
   }
 
-  String _buildHabitatgeLabel(PendingBuildingRequestItem item) {
+  String _buildHabitatgeLabel(
+    BuildContext context,
+    PendingBuildingRequestItem item,
+  ) {
+    final l10n = AppLocalizations.of(context);
     final planta = item.planta?.trim();
     final porta = item.porta?.trim();
 
     if ((planta == null || planta.isEmpty) &&
         (porta == null || porta.isEmpty)) {
-      return 'No especificat';
+      return l10n.pendingRequestsNotSpecified;
     }
 
     if (planta != null &&
         planta.isNotEmpty &&
         porta != null &&
         porta.isNotEmpty) {
-      return 'Planta $planta · Porta $porta';
+      return l10n.pendingRequestsFloorDoor(planta, porta);
     }
 
     if (planta != null && planta.isNotEmpty) {
-      return 'Planta $planta';
+      return l10n.pendingRequestsFloor(planta);
     }
 
-    return 'Porta ${porta ?? ''}';
+    return l10n.pendingRequestsDoor(porta ?? '');
   }
 }
 

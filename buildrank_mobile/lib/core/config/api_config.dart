@@ -187,10 +187,22 @@ class ApiConfig {
   static Uri rankingEvolution({
     required int buildingId,
     String categoria = 'PROGRES',
+    int? limit,
   }) {
     return uri(
       '${leagues}evolucio/',
-      queryParameters: {'edifici': buildingId, 'categoria': categoria},
+      queryParameters: {
+        'edifici': buildingId,
+        'categoria': categoria,
+        'limit': ?limit,
+      },
+    );
+  }
+
+  static Uri progressRanking({required int seasonId, int window = 3}) {
+    return uri(
+      '$seasons$seasonId/ranking/progres/',
+      queryParameters: {'window': window},
     );
   }
 

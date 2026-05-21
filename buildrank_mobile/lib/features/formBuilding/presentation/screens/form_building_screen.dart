@@ -6,6 +6,7 @@ import 'package:buildrank_mobile/features/formBuilding/data/building_form_data.d
 import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
 import 'package:buildrank_mobile/features/verification/presentation/widgets/admin_verification_documents_section.dart';
 import 'package:buildrank_mobile/features/formBuilding/data/building_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class BuildingFormScreen extends StatefulWidget {
   const BuildingFormScreen({super.key});
@@ -180,8 +181,9 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
       setState(() {
         _streetSuggestions = [];
         _isLoadingStreetSuggestions = false;
-        _streetSuggestionsMessage =
-            'Escriu almenys 2 caràcters per cercar el carrer.';
+        _streetSuggestionsMessage = AppLocalizations.of(
+          context,
+        ).buildingFormStreetMinChars;
       });
 
       return;
@@ -203,7 +205,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
         setState(() {
           _streetSuggestions = suggestions;
           _streetSuggestionsMessage = suggestions.isEmpty
-              ? 'No s’ha trobat cap carrer amb “$trimmed”.'
+              ? AppLocalizations.of(context).buildingFormNoStreetFound(trimmed)
               : null;
         });
       } on BuildingApiException catch (e) {
@@ -218,8 +220,9 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
         setState(() {
           _streetSuggestions = [];
-          _streetSuggestionsMessage =
-              'No s’han pogut carregar els suggeriments de carrers.';
+          _streetSuggestionsMessage = AppLocalizations.of(
+            context,
+          ).buildingFormStreetSuggestionsError;
         });
       } finally {
         if (mounted) {
@@ -243,42 +246,43 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
   }
 
   String? _validateStep1() {
+    final l10n = AppLocalizations.of(context);
     final postalCode = _postalCodeController.text.trim();
     final barri = _barriController.text.trim();
     final streetName = _streetNameForSubmit;
     final streetNumber = _numberController.text.trim();
 
     if (postalCode.isEmpty) {
-      return 'El codi postal és obligatori.';
+      return l10n.buildingFormPostalCodeRequired;
     }
 
     if (!RegExp(r'^\d{5}$').hasMatch(postalCode)) {
-      return 'El codi postal ha de tenir 5 dígits.';
+      return l10n.buildingFormPostalCodeInvalid;
     }
 
     if (barri.isEmpty) {
-      return 'El camp barri és obligatori.';
+      return l10n.buildingFormNeighborhoodRequired;
     }
 
     if (streetName.isEmpty) {
-      return 'El nom del carrer és obligatori.';
+      return l10n.buildingFormStreetRequired;
     }
 
     if (_selectedStreetSuggestion == null) {
-      return 'Selecciona un carrer de la llista de suggeriments.';
+      return l10n.buildingFormStreetSelectionRequired;
     }
 
     if (_selectedStreetSuggestion == null) {
-      return 'Selecciona un carrer de la llista de suggeriments perquè el backend el pugui validar.';
+      return l10n.buildingFormStreetSelectionRequired;
     }
 
     if (streetNumber.isEmpty) {
-      return 'El número és obligatori.';
+      return l10n.buildingFormNumberRequired;
     }
 
     final parsedNumber = int.tryParse(streetNumber);
     if (parsedNumber == null || parsedNumber <= 0) {
-      return 'El número del carrer ha de ser un enter positiu.';
+      return l10n.buildingFormNumberPositive;
     }
 
     final minNumber = _asInt(_selectedStreetSuggestion?['nre_min']);
@@ -287,66 +291,68 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
     if (minNumber != null &&
         maxNumber != null &&
         (parsedNumber < minNumber || parsedNumber > maxNumber)) {
-      return 'El número no està dins del rang permès per aquest carrer ($minNumber-$maxNumber).';
+      return l10n.buildingFormNumberOutOfRange(minNumber, maxNumber);
     }
 
     return null;
   }
 
   String? _validateStep2() {
+    final l10n = AppLocalizations.of(context);
     final constructionYear = _constructionYearController.text.trim();
     final regulation = _regulationController.text.trim();
     final currentYear = DateTime.now().year;
 
     if (_selectedBuildingType.trim().isEmpty) {
-      return 'Has de seleccionar una tipologia.';
+      return l10n.buildingFormTypeRequired;
     }
 
     if (constructionYear.isEmpty) {
-      return 'L\'any de construcció és obligatori.';
+      return l10n.buildingFormConstructionYearRequired;
     }
 
     final parsedYear = int.tryParse(constructionYear);
     if (parsedYear == null) {
-      return 'L\'any de construcció ha de ser un número enter.';
+      return l10n.buildingFormConstructionYearInteger;
     }
 
     if (parsedYear < 1800 || parsedYear > currentYear) {
-      return 'L\'any de construcció ha d\'estar entre 1800 i $currentYear.';
+      return l10n.buildingFormConstructionYearRange(currentYear);
     }
 
     if (regulation.isEmpty) {
-      return 'La normativa vigent és obligatòria.';
+      return l10n.buildingFormRegulationRequired;
     }
 
     return null;
   }
 
   String? _validateStep3() {
+    final l10n = AppLocalizations.of(context);
     final floors = _floorsController.text.trim();
     final surface = _surfaceController.text.trim();
     final orientation = _selectedOrientation.trim();
 
     if (floors.isEmpty) {
-      return 'El nombre de plantes és obligatori.';
+      return l10n.buildingFormFloorsRequired;
     }
 
     final parsedFloors = int.tryParse(floors);
     if (parsedFloors == null || parsedFloors <= 0) {
-      return 'El nombre de plantes ha de ser un enter positiu.';
+      return l10n.buildingFormFloorsPositive;
     }
 
     if (surface.isEmpty) {
-      return 'La superfície total és obligatòria.';
+      return l10n.buildingFormSurfaceRequired;
     }
 
     final parsedSurface = double.tryParse(surface.replaceAll(',', '.'));
     if (parsedSurface == null || parsedSurface <= 0) {
-      return 'La superfície total ha de ser un número positiu.';
+      return l10n.buildingFormSurfacePositive;
     }
 
     if (orientation.isEmpty) {
-      return 'Has de seleccionar una orientació principal.';
+      return l10n.buildingFormOrientationRequired;
     }
 
     return null;
@@ -354,7 +360,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
   String? _validateStep4() {
     if (_verificationDocuments.isEmpty) {
-      return 'Cal adjuntar almenys un document de verificació.';
+      return AppLocalizations.of(context).buildingFormDocumentsRequired;
     }
 
     return null;
@@ -400,6 +406,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
     final error = _validateStep4();
 
     if (error != null) {
@@ -420,9 +427,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
       final idEdifici = _extractCreatedBuildingId(createdBuilding);
 
       if (idEdifici == null) {
-        throw const BuildingApiException(
-          'L’edifici s’ha creat però la resposta no conté cap identificador reconeixible.',
-        );
+        throw BuildingApiException(l10n.buildingFormCreatedMissingId);
       }
 
       await _verificationService.createVerification(
@@ -432,13 +437,9 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Edifici creat i documentació enviada. Queda pendent de revisió.',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.buildingFormSubmitSuccess)));
 
       Navigator.pop(context, createdBuilding);
     } on BuildingApiException catch (e) {
@@ -446,7 +447,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
       _showMessage(e.message);
     } catch (_) {
       if (!mounted) return;
-      _showMessage('S\'ha produït un error inesperat en desar l\'edifici.');
+      _showMessage(l10n.buildingFormUnexpectedSaveError);
     } finally {
       if (mounted) {
         setState(() {
@@ -483,8 +484,58 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  String _buildingTypeTitle(String id, AppLocalizations l10n) {
+    switch (id) {
+      case 'Residencial':
+        return l10n.buildingFormTypeResidential;
+      case 'Comercial':
+        return l10n.buildingFormTypeCommercial;
+      case 'Educatiu':
+        return l10n.buildingFormTypeEducational;
+      case 'Sanitari':
+        return l10n.buildingFormTypeHealthcare;
+      case 'Mixt':
+        return l10n.buildingFormTypeMixed;
+      default:
+        return id;
+    }
+  }
+
+  String _buildingTypeSubtitle(String id, AppLocalizations l10n) {
+    switch (id) {
+      case 'Residencial':
+        return l10n.buildingFormTypeResidentialSubtitle;
+      case 'Comercial':
+        return l10n.buildingFormTypeCommercialSubtitle;
+      case 'Educatiu':
+        return l10n.buildingFormTypeEducationalSubtitle;
+      case 'Sanitari':
+        return l10n.buildingFormTypeHealthcareSubtitle;
+      case 'Mixt':
+        return l10n.buildingFormTypeMixedSubtitle;
+      default:
+        return '';
+    }
+  }
+
+  String _orientationLabel(String value, AppLocalizations l10n) {
+    switch (value) {
+      case 'Nord':
+        return l10n.orientationNorth;
+      case 'Sud':
+        return l10n.orientationSouth;
+      case 'Est':
+        return l10n.orientationEast;
+      case 'Oest':
+        return l10n.orientationWest;
+      default:
+        return value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final locationDescription = [
       _streetController.text.trim(),
       _numberController.text.trim(),
@@ -492,37 +543,37 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('BuildRank'),
+        title: Text(l10n.appName),
         centerTitle: true,
         leadingWidth: 110,
         leading: TextButton.icon(
           onPressed: _isSubmitting ? null : _goBack,
           icon: const Icon(Icons.arrow_back),
-          label: const Text('Torna'),
+          label: Text(l10n.commonBack),
         ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           const SizedBox(height: 6),
-          const Chip(
-            label: Text('Nou Edifici'),
+          Chip(
+            label: Text(l10n.buildingFormNewBuildingChip),
             backgroundColor: Color(0xFFE4F6EA),
           ),
           const SizedBox(height: 10),
-          const Text(
-            "Registra l'edifici",
+          Text(
+            l10n.buildingFormTitle,
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 6),
           Text(
             _currentStep == 1
-                ? "Comencem per la ubicació de l'edifici."
+                ? l10n.buildingFormStep1Subtitle
                 : _currentStep == 2
-                ? "Ara completa la informació general."
+                ? l10n.buildingFormStep2Subtitle
                 : _currentStep == 3
-                ? "Afegeix les dades tècniques bàsiques."
-                : "Adjunta la documentació per validar-te com a administrador de finca.",
+                ? l10n.buildingFormStep3Subtitle
+                : l10n.buildingFormStep4Subtitle,
             style: const TextStyle(color: Colors.black54, height: 1.4),
           ),
           const SizedBox(height: 24),
@@ -530,25 +581,25 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
           const SizedBox(height: 24),
 
           if (_currentStep == 1) ...[
-            const _SectionTitle(title: 'UBICACIÓ'),
+            _SectionTitle(title: l10n.buildingFormLocationSection),
             const SizedBox(height: 12),
 
-            const Text('Codi postal'),
+            Text(l10n.buildingFormPostalCodeLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _postalCodeController,
               keyboardType: TextInputType.number,
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., 08025',
+                hintText: l10n.buildingFormPostalCodeHint,
                 icon: Icons.markunread_mailbox_outlined,
               ),
             ),
 
             const SizedBox(height: 16),
-            const Center(
+            Center(
               child: Text(
-                'o',
+                l10n.buildingFormOr,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.black45,
@@ -557,20 +608,20 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
             ),
             const SizedBox(height: 16),
 
-            const Text('Barri'),
+            Text(l10n.buildingFormNeighborhoodLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _barriController,
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., Sagrada Família',
+                hintText: l10n.buildingFormNeighborhoodHint,
                 icon: Icons.location_city_outlined,
               ),
             ),
 
             const SizedBox(height: 20),
 
-            const Text('Nom del carrer'),
+            Text(l10n.buildingFormStreetLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _streetController,
@@ -578,7 +629,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
               enabled: !_isSubmitting,
               onChanged: _onStreetChanged,
               decoration: _inputDecoration(
-                hintText: 'Comença a escriure el carrer',
+                hintText: l10n.buildingFormStreetHint,
                 icon: Icons.search,
                 suffixIcon: _isLoadingStreetSuggestions
                     ? const Padding(
@@ -612,7 +663,10 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                     final maxNumber = _asInt(suggestion['nre_max']);
 
                     final rangeText = minNumber != null && maxNumber != null
-                        ? 'Números $minNumber-$maxNumber'
+                        ? l10n.buildingFormStreetNumberRange(
+                            minNumber,
+                            maxNumber,
+                          )
                         : null;
 
                     return ListTile(
@@ -624,7 +678,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                       title: Text(displayName),
                       subtitle: rangeText != null
                           ? Text(rangeText)
-                          : const Text('Rang de numeració no informat'),
+                          : Text(l10n.buildingFormStreetRangeUnknown),
                       trailing: isSelected
                           ? const Icon(Icons.check_circle, color: Colors.green)
                           : const Icon(Icons.chevron_right),
@@ -671,14 +725,14 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
             const SizedBox(height: 20),
 
-            const Text('Número'),
+            Text(l10n.buildingFormNumberLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _numberController,
               keyboardType: TextInputType.number,
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., 123',
+                hintText: l10n.buildingFormNumberHint,
                 icon: Icons.pin_outlined,
               ),
             ),
@@ -691,14 +745,14 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                 color: const Color(0xFFEAF5ED),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.info_outline),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      "Selecciona un carrer de la llista de suggeriments. En desar, BuildRank crearà primer la localització i després l’edifici vinculat al teu compte d’administrador.",
+                      l10n.buildingFormLocationInfo,
                       style: TextStyle(height: 1.4),
                     ),
                   ),
@@ -711,37 +765,37 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
             ElevatedButton(
               onPressed: _isSubmitting ? null : _goToStep2,
               style: _primaryButtonStyle(),
-              child: const Text(
-                'Continua →',
+              child: Text(
+                l10n.commonContinue,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
 
           if (_currentStep == 2) ...[
-            const _SectionTitle(title: 'INFORMACIÓ GENERAL'),
+            _SectionTitle(title: l10n.buildingFormGeneralSection),
             const SizedBox(height: 12),
 
             _SummaryCard(
-              title: 'Ubicació registrada',
+              title: l10n.buildingFormRegisteredLocation,
               rows: [
                 _SummaryRowData(
                   icon: Icons.location_on_outlined,
-                  label: 'Adreça',
+                  label: l10n.buildingFormAddressLabel,
                   value: locationDescription.isEmpty
                       ? '-'
                       : locationDescription,
                 ),
                 _SummaryRowData(
                   icon: Icons.markunread_mailbox_outlined,
-                  label: 'Codi postal',
+                  label: l10n.buildingFormPostalCodeLabel,
                   value: _postalCodeController.text.trim().isEmpty
                       ? '-'
                       : _postalCodeController.text.trim(),
                 ),
                 _SummaryRowData(
                   icon: Icons.location_city_outlined,
-                  label: 'Barri',
+                  label: l10n.buildingFormNeighborhoodLabel,
                   value: _barriController.text.trim().isEmpty
                       ? '-'
                       : _barriController.text.trim(),
@@ -751,8 +805,8 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
             const SizedBox(height: 20),
 
-            const Text(
-              "Tipologia de l'edifici",
+            Text(
+              l10n.buildingFormTypeLabel,
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
@@ -771,8 +825,11 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                     ),
                     child: _BuildingTypeCard(
                       icon: type['icon'] as IconData,
-                      title: type['title'] as String,
-                      subtitle: type['subtitle'] as String,
+                      title: _buildingTypeTitle(type['id'] as String, l10n),
+                      subtitle: _buildingTypeSubtitle(
+                        type['id'] as String,
+                        l10n,
+                      ),
                       selected: _selectedBuildingType == type['id'],
                       onTap: () {
                         if (_isSubmitting) return;
@@ -788,27 +845,27 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
             const SizedBox(height: 20),
 
-            const Text('Any de construcció'),
+            Text(l10n.buildingFormConstructionYearLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _constructionYearController,
               keyboardType: TextInputType.number,
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., 1998',
+                hintText: l10n.buildingFormConstructionYearHint,
                 icon: Icons.calendar_today_outlined,
               ),
             ),
 
             const SizedBox(height: 20),
 
-            const Text('Normativa vigent'),
+            Text(l10n.buildingFormRegulationLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _regulationController,
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., CTE',
+                hintText: l10n.buildingFormRegulationHint,
                 icon: Icons.rule_folder_outlined,
               ),
             ),
@@ -818,35 +875,35 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
             ElevatedButton(
               onPressed: _isSubmitting ? null : _goToStep3,
               style: _primaryButtonStyle(),
-              child: const Text(
-                'Continua →',
+              child: Text(
+                l10n.commonContinue,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
 
           if (_currentStep == 3) ...[
-            const _SectionTitle(title: 'DADES TÈCNIQUES'),
+            _SectionTitle(title: l10n.buildingFormTechnicalSection),
             const SizedBox(height: 12),
 
             _SummaryCard(
-              title: 'Resum de l’edifici',
+              title: l10n.buildingFormBuildingSummary,
               rows: [
                 _SummaryRowData(
                   icon: Icons.apartment_outlined,
-                  label: 'Tipologia',
-                  value: _selectedBuildingType,
+                  label: l10n.buildingCardTypology,
+                  value: _buildingTypeTitle(_selectedBuildingType, l10n),
                 ),
                 _SummaryRowData(
                   icon: Icons.calendar_today_outlined,
-                  label: 'Any construcció',
+                  label: l10n.buildingFormConstructionYearSummaryLabel,
                   value: _constructionYearController.text.trim().isEmpty
                       ? '-'
                       : _constructionYearController.text.trim(),
                 ),
                 _SummaryRowData(
                   icon: Icons.rule_folder_outlined,
-                  label: 'Normativa',
+                  label: l10n.buildingFormRegulationSummaryLabel,
                   value: _regulationController.text.trim().isEmpty
                       ? '-'
                       : _regulationController.text.trim(),
@@ -856,21 +913,21 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
 
             const SizedBox(height: 20),
 
-            const Text('Nombre de plantes'),
+            Text(l10n.buildingFormFloorsLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _floorsController,
               keyboardType: TextInputType.number,
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., 6',
+                hintText: l10n.buildingFormFloorsHint,
                 icon: Icons.layers_outlined,
               ),
             ),
 
             const SizedBox(height: 20),
 
-            const Text('Superfície total (m²)'),
+            Text(l10n.buildingFormSurfaceLabel),
             const SizedBox(height: 6),
             TextField(
               controller: _surfaceController,
@@ -879,14 +936,14 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
               ),
               enabled: !_isSubmitting,
               decoration: _inputDecoration(
-                hintText: 'p. ex., 850',
+                hintText: l10n.buildingFormSurfaceHint,
                 icon: Icons.square_foot_outlined,
               ),
             ),
 
             const SizedBox(height: 20),
 
-            const Text('Orientació principal'),
+            Text(l10n.buildingFormOrientationLabel),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
               initialValue: _selectedOrientation.isEmpty
@@ -896,7 +953,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                   .map(
                     (item) => DropdownMenuItem<String>(
                       value: item,
-                      child: Text(item),
+                      child: Text(_orientationLabel(item, l10n)),
                     ),
                   )
                   .toList(),
@@ -908,7 +965,7 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
                       });
                     },
               decoration: _inputDecoration(
-                hintText: 'Selecciona una orientació',
+                hintText: l10n.buildingFormOrientationHint,
                 icon: Icons.explore_outlined,
               ),
             ),
@@ -918,35 +975,35 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
             ElevatedButton(
               onPressed: _isSubmitting ? null : _goToStep4,
               style: _primaryButtonStyle(),
-              child: const Text(
-                'Continua →',
+              child: Text(
+                l10n.commonContinue,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
 
           if (_currentStep == 4) ...[
-            const _SectionTitle(title: 'DOCUMENTACIÓ'),
+            _SectionTitle(title: l10n.buildingFormDocumentationSection),
             const SizedBox(height: 12),
 
             _SummaryCard(
-              title: 'Edifici a verificar',
+              title: l10n.buildingFormBuildingToVerify,
               rows: [
                 _SummaryRowData(
                   icon: Icons.location_on_outlined,
-                  label: 'Adreça',
+                  label: l10n.buildingFormAddressLabel,
                   value: locationDescription.isEmpty
                       ? '-'
                       : locationDescription,
                 ),
                 _SummaryRowData(
                   icon: Icons.apartment_outlined,
-                  label: 'Tipologia',
-                  value: _selectedBuildingType,
+                  label: l10n.buildingCardTypology,
+                  value: _buildingTypeTitle(_selectedBuildingType, l10n),
                 ),
                 _SummaryRowData(
                   icon: Icons.square_foot_outlined,
-                  label: 'Superfície',
+                  label: l10n.buildingCardSurface,
                   value: _surfaceController.text.trim().isEmpty
                       ? '-'
                       : '${_surfaceController.text.trim()} m²',
@@ -973,8 +1030,8 @@ class _BuildingFormScreenState extends State<BuildingFormScreen> {
               style: _primaryButtonStyle(),
               child: Text(
                 _isSubmitting
-                    ? 'Enviant documentació...'
-                    : 'Crear edifici i enviar verificació',
+                    ? l10n.buildingFormSubmittingDocuments
+                    : l10n.buildingFormSubmit,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

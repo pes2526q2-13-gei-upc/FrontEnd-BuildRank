@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
+import 'package:flutter/material.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String initialFullName;
@@ -49,27 +49,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
+    final l10n = AppLocalizations.of(context);
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
     final email = _emailController.text.trim();
 
     if (firstName.isEmpty) {
-      _showMessage('El nom és obligatori.');
+      _showMessage(l10n.editProfileFirstNameRequired);
       return;
     }
 
     if (lastName.isEmpty) {
-      _showMessage('Els cognoms són obligatoris.');
+      _showMessage(l10n.editProfileLastNameRequired);
       return;
     }
 
     if (email.isEmpty) {
-      _showMessage('El correu electrònic és obligatori.');
+      _showMessage(l10n.editProfileEmailRequired);
       return;
     }
 
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
-      _showMessage('Introdueix un correu electrònic vàlid.');
+      _showMessage(l10n.editProfileEmailInvalid);
       return;
     }
 
@@ -86,9 +87,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perfil actualitzat correctament.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.editProfileSuccess)));
 
       Navigator.pop(context, true);
     } catch (e) {
@@ -111,10 +112,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
       appBar: AppBar(
-        title: const Text('Editar perfil'),
+        title: Text(l10n.editProfileTitle),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -137,14 +140,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Dades personals',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                Text(
+                  l10n.editProfilePersonalDataTitle,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Actualitza la informació bàsica del teu compte. El rol no es pot modificar des d’aquesta pantalla.',
-                  style: TextStyle(
+                Text(
+                  l10n.editProfilePersonalDataSubtitle,
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.black54,
                     height: 1.35,
@@ -155,10 +161,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   controller: _firstNameController,
                   enabled: !_isSaving,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Nom',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.firstNameLabel,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -166,10 +172,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   controller: _lastNameController,
                   enabled: !_isSaving,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Cognoms',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.lastNameLabel,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -178,18 +184,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   enabled: !_isSaving,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
-                    labelText: 'Correu electrònic',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.emailLabel,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                 ),
                 const SizedBox(height: 16),
                 InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Rol',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.badge_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.editProfileRoleLabel,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.badge_outlined),
                   ),
                   child: Text(
                     widget.initialRoleLabel,
@@ -209,7 +215,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           )
                         : const Icon(Icons.save_outlined),
                     label: Text(
-                      _isSaving ? 'Desant...' : 'Guardar canvis',
+                      _isSaving
+                          ? l10n.editProfileSaving
+                          : l10n.editProfileSaveChanges,
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
@@ -217,7 +225,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 10),
                 OutlinedButton(
                   onPressed: _isSaving ? null : () => Navigator.pop(context),
-                  child: const Text('Cancel·lar'),
+                  child: Text(l10n.commonCancel),
                 ),
               ],
             ),

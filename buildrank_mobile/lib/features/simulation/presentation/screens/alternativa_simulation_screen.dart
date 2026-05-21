@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class AlternativaSimulationScreen extends StatefulWidget {
   final String userRole;
@@ -25,9 +26,8 @@ class _AlternativaSimulationScreenState
   final List<SimulationImprovement> _improvements = [
     const SimulationImprovement(
       id: 'solar_panels',
-      title:
-          'Panell solar fotovoltaic nasdlfasjflasjlfjsdlfjasñfdkjasñldkfjasñldkfjasñldfkjasñlf añsldfkajsñflask ñasdlfkjas dfñalskfdjajs dfñlaskdjfas dñflkasjfd as',
-      subtitle: '10kW teulada',
+      title: 'solar_panels',
+      subtitle: 'solar_roof_10kw',
       impactPoints: 15,
       estimatedCost: 12500,
       annualSavings: 1200,
@@ -37,8 +37,8 @@ class _AlternativaSimulationScreenState
     ),
     const SimulationImprovement(
       id: 'triple_glazing',
-      title: 'Triple vidre',
-      subtitle: 'Alt rendiment',
+      title: 'triple_glazing',
+      subtitle: 'high_performance',
       impactPoints: 8,
       estimatedCost: 8000,
       annualSavings: 700,
@@ -49,7 +49,7 @@ class _AlternativaSimulationScreenState
     const SimulationImprovement(
       id: 'wall_insulation',
       title: 'Aïllament de paret',
-      subtitle: 'Mineral exterior',
+      subtitle: 'external_mineral',
       impactPoints: 12,
       estimatedCost: 15000,
       annualSavings: 1100,
@@ -59,8 +59,8 @@ class _AlternativaSimulationScreenState
     ),
     const SimulationImprovement(
       id: 'heat_pump',
-      title: 'Bomba de calor',
-      subtitle: 'Sistema eficient aire-aigua',
+      title: 'heat_pump',
+      subtitle: 'efficient_air_water',
       impactPoints: 20,
       estimatedCost: 11000,
       annualSavings: 1400,
@@ -126,7 +126,9 @@ class _AlternativaSimulationScreenState
   String get _paybackPeriod {
     if (_annualSavings <= 0) return '-';
     final years = _totalInvestment / _annualSavings;
-    return '${years.toStringAsFixed(1)} anys';
+    return AppLocalizations.of(
+      context,
+    ).altSimulationYears(years.toStringAsFixed(1));
   }
 
   void _toggleImprovement(String id) {
@@ -150,7 +152,9 @@ class _AlternativaSimulationScreenState
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Simulació preparada per presentar a votació amb ${_selectedImprovements.length} millora/es.',
+          AppLocalizations.of(
+            context,
+          ).altSimulationPreparedSnack(_selectedImprovements.length),
         ),
       ),
     );
@@ -175,9 +179,9 @@ class _AlternativaSimulationScreenState
               const SizedBox(height: 24),
               Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Seleccioneu\nactualitzacions',
+                      AppLocalizations.of(context).altSimulationSelectUpdates,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -196,7 +200,9 @@ class _AlternativaSimulationScreenState
                       color: const Color(0xFFEAF8EE),
                     ),
                     child: Text(
-                      '$selectedCount seleccionades',
+                      AppLocalizations.of(
+                        context,
+                      ).simulationSelectedCount(selectedCount),
                       style: const TextStyle(
                         color: Color(0xFF16A34A),
                         fontWeight: FontWeight.w600,
@@ -232,8 +238,8 @@ class _AlternativaSimulationScreenState
               ),
 
               const SizedBox(height: 28),
-              const Text(
-                'Impacte detallat',
+              Text(
+                AppLocalizations.of(context).altSimulationDetailedImpact,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 14),
@@ -271,11 +277,11 @@ class _AlternativaSimulationScreenState
                       ),
                       elevation: 0,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Presentar a votació',
+                          AppLocalizations.of(context).altSimulationPresentVote,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -340,8 +346,8 @@ class _PredictionCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'SIMULACIÓ EN DIRECTE',
+          Text(
+            AppLocalizations.of(context).altSimulationLive,
             style: TextStyle(
               color: Color(0xFF22C55E),
               fontWeight: FontWeight.w800,
@@ -349,8 +355,8 @@ class _PredictionCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Rendiment previst',
+          Text(
+            AppLocalizations.of(context).altSimulationExpectedPerformance,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 18),
@@ -358,7 +364,7 @@ class _PredictionCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniScoreBubble(
-                  label: 'Actual',
+                  label: AppLocalizations.of(context).simulationCurrent,
                   points: '$currentPoints pts',
                 ),
               ),
@@ -376,7 +382,7 @@ class _PredictionCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MiniScoreBubble(
-                  label: 'Simulat',
+                  label: AppLocalizations.of(context).simulationSimulated,
                   points: '$simulatedPoints pts',
                   highlight: true,
                 ),
@@ -463,6 +469,38 @@ class _ImprovementCard extends StatelessWidget {
     required this.onTap,
   });
 
+  String _title(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (improvement.id) {
+      case 'solar_panels':
+        return l10n.altSimulationSolarTitle;
+      case 'triple_glazing':
+        return l10n.altSimulationGlazingTitle;
+      case 'wall_insulation':
+        return l10n.altSimulationInsulationTitle;
+      case 'heat_pump':
+        return l10n.altSimulationHeatPumpTitle;
+      default:
+        return improvement.title;
+    }
+  }
+
+  String _subtitle(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (improvement.id) {
+      case 'solar_panels':
+        return l10n.altSimulationSolarSubtitle;
+      case 'triple_glazing':
+        return l10n.altSimulationGlazingSubtitle;
+      case 'wall_insulation':
+        return l10n.altSimulationInsulationSubtitle;
+      case 'heat_pump':
+        return l10n.altSimulationHeatPumpSubtitle;
+      default:
+        return improvement.subtitle;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -527,7 +565,7 @@ class _ImprovementCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    improvement.title,
+                    _title(context),
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
@@ -536,7 +574,7 @@ class _ImprovementCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    improvement.subtitle,
+                    _subtitle(context),
                     style: const TextStyle(
                       color: Colors.black54,
                       fontSize: 14,
@@ -551,14 +589,18 @@ class _ImprovementCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _MiniMetric(
-                          label: 'IMPACTE',
+                          label: AppLocalizations.of(
+                            context,
+                          ).altSimulationImpact,
                           value: '+${improvement.impactPoints} pts',
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: _MiniMetric(
-                          label: 'COST\nESTIM',
+                          label: AppLocalizations.of(
+                            context,
+                          ).altSimulationEstimatedCost,
                           value: _formatCurrency(improvement.estimatedCost),
                           alignEnd: true,
                         ),
@@ -651,8 +693,8 @@ class _OperationalPreviewCard extends StatelessWidget {
               color: Color(0xFFF8F8F8),
               borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
             ),
-            child: const Text(
-              'PREVISIÓ OPERATIVA',
+            child: Text(
+              AppLocalizations.of(context).altSimulationOperationalForecast,
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 12,
@@ -668,7 +710,7 @@ class _OperationalPreviewCard extends StatelessWidget {
           ),
           _DetailRow(
             icon: Icons.eco_outlined,
-            title: 'Petjada de carboni',
+            title: AppLocalizations.of(context).altSimulationCarbonFootprint,
             oldValue: currentCarbon.toStringAsFixed(1),
             newValue: simulatedCarbon.toStringAsFixed(1),
           ),
@@ -769,8 +811,8 @@ class _InvestmentSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'INVERSIÓ TOTAL',
+          Text(
+            AppLocalizations.of(context).altSimulationTotalInvestment,
             style: TextStyle(
               color: Colors.white70,
               fontWeight: FontWeight.w700,
@@ -791,14 +833,18 @@ class _InvestmentSummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _SummaryMiniCard(
-                  title: 'ESTALVI ANUAL',
+                  title: AppLocalizations.of(
+                    context,
+                  ).altSimulationAnnualSavings,
                   value: _formatCurrency(annualSavings),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _SummaryMiniCard(
-                  title: 'PERÍODE DE RETORN',
+                  title: AppLocalizations.of(
+                    context,
+                  ).altSimulationPaybackPeriod,
                   value: paybackPeriod,
                 ),
               ),

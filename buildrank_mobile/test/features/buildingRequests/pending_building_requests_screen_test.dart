@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:buildrank_mobile/features/buildingRequests/presentation/screens/pending_building_requests_screen.dart';
 import 'package:buildrank_mobile/features/buildingRequests/data/pending_building_requests_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 void main() {
   Widget buildTestable({required String userRole}) {
     return MaterialApp(
+      locale: const Locale('ca'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: PendingBuildingRequestsScreen(
         idEdifici: 1,
         buildingTitle: 'Edifici test',

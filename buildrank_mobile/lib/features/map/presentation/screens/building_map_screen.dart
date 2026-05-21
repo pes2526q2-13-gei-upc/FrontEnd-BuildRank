@@ -1,5 +1,6 @@
 import 'package:buildrank_mobile/features/map/data/building_map_feature_model.dart';
 import 'package:buildrank_mobile/features/map/data/building_map_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -116,12 +117,14 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mapa d’edificis'),
+        title: Text(l10n.mapTitle),
         actions: [
           IconButton(
-            tooltip: 'Refrescar',
+            tooltip: l10n.commonRefresh,
             onPressed: _isLoading ? null : _loadMapData,
             icon: const Icon(Icons.refresh),
           ),
@@ -143,6 +146,8 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
   }
 
   Widget _buildSearchAndFilters() {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
       decoration: BoxDecoration(
@@ -156,10 +161,10 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
             textInputAction: TextInputAction.search,
             onSubmitted: (_) => _loadMapData(),
             decoration: InputDecoration(
-              hintText: 'Cerca per carrer, barri o codi postal',
+              hintText: l10n.mapSearchHint,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: IconButton(
-                tooltip: 'Cercar',
+                tooltip: l10n.mapSearchTooltip,
                 onPressed: _loadMapData,
                 icon: const Icon(Icons.arrow_forward),
               ),
@@ -179,10 +184,10 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildScoreChip('Tots', null),
-                      _buildScoreChip('≥ 50', 50),
-                      _buildScoreChip('≥ 65', 65),
-                      _buildScoreChip('≥ 80', 80),
+                      _buildScoreChip(l10n.mapFilterAll, null),
+                      _buildScoreChip(l10n.mapFilterMinScore(50), 50),
+                      _buildScoreChip(l10n.mapFilterMinScore(65), 65),
+                      _buildScoreChip(l10n.mapFilterMinScore(80), 80),
                     ],
                   ),
                 ),
@@ -214,6 +219,7 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
 
   Widget _buildMap() {
     final features = _features;
+    final l10n = AppLocalizations.of(context);
 
     return Stack(
       children: [
@@ -257,8 +263,8 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
                   ),
                 ],
               ),
-              child: const Text(
-                'No hi ha edificis amb coordenades vàlides per mostrar.',
+              child: Text(
+                l10n.mapNoValidCoordinates,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -330,6 +336,7 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
   }
 
   Widget _buildMapSummary() {
+    final l10n = AppLocalizations.of(context);
     final count = _response?.count ?? _features.length;
     final shown = _features.length;
     final truncated = _response?.truncated == true;
@@ -354,8 +361,8 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
           Expanded(
             child: Text(
               truncated
-                  ? '$shown de $count edificis mostrats'
-                  : '$shown edificis al mapa',
+                  ? l10n.mapShownOfCount(shown, count)
+                  : l10n.mapShownCount(shown),
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
@@ -383,6 +390,8 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
   }
 
   Widget _buildErrorState() {
+    final l10n = AppLocalizations.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -391,15 +400,12 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
           children: [
             const Icon(Icons.map_outlined, size: 46, color: Colors.black45),
             const SizedBox(height: 12),
-            Text(
-              _errorText ?? 'No s’ha pogut carregar el mapa.',
-              textAlign: TextAlign.center,
-            ),
+            Text(_errorText ?? l10n.mapLoadError, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _loadMapData,
               icon: const Icon(Icons.refresh),
-              label: const Text('Torna-ho a provar'),
+              label: Text(l10n.commonRetry),
             ),
           ],
         ),

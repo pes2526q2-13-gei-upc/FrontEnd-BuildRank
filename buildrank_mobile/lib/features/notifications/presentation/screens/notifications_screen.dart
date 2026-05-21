@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/notification_model.dart';
@@ -47,7 +48,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
       if (mounted) {
-        setState(() => _error = 'No s\'han pogut carregar les notificacions.');
+        final l10n = AppLocalizations.of(context);
+        setState(() => _error = l10n.notificationsLoadError);
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -67,9 +69,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         }
       });
       widget.onBadgeUpdate?.call();
-    } catch (_) {
-      // No bloquejem la navegació si falla el marcar com a llegida
-    }
+    } catch (_) {}
   }
 
   Future<void> _marcarTotes() async {
@@ -128,9 +128,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notificacions'),
+        title: Text(l10n.notificationsTitle),
         actions: [
           if (_hiHaNoLlegides)
             _markingAll
@@ -144,7 +146,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   )
                 : TextButton(
                     onPressed: _marcarTotes,
-                    child: const Text('Marcar totes'),
+                    child: Text(l10n.notificationsMarkAll),
                   ),
         ],
       ),
@@ -153,6 +155,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context);
+
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -164,20 +168,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           children: [
             Text(_error!, textAlign: TextAlign.center),
             const SizedBox(height: 12),
-            FilledButton(onPressed: _load, child: const Text('Reintenta')),
+            FilledButton(onPressed: _load, child: Text(l10n.commonRetry)),
           ],
         ),
       );
     }
 
     if (_notificacions.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.notifications_none, size: 48, color: Colors.grey),
-            SizedBox(height: 12),
-            Text('No tens notificacions', style: TextStyle(color: Colors.grey)),
+            const Icon(Icons.notifications_none, size: 48, color: Colors.grey),
+            const SizedBox(height: 12),
+            Text(
+              l10n.notificationsEmpty,
+              style: const TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       );
@@ -212,14 +219,15 @@ class _NotificacioTile extends StatelessWidget {
     };
   }
 
-  String _formatData(DateTime dt) {
+  String _formatData(BuildContext context, DateTime dt) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final diff = now.difference(dt);
 
-    if (diff.inMinutes < 1) return 'Ara mateix';
-    if (diff.inHours < 1) return 'Fa ${diff.inMinutes} min';
-    if (diff.inDays < 1) return 'Fa ${diff.inHours} h';
-    if (diff.inDays < 7) return 'Fa ${diff.inDays} dies';
+    if (diff.inMinutes < 1) return l10n.notificationsNow;
+    if (diff.inHours < 1) return l10n.notificationsMinutesAgo(diff.inMinutes);
+    if (diff.inDays < 1) return l10n.notificationsHoursAgo(diff.inHours);
+    if (diff.inDays < 7) return l10n.notificationsDaysAgo(diff.inDays);
 
     return '${dt.day}/${dt.month}/${dt.year}';
   }
@@ -296,7 +304,7 @@ class _NotificacioTile extends StatelessWidget {
                   ],
                   const SizedBox(height: 4),
                   Text(
-                    _formatData(notificacio.dataCreacio),
+                    _formatData(context, notificacio.dataCreacio),
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],

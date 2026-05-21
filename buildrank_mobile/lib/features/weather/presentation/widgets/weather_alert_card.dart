@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:buildrank_mobile/features/weather/data/weather_model.dart';
 import 'package:buildrank_mobile/features/weather/data/weather_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class WeatherAlertCard extends StatefulWidget {
   final VoidCallback onDismiss;
@@ -53,7 +54,7 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut carregar la meteorologia.';
+        _errorText = AppLocalizations.of(context).weatherLoadError;
         _isLoading = false;
       });
     }
@@ -62,20 +63,22 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
+      final l10n = AppLocalizations.of(context);
+
       return _WeatherCardContainer(
         onDismiss: widget.onDismiss,
-        child: const Row(
+        child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 22,
               height: 22,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Carregant dades meteorològiques de Barcelona...',
-                style: TextStyle(fontWeight: FontWeight.w600),
+                l10n.weatherLoadingBarcelona,
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -101,7 +104,7 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
               ),
             ),
             IconButton(
-              tooltip: 'Reintentar',
+              tooltip: AppLocalizations.of(context).commonRetry,
               onPressed: _loadWeather,
               icon: const Icon(Icons.refresh),
             ),
@@ -127,7 +130,9 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Temps actual a ${weather.city}',
+                  AppLocalizations.of(
+                    context,
+                  ).weatherCurrentInCity(weather.city),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -138,7 +143,7 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
           ),
           const SizedBox(height: 10),
           Text(
-            weather.temperatureSummary,
+            _temperatureSummary(context, weather),
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -147,22 +152,60 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
           ),
           const SizedBox(height: 4),
           Text(
-            weather.precipitationSummary,
+            _precipitationSummary(context, weather),
             style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
           const SizedBox(height: 4),
           Text(
-            weather.solarSummary,
+            _solarSummary(context, weather),
             style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Dades meteorològiques actualitzades pel servei XEMA.',
-            style: TextStyle(color: Colors.black45, fontSize: 12),
+          Text(
+            AppLocalizations.of(context).weatherUpdatedByXema,
+            style: const TextStyle(color: Colors.black45, fontSize: 12),
           ),
         ],
       ),
     );
+  }
+
+  String _temperatureSummary(
+    BuildContext context,
+    WeatherCurrentModel weather,
+  ) {
+    final value = weather.temperature;
+    final l10n = AppLocalizations.of(context);
+    if (value == null) return l10n.weatherTemperatureUnavailable;
+
+    return l10n.weatherCurrentTemperature(_formatWeatherNumber(value));
+  }
+
+  String _precipitationSummary(
+    BuildContext context,
+    WeatherCurrentModel weather,
+  ) {
+    final value = weather.precipitation;
+    final l10n = AppLocalizations.of(context);
+    if (value == null) return l10n.weatherPrecipitationUnavailable;
+
+    return l10n.weatherPrecipitation(_formatWeatherNumber(value));
+  }
+
+  String _solarSummary(BuildContext context, WeatherCurrentModel weather) {
+    final value = weather.solarIrradiance;
+    final l10n = AppLocalizations.of(context);
+    if (value == null) return l10n.weatherSolarIrradianceUnavailable;
+
+    return l10n.weatherSolarIrradiance(_formatWeatherNumber(value));
+  }
+
+  String _formatWeatherNumber(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toStringAsFixed(0);
+    }
+
+    return value.toStringAsFixed(1);
   }
 }
 
@@ -187,7 +230,7 @@ class _WeatherCardContainer extends StatelessWidget {
         children: [
           Expanded(child: child),
           IconButton(
-            tooltip: 'Amagar durant aquesta sessió',
+            tooltip: AppLocalizations.of(context).commonHideForSession,
             onPressed: onDismiss,
             icon: const Icon(Icons.close),
           ),

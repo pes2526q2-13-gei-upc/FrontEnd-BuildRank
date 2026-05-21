@@ -1,5 +1,6 @@
 import 'package:buildrank_mobile/features/admin/data/audit_log.dart';
 import 'package:buildrank_mobile/features/admin/data/audit_log_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 String _toIsoDate(DateTime dt) {
@@ -129,6 +130,8 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
       appBar: AppBar(
@@ -138,8 +141,8 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text(
-          'Registre d\'auditoria',
+        title: Text(
+          l10n.adminAuditTitle,
           style: TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 18,
@@ -150,7 +153,7 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loading ? null : () => _load(page: _currentPage),
-            tooltip: 'Recarregar',
+            tooltip: l10n.commonRefresh,
           ),
         ],
       ),
@@ -223,7 +226,7 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
                   foregroundColor: Colors.white,
                   elevation: 0,
                 ),
-                child: const Text('Reintentar'),
+                child: Text(AppLocalizations.of(context).commonRetry),
               ),
             ],
           ),
@@ -234,15 +237,15 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
 
     final logs = _page!.results;
     if (logs.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.manage_search, size: 48, color: Color(0xFFD1D5DB)),
-            SizedBox(height: 12),
+            const Icon(Icons.manage_search, size: 48, color: Color(0xFFD1D5DB)),
+            const SizedBox(height: 12),
             Text(
-              'Cap registre trobat.',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 15),
+              AppLocalizations.of(context).adminAuditEmpty,
+              style: const TextStyle(color: Color(0xFF6B7280), fontSize: 15),
             ),
           ],
         ),
@@ -317,6 +320,8 @@ class _FiltersPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
@@ -329,14 +334,14 @@ class _FiltersPanel extends StatelessWidget {
               Expanded(
                 child: _FilterTextField(
                   controller: userController,
-                  label: 'User ID',
+                  label: l10n.adminAuditUserId,
                   keyboardType: TextInputType.number,
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _FilterDropdown<String>(
-                  label: 'Mètode',
+                  label: l10n.adminAuditMethod,
                   value: method,
                   items: methods,
                   itemLabel: (v) => v,
@@ -352,7 +357,7 @@ class _FiltersPanel extends StatelessWidget {
               Expanded(
                 child: _FilterTextField(
                   controller: null,
-                  label: 'Resource type',
+                  label: l10n.adminAuditResourceType,
                   initialValue: resourceType,
                   onChanged: onResourceTypeChanged,
                 ),
@@ -360,7 +365,7 @@ class _FiltersPanel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _FilterDropdown<int>(
-                  label: 'Codi HTTP',
+                  label: l10n.adminAuditHttpCode,
                   value: statusCode,
                   items: statusCodes,
                   itemLabel: (v) => v.toString(),
@@ -375,7 +380,7 @@ class _FiltersPanel extends StatelessWidget {
             children: [
               Expanded(
                 child: _DateChip(
-                  label: 'Des de',
+                  label: l10n.adminAuditFromDate,
                   date: fromDate,
                   onTap: onPickFromDate,
                   onClear: onClearFromDate,
@@ -384,7 +389,7 @@ class _FiltersPanel extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _DateChip(
-                  label: 'Fins a',
+                  label: l10n.adminAuditToDate,
                   date: toDate,
                   onTap: onPickToDate,
                   onClear: onClearToDate,
@@ -407,7 +412,10 @@ class _FiltersPanel extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Netejar', style: TextStyle(fontSize: 13)),
+                  child: Text(
+                    l10n.adminAuditClear,
+                    style: const TextStyle(fontSize: 13),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -424,8 +432,8 @@ class _FiltersPanel extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Aplicar filtres',
+                  child: Text(
+                    l10n.adminAuditApplyFilters,
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -504,6 +512,8 @@ class _FilterDropdown<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return InputDecorator(
       decoration: InputDecoration(
         labelText: label,
@@ -524,12 +534,15 @@ class _FilterDropdown<T> extends StatelessWidget {
           value: value,
           isDense: true,
           isExpanded: true,
-          hint: const Text('Tots', style: TextStyle(fontSize: 13)),
+          hint: Text(l10n.adminAuditAll, style: const TextStyle(fontSize: 13)),
           style: const TextStyle(fontSize: 13, color: Color(0xFF111827)),
           items: [
             DropdownMenuItem<T>(
               value: null,
-              child: const Text('Tots', style: TextStyle(fontSize: 13)),
+              child: Text(
+                l10n.adminAuditAll,
+                style: const TextStyle(fontSize: 13),
+              ),
             ),
             ...items.map(
               (v) => DropdownMenuItem<T>(
@@ -787,6 +800,7 @@ class _PaginationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     const pageSize = 50;
     final firstItem = (currentPage - 1) * pageSize + 1;
     final lastItem = (currentPage * pageSize).clamp(0, totalCount);
@@ -797,7 +811,7 @@ class _PaginationBar extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            '$firstItem–$lastItem de $totalCount',
+            l10n.adminAuditPageRange(firstItem, lastItem, totalCount),
             style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
           ),
           const Spacer(),
@@ -806,10 +820,10 @@ class _PaginationBar extends StatelessWidget {
             icon: const Icon(Icons.chevron_left),
             color: const Color(0xFF19C463),
             disabledColor: const Color(0xFFD1D5DB),
-            tooltip: 'Pàgina anterior',
+            tooltip: l10n.adminAuditPreviousPage,
           ),
           Text(
-            'Pàg. $currentPage',
+            l10n.adminAuditPage(currentPage),
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
           IconButton(
@@ -817,7 +831,7 @@ class _PaginationBar extends StatelessWidget {
             icon: const Icon(Icons.chevron_right),
             color: const Color(0xFF19C463),
             disabledColor: const Color(0xFFD1D5DB),
-            tooltip: 'Pàgina següent',
+            tooltip: l10n.adminAuditNextPage,
           ),
         ],
       ),

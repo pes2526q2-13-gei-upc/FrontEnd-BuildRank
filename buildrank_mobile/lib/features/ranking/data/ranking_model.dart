@@ -339,6 +339,71 @@ class RankingProgressPoint {
   }
 }
 
+class ProgressRankingEntry {
+  final int idEdifici;
+  final int position;
+  final String name;
+  final String? address;
+  final int startPoints;
+  final int currentPoints;
+  final int delta;
+  final String? division;
+  final bool isCurrentBuilding;
+  final List<RankingProgressPoint> series;
+
+  const ProgressRankingEntry({
+    required this.idEdifici,
+    required this.position,
+    required this.name,
+    required this.startPoints,
+    required this.currentPoints,
+    required this.delta,
+    required this.series,
+    this.address,
+    this.division,
+    this.isCurrentBuilding = false,
+  });
+
+  double get percentage {
+    if (startPoints <= 0) return 0;
+    return delta / startPoints;
+  }
+
+  factory ProgressRankingEntry.fromJson(
+    Map<String, dynamic> json, {
+    int? currentBuildingId,
+  }) {
+    final id = _readInt(json['edifici'] ?? json['idEdifici']) ?? 0;
+    final seriesRaw = json['serie_temporal'];
+
+    return ProgressRankingEntry(
+      idEdifici: id,
+      position: _readInt(json['posicio'] ?? json['position']) ?? 0,
+      name:
+          _readString(json['nom'] ?? json['name'] ?? json['adreca']) ??
+          'Edifici #$id',
+      address: _readString(json['adreca'] ?? json['address']),
+      startPoints:
+          _readInt(json['puntuacio_inicial'] ?? json['initial_points']) ?? 0,
+      currentPoints:
+          _readInt(json['puntuacio_actual'] ?? json['current_points']) ?? 0,
+      delta: _readInt(json['delta'] ?? json['progres']) ?? 0,
+      division: _readString(json['divisio_actual'] ?? json['divisio']),
+      isCurrentBuilding: id == currentBuildingId,
+      series: seriesRaw is List
+          ? seriesRaw
+                .whereType<Map>()
+                .map(
+                  (item) => RankingProgressPoint.fromJson(
+                    Map<String, dynamic>.from(item),
+                  ),
+                )
+                .toList()
+          : const [],
+    );
+  }
+}
+
 Map<String, dynamic>? _readMap(dynamic value) {
   if (value is Map<String, dynamic>) return value;
   if (value is Map) return Map<String, dynamic>.from(value);

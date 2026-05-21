@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/profile/data/add_existing_building_service.dart';
 import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
 import 'package:buildrank_mobile/features/verification/presentation/widgets/admin_verification_documents_section.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class AddExistingBuildingScreen extends StatefulWidget {
   final String userRole;
@@ -190,8 +191,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
         SnackBar(
           content: Text(
             widget.userRole == 'admin'
-                ? 'S\'ha enviat la sol·licitud per vincular-te com a administrador de finca.'
-                : 'S\'ha enviat la sol·licitud d\'unió a l\'administrador de finca.',
+                ? AppLocalizations.of(context).addExistingAdminRequestSent
+                : AppLocalizations.of(context).addExistingResidentRequestSent,
           ),
         ),
       );
@@ -216,10 +217,14 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final hasMinQuery = _searchController.text.trim().length >= 3;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Vincular edifici'), centerTitle: true),
+      appBar: AppBar(
+        title: Text(l10n.addExistingAppBarTitle),
+        centerTitle: true,
+      ),
       backgroundColor: const Color(0xFFF6F7F2),
       body: SafeArea(
         child: ListView(
@@ -234,23 +239,23 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Vincula\'t a un edifici ja existent',
+                  Text(
+                    l10n.addExistingTitle,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.userRole == 'admin'
-                        ? 'Quan seleccionis un edifici, s\'enviarà una sol·licitud per vincular-te com a administrador de finca.'
-                        : 'Quan seleccionis un edifici, s\'enviarà una sol·licitud d\'unió a l\'administrador de finca perquè et pugui validar com a resident.',
+                        ? l10n.addExistingAdminSubtitle
+                        : l10n.addExistingResidentSubtitle,
                     style: const TextStyle(color: Colors.black54, height: 1.4),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Localització',
+            Text(
+              l10n.addExistingLocationSection,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -263,7 +268,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
               controller: _searchController,
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
-                hintText: 'Escriu el carrer del teu edifici...',
+                hintText: l10n.addExistingSearchHint,
                 prefixIcon: const Icon(Icons.location_on_outlined),
                 suffixIcon: _searchController.text.isEmpty
                     ? null
@@ -294,8 +299,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
             ),
             const SizedBox(height: 12),
             if (!hasMinQuery)
-              const Text(
-                'Introdueix almenys 3 caràcters per començar la cerca.',
+              Text(
+                l10n.addExistingMinSearch,
                 style: TextStyle(color: Colors.black54),
               ),
             if (_isSearching)
@@ -320,8 +325,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
             ],
             if (!_isSearching && _results.isNotEmpty) ...[
               const SizedBox(height: 18),
-              const Text(
-                'Resultats',
+              Text(
+                l10n.addExistingResultsTitle,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 12),
@@ -348,8 +353,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
-                child: const Text(
-                  'No s\'ha trobat cap edifici amb aquesta adreça.',
+                child: Text(
+                  l10n.addExistingNoResults,
                   style: TextStyle(color: Colors.black54),
                 ),
               ),
@@ -364,7 +369,12 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                   border: Border.all(color: const Color(0xFF86EFAC)),
                 ),
                 child: Text(
-                  'Seleccionat: ${_selectedBuilding!.name} · Rol sol·licitat: ${_isAdminRole ? 'administrador de finca' : 'resident'}',
+                  l10n.addExistingSelectedBuilding(
+                    _selectedBuilding!.name,
+                    _isAdminRole
+                        ? l10n.profileRoleAdmin
+                        : l10n.profileRoleTenant,
+                  ),
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF166534),
@@ -382,8 +392,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFFFCD34D)),
                 ),
-                child: const Text(
-                  'Aquest edifici no admet noves sol·licituds d’unió en aquest moment.',
+                child: Text(
+                  l10n.addExistingClosedRequests,
                   style: TextStyle(
                     color: Color(0xFF92400E),
                     fontWeight: FontWeight.w600,
@@ -403,16 +413,16 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Dades de l’habitatge',
+                    Text(
+                      l10n.addExistingHabitatgeTitle,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Completa les dades del teu habitatge per enviar la sol·licitud d’unió.',
+                    Text(
+                      l10n.addExistingHabitatgeSubtitle,
                       style: TextStyle(color: Colors.black54, height: 1.4),
                     ),
                     const SizedBox(height: 16),
@@ -420,7 +430,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                       controller: _refCadastralController,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        labelText: 'Referència cadastral',
+                        labelText: l10n.habitatgeCadastralReference,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -435,7 +445,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                               controller: _plantaController,
                               onChanged: (_) => setState(() {}),
                               decoration: InputDecoration(
-                                labelText: 'Planta',
+                                labelText: l10n.habitatgeFloor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -448,7 +458,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                               controller: _portaController,
                               onChanged: (_) => setState(() {}),
                               decoration: InputDecoration(
-                                labelText: 'Porta',
+                                labelText: l10n.habitatgeDoor,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -466,7 +476,7 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                         decimal: true,
                       ),
                       decoration: InputDecoration(
-                        labelText: 'Superfície (m²)',
+                        labelText: l10n.habitatgeSurface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -510,8 +520,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Enviar sol·licitud',
+                    : Text(
+                        l10n.addExistingSubmit,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

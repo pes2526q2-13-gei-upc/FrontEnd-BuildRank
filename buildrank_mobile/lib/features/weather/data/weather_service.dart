@@ -26,7 +26,7 @@ class WeatherService {
             uri,
             headers: {'accept': 'application/json', 'X-API-Key': apiKey},
           )
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
 
       final decoded = _tryDecodeBody(response.body);
 

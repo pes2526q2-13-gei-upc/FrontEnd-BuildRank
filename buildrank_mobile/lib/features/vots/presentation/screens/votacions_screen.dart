@@ -4,6 +4,7 @@ import 'package:buildrank_mobile/features/vots/data/votation_model.dart';
 import 'package:buildrank_mobile/features/vots/data/votation_service.dart';
 import 'package:buildrank_mobile/features/vots/presentation/screens/crear_votacio_screen.dart';
 import 'package:buildrank_mobile/features/vots/presentation/screens/votacio_detall_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class VotacionsScreen extends StatefulWidget {
@@ -131,8 +132,8 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
         SnackBar(
           content: Text(
             sentit == 'favor'
-                ? 'Vot a favor registrat.'
-                : 'Vot en contra registrat.',
+                ? AppLocalizations.of(context).votesRegisteredFavor
+                : AppLocalizations.of(context).votesRegisteredAgainst,
           ),
         ),
       );
@@ -178,7 +179,9 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
                 _buildEmpty()
               else ...[
                 if (_filteredComunitats.isNotEmpty) ...[
-                  _buildSectionLabel('VOTACIONS GENERALS'),
+                  _buildSectionLabel(
+                    AppLocalizations.of(context).votesGeneralSection,
+                  ),
                   const SizedBox(height: 8),
                   for (final v in _filteredComunitats) ...[
                     _ComunityCard(votacio: v, onTap: () => _openDetall(v)),
@@ -186,7 +189,9 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
                   ],
                   if (_filtered.isNotEmpty) ...[
                     const SizedBox(height: 6),
-                    _buildSectionLabel('VOTACIONS DE SIMULACIÓ'),
+                    _buildSectionLabel(
+                      AppLocalizations.of(context).votesSimulationSection,
+                    ),
                     const SizedBox(height: 8),
                   ],
                 ],
@@ -224,25 +229,14 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Votació interna',
+        Text(
+          AppLocalizations.of(context).votesListTitle,
           style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 4),
-        Text.rich(
-          TextSpan(
-            text: 'Presa de decisions per ',
-            style: const TextStyle(color: Colors.black54, fontSize: 15),
-            children: [
-              TextSpan(
-                text: widget.buildingName,
-                style: TextStyle(
-                  color: Colors.green.shade700,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
+        Text(
+          AppLocalizations.of(context).votesListSubtitle(widget.buildingName),
+          style: const TextStyle(color: Colors.black54, fontSize: 15),
         ),
       ],
     );
@@ -288,19 +282,23 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
         children: [
           _TabChip(
             selected: _tab == 0,
-            label: 'Actiu ($activeCount)',
+            label: AppLocalizations.of(context).votesTabActive(activeCount),
             onTap: () => setState(() => _tab = 0),
           ),
           const SizedBox(width: 8),
           _TabChip(
             selected: _tab == 1,
-            label: 'Completat ($completedCount)',
+            label: AppLocalizations.of(
+              context,
+            ).votesTabCompleted(completedCount),
             onTap: () => setState(() => _tab = 1),
           ),
           const SizedBox(width: 8),
           _TabChip(
             selected: _tab == 2,
-            label: _isAdmin ? 'Les meves propostes' : 'Les meves votacions',
+            label: _isAdmin
+                ? AppLocalizations.of(context).votesTabMyProposals
+                : AppLocalizations.of(context).votesTabMyVotes,
             onTap: () => setState(() => _tab = 2),
           ),
         ],
@@ -328,7 +326,7 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
           const SizedBox(height: 10),
           OutlinedButton(
             onPressed: _load,
-            child: const Text('Torna-ho a provar'),
+            child: Text(AppLocalizations.of(context).votesRetry),
           ),
         ],
       ),
@@ -353,14 +351,14 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
           const SizedBox(height: 12),
           Text(
             _tab == 0
-                ? 'No hi ha votacions actives ara mateix.'
-                : 'No hi ha votacions en aquesta secció.',
+                ? AppLocalizations.of(context).votesEmptyActive
+                : AppLocalizations.of(context).votesEmptySection,
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Quan l\'administrador sotmeti una simulació a votació, apareixerà aquí.',
+          Text(
+            AppLocalizations.of(context).votesEmptyBody,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.black54, height: 1.35),
           ),
@@ -383,8 +381,8 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
           const SizedBox(height: 10),
           Text(
             _canVoteCommunity
-                ? 'Pots participar en les votacions de la comunitat vinculades a aquest edifici.'
-                : 'Només propietaris i administradors de finca vinculats a l’edifici poden votar.',
+                ? AppLocalizations.of(context).votesInfoCanVote
+                : AppLocalizations.of(context).votesInfoCannotVote,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.w700,
@@ -452,10 +450,12 @@ class _VotationCard extends StatelessWidget {
                     Text(
                       votacio.isActive
                           ? days == null
-                                ? 'Activa'
+                                ? AppLocalizations.of(context).votesActive
                                 : days == 0
-                                ? 'Finalitza avui'
-                                : '$days dies restants'
+                                ? AppLocalizations.of(context).votesEndsToday
+                                : AppLocalizations.of(
+                                    context,
+                                  ).votesDaysRemaining(days)
                           : votacio.estatLabel,
                       style: const TextStyle(color: Colors.black54),
                     ),
@@ -484,12 +484,12 @@ class _VotationCard extends StatelessWidget {
                       '${participation.toStringAsFixed(0)}% / ${votacio.quorumPercent.toStringAsFixed(0)}%',
                   value: participation / 100,
                   helper: votacio.participacioPercent >= votacio.quorumPercent
-                      ? 'Quòrum assolit'
+                      ? AppLocalizations.of(context).votesQuorumReached
                       : 'Cal més participació',
                 ),
                 const SizedBox(height: 18),
-                const Text(
-                  'VOTA',
+                Text(
+                  AppLocalizations.of(context).votesVoteSection,
                   style: TextStyle(
                     color: Colors.black54,
                     fontSize: 12,
@@ -499,23 +499,23 @@ class _VotationCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 _VoteOption(
-                  title: 'A favor',
+                  title: AppLocalizations.of(context).votesFavor,
                   percent: favor,
                   selected: votacio.elMeuVot == 'favor',
                   enabled: votacio.isActive && votacio.potVotar && !voting,
                   onTap: () => onVote('favor'),
                   subtitle: simulation == null
                       ? null
-                      : 'Cost estimat ${_money(simulation.costEstimat)} · +${simulation.estalviAnual.toStringAsFixed(0)} €/any',
+                      : 'Cost estimat ${_money(context, simulation.costEstimat)} · +${simulation.estalviAnual.toStringAsFixed(0)} €/any',
                 ),
                 const SizedBox(height: 10),
                 _VoteOption(
-                  title: 'En contra',
+                  title: AppLocalizations.of(context).votesAgainst,
                   percent: contra,
                   selected: votacio.elMeuVot == 'contra',
                   enabled: votacio.isActive && votacio.potVotar && !voting,
                   onTap: () => onVote('contra'),
-                  subtitle: 'Mantenir l\'estat actual',
+                  subtitle: AppLocalizations.of(context).votesKeepCurrentState,
                 ),
               ],
             ),
@@ -534,7 +534,7 @@ class _VotationCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '${votacio.totalVots} vots',
+                  AppLocalizations.of(context).votesCount(votacio.totalVots),
                   style: const TextStyle(
                     color: Colors.black54,
                     fontWeight: FontWeight.w700,
@@ -543,8 +543,10 @@ class _VotationCard extends StatelessWidget {
                 const Spacer(),
                 Text(
                   votacio.hasVoted
-                      ? 'El teu vot: ${votacio.elMeuVot}'
-                      : 'Pendent de vot',
+                      ? AppLocalizations.of(
+                          context,
+                        ).votesYourVote(votacio.elMeuVot ?? '')
+                      : AppLocalizations.of(context).votesPendingVote,
                   style: TextStyle(
                     color: votacio.hasVoted
                         ? Colors.green.shade700
@@ -560,8 +562,8 @@ class _VotationCard extends StatelessWidget {
     );
   }
 
-  static String _money(double value) {
-    if (value <= 0) return 'no informat';
+  static String _money(BuildContext context, double value) {
+    if (value <= 0) return AppLocalizations.of(context).votesNotReported;
     return '${value.toStringAsFixed(0)} €';
   }
 }
@@ -773,7 +775,9 @@ class _ComunityCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isOberta ? 'Oberta' : _formatEstat(votacio.estat),
+                isOberta
+                    ? AppLocalizations.of(context).votesStatusOpen
+                    : _formatEstat(context, votacio.estat),
                 style: TextStyle(
                   color: isOberta
                       ? Colors.green.shade700
@@ -800,7 +804,7 @@ class _ComunityCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${votacio.numVotsTotal} vots',
+                  AppLocalizations.of(context).votesCount(votacio.numVotsTotal),
                   style: const TextStyle(
                     color: Colors.black54,
                     fontSize: 12,
@@ -820,12 +824,12 @@ class _ComunityCard extends StatelessWidget {
     );
   }
 
-  String _formatEstat(String estat) {
+  String _formatEstat(BuildContext context, String estat) {
     switch (estat) {
       case 'tancada':
-        return 'Tancada';
+        return AppLocalizations.of(context).votesStatusClosed;
       case 'arxivada':
-        return 'Arxivada';
+        return AppLocalizations.of(context).votesStatusArchived;
       default:
         return estat;
     }

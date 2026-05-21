@@ -7,10 +7,13 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:buildrank_mobile/app/app.dart';
+import 'package:buildrank_mobile/core/localization/locale_controller.dart';
 
 void main() {
   testWidgets('BuildRankApp loads correctly', (WidgetTester tester) async {
-    await tester.pumpWidget(const BuildRankApp());
+    final localeController = LocaleController();
+
+    await tester.pumpWidget(BuildRankApp(localeController: localeController));
 
     expect(find.byType(BuildRankApp), findsOneWidget);
   });

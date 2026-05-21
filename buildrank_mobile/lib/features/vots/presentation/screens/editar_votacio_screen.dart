@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 import '../../data/votacions_model.dart';
 import '../../data/votacions_service.dart';
@@ -29,13 +30,20 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
   bool _isSubmitting = false;
 
   static const _estats = ['oberta', 'tancada', 'cancel·lada'];
-  static const _estatLabels = {
-    'oberta': 'Oberta',
-    'tancada': 'Tancada',
-    'cancel·lada': 'Cancel·lada',
-  };
 
   bool get _isCancelled => widget.votacio.estat == 'cancel·lada';
+
+  String _estatLabel(String estat) {
+    final l10n = AppLocalizations.of(context);
+    switch (estat) {
+      case 'oberta':
+        return l10n.votesStatusOpen;
+      case 'tancada':
+        return l10n.votesStatusClosed;
+      default:
+        return l10n.votesStatusCancelled;
+    }
+  }
 
   @override
   void initState() {
@@ -124,7 +132,9 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
 
     if (opcionsNoves.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cal un mínim de 2 opcions.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).votesMinimumOptionsSnack),
+        ),
       );
       setState(() => _isSubmitting = false);
       return;
@@ -133,7 +143,11 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
     final duplicats = opcionsNoves.toSet().length != opcionsNoves.length;
     if (duplicats) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hi ha opcions duplicades. Revisa\'ls.')),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).votesDuplicateOptionsSnack,
+          ),
+        ),
       );
       setState(() => _isSubmitting = false);
       return;
@@ -167,8 +181,8 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'Editar votació',
+        title: Text(
+          AppLocalizations.of(context).votesEditTitle,
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.white,
@@ -182,7 +196,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
           TextButton(
             onPressed: _isSubmitting ? null : _submit,
             child: Text(
-              'Desar',
+              AppLocalizations.of(context).votesSave,
               style: TextStyle(
                 color: _isSubmitting ? Colors.grey : Colors.green[700],
                 fontWeight: FontWeight.w600,
@@ -198,18 +212,20 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             _buildSection(
-              'Títol',
+              AppLocalizations.of(context).votesTitleLabel,
               TextFormField(
                 controller: _titolController,
                 maxLength: 120,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: _inputDecoration('Títol de la votació'),
+                decoration: _inputDecoration(
+                  AppLocalizations.of(context).votesTitleHint,
+                ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return 'El títol és obligatori.';
+                    return AppLocalizations.of(context).votesTitleRequired;
                   }
                   if (v.trim().length < 4) {
-                    return 'El títol ha de tenir almenys 4 caràcters.';
+                    return AppLocalizations.of(context).votesTitleMinLength;
                   }
                   return null;
                 },
@@ -217,18 +233,20 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
             ),
             const SizedBox(height: 12),
             _buildSection(
-              'Descripció (opcional)',
+              AppLocalizations.of(context).votesDescriptionOptional,
               TextFormField(
                 controller: _descripcioController,
                 maxLines: 3,
                 maxLength: 500,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: _inputDecoration('Context de la votació...'),
+                decoration: _inputDecoration(
+                  AppLocalizations.of(context).votesDescriptionHint,
+                ),
               ),
             ),
             const SizedBox(height: 12),
             _buildSection(
-              'Data límit',
+              AppLocalizations.of(context).votesDeadline,
               GestureDetector(
                 onTap: _pickDate,
                 child: Container(
@@ -251,7 +269,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
                       const SizedBox(width: 10),
                       Text(
                         _clearDataLimit || _dataLimit == null
-                            ? 'Sense data límit'
+                            ? AppLocalizations.of(context).votesNoDeadline
                             : '${_dataLimit!.day.toString().padLeft(2, '0')}/${_dataLimit!.month.toString().padLeft(2, '0')}/${_dataLimit!.year}',
                         style: TextStyle(
                           fontSize: 15,
@@ -281,8 +299,8 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
             const SizedBox(height: 20),
             Row(
               children: [
-                const Text(
-                  'Opcions',
+                Text(
+                  AppLocalizations.of(context).votesOptions,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -291,7 +309,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
                 ),
                 const Spacer(),
                 Text(
-                  'Mínim 2 · Màxim 8',
+                  AppLocalizations.of(context).votesOptionsRange,
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ],
@@ -301,7 +319,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
-                  'Atenció: modificar les opcions pot afectar els vots existents.',
+                  AppLocalizations.of(context).votesOptionsWarning,
                   style: TextStyle(fontSize: 12, color: Colors.orange[700]),
                 ),
               ),
@@ -314,13 +332,13 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
                 onPressed: _addOpcio,
                 icon: Icon(Icons.add, color: Colors.green[700]),
                 label: Text(
-                  'Afegir opció',
+                  AppLocalizations.of(context).votesAddOption,
                   style: TextStyle(color: Colors.green[700]),
                 ),
               ),
             const SizedBox(height: 12),
             _buildSection(
-              'Estat',
+              AppLocalizations.of(context).votesState,
               _isCancelled
                   ? _estatChip('cancel·lada', disabled: true)
                   : Column(
@@ -331,7 +349,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  'Una votació cancel·lada no es pot reobrir.',
+                  AppLocalizations.of(context).votesCancelledLocked,
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ),
@@ -356,8 +374,8 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Desar canvis',
+                    : Text(
+                        AppLocalizations.of(context).votesSaveChanges,
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
               ),
@@ -378,10 +396,12 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
             child: TextFormField(
               controller: _opcionsControllers[index],
               textCapitalization: TextCapitalization.sentences,
-              decoration: _inputDecoration('Opció ${index + 1}'),
+              decoration: _inputDecoration(
+                AppLocalizations.of(context).votesOptionHint(index + 1),
+              ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) {
-                  return 'Aquesta opció no pot estar buida.';
+                  return AppLocalizations.of(context).votesOptionRequired;
                 }
                 return null;
               },
@@ -427,10 +447,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
               size: 20,
             ),
             const SizedBox(width: 10),
-            Text(
-              _estatLabels[estat] ?? estat,
-              style: const TextStyle(fontSize: 15),
-            ),
+            Text(_estatLabel(estat), style: const TextStyle(fontSize: 15)),
           ],
         ),
       ),
@@ -450,7 +467,7 @@ class _EditarVotacioScreenState extends State<EditarVotacioScreen> {
           Icon(Icons.lock_outline, size: 16, color: Colors.grey[400]),
           const SizedBox(width: 10),
           Text(
-            _estatLabels[estat] ?? estat,
+            _estatLabel(estat),
             style: TextStyle(fontSize: 15, color: Colors.grey[500]),
           ),
         ],

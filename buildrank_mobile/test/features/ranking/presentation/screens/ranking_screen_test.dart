@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:buildrank_mobile/features/ranking/data/ranking_model.dart';
 import 'package:buildrank_mobile/features/ranking/data/ranking_service.dart';
 import 'package:buildrank_mobile/features/ranking/presentation/screens/ranking_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,6 +12,9 @@ void main() {
 
   Widget buildSubject(FakeRankingService service) {
     return MaterialApp(
+      locale: const Locale('ca'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: MediaQuery(
         data: const MediaQueryData(
           size: Size(430, 900),
@@ -136,9 +140,9 @@ void main() {
       expect(find.text('Últimes 5'), findsOneWidget);
       expect(find.text('Últimes 10'), findsOneWidget);
 
-      expect(find.text('Veure detall'), findsOneWidget);
+      expect(find.text('Veure detall'), findsWidgets);
       expect(service.calls.length, callsBeforeProgress);
-      expect(service.progressEvolutionCalls, 1);
+      expect(service.progressRankingCalls, 1);
     },
   );
 
@@ -154,13 +158,13 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(service.progressEvolutionCalls, 1);
+    expect(service.progressRankingCalls, 1);
 
     await tester.tap(find.text('Últimes 5'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(service.progressEvolutionCalls, 2);
+    expect(service.progressRankingCalls, 2);
 
     expect(find.textContaining('últimes 5 temporades'), findsOneWidget);
   });
@@ -176,7 +180,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 
-    final detailFinder = find.text('Veure detall');
+    final detailFinder = find.text('Veure detall').first;
 
     await tester.scrollUntilVisible(
       detailFinder,
@@ -253,61 +257,81 @@ class FakeRankingService extends RankingService {
 
   FakeRankingService({this.shouldThrow = false}) : super(useMockData: true);
 
-  int progressEvolutionCalls = 0;
+  int progressRankingCalls = 0;
 
   @override
-  Future<List<RankingProgressPoint>> getProgressEvolution({
+  Future<List<ProgressRankingEntry>> getProgressRanking({
     required int idEdifici,
-    int seasonsCount = 3,
+    int window = 3,
   }) async {
-    progressEvolutionCalls++;
+    progressRankingCalls++;
 
-    final items = [
-      const RankingProgressPoint(
-        seasonId: 1,
-        seasonName: 'T-5',
-        category: 'PROGRES',
-        points: 610,
-        position: 8,
-        division: 'Bronze',
-      ),
-      const RankingProgressPoint(
-        seasonId: 2,
-        seasonName: 'T-4',
-        category: 'PROGRES',
-        points: 650,
-        position: 7,
-        division: 'Bronze',
-      ),
-      const RankingProgressPoint(
-        seasonId: 3,
-        seasonName: 'T-3',
-        category: 'PROGRES',
-        points: 700,
-        position: 5,
-        division: 'Silver',
-      ),
-      const RankingProgressPoint(
-        seasonId: 4,
-        seasonName: 'T-2',
-        category: 'PROGRES',
-        points: 760,
-        position: 4,
-        division: 'Silver',
-      ),
-      const RankingProgressPoint(
-        seasonId: 5,
-        seasonName: 'T-1',
-        category: 'PROGRES',
-        points: 820,
-        position: 3,
+    return [
+      ProgressRankingEntry(
+        idEdifici: idEdifici,
+        position: 1,
+        name: 'Edifici #$idEdifici',
+        startPoints: 610,
+        currentPoints: window == 5 ? 820 : 700,
+        delta: window == 5 ? 210 : 90,
         division: 'Gold',
+        isCurrentBuilding: true,
+        series: [
+          const RankingProgressPoint(
+            seasonId: 1,
+            seasonName: 'T-3',
+            category: 'PROGRES',
+            points: 610,
+            position: 8,
+            division: 'Bronze',
+          ),
+          const RankingProgressPoint(
+            seasonId: 2,
+            seasonName: 'T-2',
+            category: 'PROGRES',
+            points: 700,
+            position: 5,
+            division: 'Silver',
+          ),
+          if (window == 5)
+            const RankingProgressPoint(
+              seasonId: 3,
+              seasonName: 'T-1',
+              category: 'PROGRES',
+              points: 820,
+              position: 1,
+              division: 'Gold',
+            ),
+        ],
+      ),
+      const ProgressRankingEntry(
+        idEdifici: 11,
+        position: 2,
+        name: 'Edifici #11',
+        startPoints: 640,
+        currentPoints: 790,
+        delta: 150,
+        division: 'Silver',
+        series: [
+          RankingProgressPoint(
+            seasonId: 1,
+            seasonName: 'T-3',
+            category: 'PROGRES',
+            points: 640,
+            position: 9,
+            division: 'Bronze',
+          ),
+          RankingProgressPoint(
+            seasonId: 2,
+            seasonName: 'T-2',
+            category: 'PROGRES',
+            points: 790,
+            position: 2,
+            division: 'Silver',
+          ),
+        ],
       ),
     ];
-
-    return items.length <= seasonsCount
-        ? items
-        : items.sublist(items.length - seasonsCount);
   }
 
   @override

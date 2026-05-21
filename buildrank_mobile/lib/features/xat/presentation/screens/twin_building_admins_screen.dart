@@ -1,6 +1,7 @@
 import 'package:buildrank_mobile/features/xat/data/twin_building_model.dart';
 import 'package:buildrank_mobile/features/xat/data/twin_building_service.dart';
 import 'package:buildrank_mobile/features/xat/presentation/screens/direct_channel_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class TwinBuildingAdminsScreen extends StatefulWidget {
@@ -56,6 +57,7 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
     setState(() => _creatingFor = candidate.edificiId);
 
     try {
+      final l10n = AppLocalizations.of(context);
       final channel = await _service.createChannel(
         idEdifici: widget.idEdifici,
         targetEdificiId: candidate.edificiId,
@@ -70,10 +72,12 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
             channelId: channel.streamChannelId,
             channelName: channel.name.isNotEmpty
                 ? channel.name
-                : 'Twin Building amb ${candidate.adreca}',
+                : l10n.twinChannelName(candidate.adreca),
             channelType: channel.type,
-            description:
-                'Conversa amb ${candidate.admin.name}, administrador de ${candidate.adreca}.',
+            description: l10n.twinChannelDescription(
+              candidate.admin.name,
+              candidate.adreca,
+            ),
           ),
         ),
       );
@@ -89,10 +93,12 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F5),
       appBar: AppBar(
-        title: const Text('Twin Building'),
+        title: Text(l10n.twinTitle),
         backgroundColor: Colors.white,
       ),
       body: RefreshIndicator(
@@ -100,7 +106,7 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            _buildIntro(),
+            _buildIntro(l10n),
             const SizedBox(height: 16),
             if (_loading)
               const Padding(
@@ -108,9 +114,9 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
                 child: Center(child: CircularProgressIndicator()),
               )
             else if (_error != null)
-              _buildError()
+              _buildError(l10n)
             else if (_candidates.isEmpty)
-              _buildEmpty()
+              _buildEmpty(l10n)
             else
               for (final candidate in _candidates) ...[
                 _CandidateCard(
@@ -126,7 +132,7 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
     );
   }
 
-  Widget _buildIntro() {
+  Widget _buildIntro(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -137,13 +143,13 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Administradors d’edificis comparables',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          Text(
+            l10n.twinIntroTitle,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),
           Text(
-            'Contacta amb administradors de finca d’edificis similars a ${widget.buildingName} per compartir experiències sobre millores energètiques, votacions i gestió comunitària.',
+            l10n.twinIntroBody(widget.buildingName),
             style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
         ],
@@ -151,7 +157,7 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -165,16 +171,13 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
           const SizedBox(height: 8),
           Text(_error!, textAlign: TextAlign.center),
           const SizedBox(height: 10),
-          OutlinedButton(
-            onPressed: _load,
-            child: const Text('Torna-ho a provar'),
-          ),
+          OutlinedButton(onPressed: _load, child: Text(l10n.commonRetry)),
         ],
       ),
     );
   }
 
-  Widget _buildEmpty() {
+  Widget _buildEmpty(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -182,20 +185,20 @@ class _TwinBuildingAdminsScreenState extends State<TwinBuildingAdminsScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFFE5E7E3)),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(Icons.apartment_outlined, size: 44, color: Colors.black45),
-          SizedBox(height: 12),
+          const Icon(Icons.apartment_outlined, size: 44, color: Colors.black45),
+          const SizedBox(height: 12),
           Text(
-            'No hi ha administradors comparables disponibles.',
+            l10n.twinEmptyTitle,
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w800),
+            style: const TextStyle(fontWeight: FontWeight.w800),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
-            'Pot ser que l’edifici encara no tingui grup comparable o que no hi hagi altres edificis administrats dins del mateix grup.',
+            l10n.twinEmptyBody,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.black54, height: 1.35),
+            style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
         ],
       ),
@@ -216,6 +219,8 @@ class _CandidateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -262,7 +267,7 @@ class _CandidateCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '${candidate.puntuacioBase.toStringAsFixed(0)} pts',
+                l10n.twinPoints(candidate.puntuacioBase.toStringAsFixed(0)),
                 style: TextStyle(
                   color: Colors.green.shade700,
                   fontWeight: FontWeight.w900,
@@ -277,14 +282,14 @@ class _CandidateCard extends StatelessWidget {
             children: [
               _MiniChip(
                 label: candidate.tipologia.isEmpty
-                    ? 'Tipologia'
+                    ? l10n.twinTypologyFallback
                     : candidate.tipologia,
               ),
               _MiniChip(
                 label: '${candidate.superficieTotal.toStringAsFixed(0)} m²',
               ),
               if (candidate.zonaClimatica.isNotEmpty)
-                _MiniChip(label: 'Zona ${candidate.zonaClimatica}'),
+                _MiniChip(label: l10n.twinClimateZone(candidate.zonaClimatica)),
             ],
           ),
           const SizedBox(height: 14),
@@ -292,7 +297,7 @@ class _CandidateCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Admin: ${candidate.admin.name}',
+                  l10n.twinAdminLine(candidate.admin.name),
                   style: const TextStyle(
                     color: Colors.black54,
                     fontWeight: FontWeight.w600,
@@ -308,7 +313,7 @@ class _CandidateCard extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.chat_bubble_outline, size: 18),
-                label: const Text('Obrir xat'),
+                label: Text(l10n.twinOpenChat),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,

@@ -1,4 +1,5 @@
 import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +53,8 @@ class AdminVerificationDocumentsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -62,20 +65,20 @@ class AdminVerificationDocumentsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Documentació d’administrador',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          Text(
+            l10n.adminVerificationDocumentsTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Adjunta documentació que acrediti que pots actuar com a administrador de finca d’aquest edifici. La verificació quedarà pendent de revisió.',
-            style: TextStyle(color: Colors.black54, height: 1.35),
+          Text(
+            l10n.adminVerificationDocumentsBody,
+            style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
           const SizedBox(height: 14),
           OutlinedButton.icon(
             onPressed: enabled ? () => _pickFiles(context) : null,
             icon: const Icon(Icons.attach_file),
-            label: const Text('Adjuntar documents'),
+            label: Text(l10n.adminVerificationAttachDocuments),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               foregroundColor: const Color(0xFF166534),
@@ -86,9 +89,9 @@ class AdminVerificationDocumentsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Adjunta documents en format JPG.',
-            style: TextStyle(color: Colors.black45, fontSize: 12),
+          Text(
+            l10n.adminVerificationJpgOnly,
+            style: const TextStyle(color: Colors.black45, fontSize: 12),
           ),
           if (documents.isNotEmpty) ...[
             const SizedBox(height: 14),
@@ -164,7 +167,9 @@ class _DocumentRow extends StatelessWidget {
               IconButton(
                 onPressed: enabled ? onRemove : null,
                 icon: const Icon(Icons.close),
-                tooltip: 'Eliminar document',
+                tooltip: AppLocalizations.of(
+                  context,
+                ).adminVerificationRemoveDocument,
               ),
             ],
           ),
@@ -181,7 +186,9 @@ class _DocumentRow extends StatelessWidget {
                 .toList(),
             onChanged: enabled ? onTypeChanged : null,
             decoration: InputDecoration(
-              labelText: 'Tipus de document',
+              labelText: AppLocalizations.of(
+                context,
+              ).adminVerificationDocumentType,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

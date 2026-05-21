@@ -3,10 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
 import 'package:buildrank_mobile/features/profile/data/add_existing_building_service.dart';
 import 'package:buildrank_mobile/features/verification/data/admin_verification_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 void main() {
   Widget buildTestable({required String userRole}) {
     return MaterialApp(
+      locale: const Locale('ca'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: AddExistingBuildingScreen(
         userRole: userRole,
         service: const FakeAddExistingBuildingService(),

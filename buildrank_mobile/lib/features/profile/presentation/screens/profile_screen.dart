@@ -12,6 +12,7 @@ import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
 import 'package:buildrank_mobile/features/weather/presentation/widgets/weather_alert_card.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
 import 'package:buildrank_mobile/features/map/presentation/screens/building_map_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -143,48 +144,50 @@ class _ProfileScreenState extends State<ProfileScreen>
     final fullName = '$firstName $lastName'.trim();
     if (fullName.isNotEmpty) return fullName;
 
-    return (_userData?['email'] ?? 'Usuari').toString();
+    return (_userData?['email'] ??
+            AppLocalizations.of(context).profileUserFallback)
+        .toString();
   }
 
   String _buildRoleLabel() {
+    final l10n = AppLocalizations.of(context);
     switch (_role) {
       case 'admin':
-        return 'Administrador de finca';
+        return l10n.profileRoleAdmin;
       case 'owner':
-        return 'Propietari';
+        return l10n.profileRoleOwner;
       case 'tenant':
-        return 'Llogater';
+        return l10n.profileRoleTenant;
       default:
-        return 'Usuari';
+        return l10n.profileUserFallback;
     }
   }
 
   String _buildBuildingsSectionTitle() {
+    final l10n = AppLocalizations.of(context);
     switch (_role) {
       case 'admin':
-        return 'Edificis administrats';
+        return l10n.profileAdminBuildingsTitle;
       case 'owner':
-        return 'Edificis dels meus habitatges';
+        return l10n.profileOwnerBuildingsTitle;
       case 'tenant':
-        return 'Edificis vinculats';
+        return l10n.profileTenantBuildingsTitle;
       default:
-        return 'Edificis accessibles';
+        return l10n.profileAccessibleBuildingsTitle;
     }
   }
 
   String _buildEmptyBuildingsMessage() {
+    final l10n = AppLocalizations.of(context);
     switch (_role) {
       case 'admin':
-        return 'Encara no tens cap edifici assignat com a administrador de finca. '
-            'Pots crear-ne un amb el formulari d’alta.';
+        return l10n.profileEmptyAdminBuildings;
       case 'owner':
-        return 'Encara no tens habitatges vinculats al teu compte. Quan un administrador '
-            't’assigni un habitatge, aquí veuràs l’edifici corresponent.';
+        return l10n.profileEmptyOwnerBuildings;
       case 'tenant':
-        return 'Encara no tens cap habitatge vinculat al teu compte. Quan siguis assignat '
-            'a un habitatge, aquí veuràs l’edifici corresponent.';
+        return l10n.profileEmptyTenantBuildings;
       default:
-        return 'Encara no hi ha edificis disponibles per a aquest compte.';
+        return l10n.profileEmptyAccessibleBuildings;
     }
   }
 
@@ -217,7 +220,9 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     if (createdBuilding != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Edifici creat correctament.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).profileBuildingCreated),
+        ),
       );
     }
 
@@ -233,6 +238,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: const Padding(
@@ -243,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
         actions: [
           IconButton(
-            tooltip: 'Notificacions',
+            tooltip: l10n.notificationsTitle,
             onPressed: _openNotifications,
             icon: Badge(
               label: Text('$_noLlegides'),
@@ -252,12 +259,12 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
           IconButton(
-            tooltip: 'Refrescar',
+            tooltip: l10n.commonRefresh,
             onPressed: _isLoading ? null : _loadProfile,
             icon: const Icon(Icons.refresh),
           ),
           IconButton(
-            tooltip: 'Tancar sessió',
+            tooltip: l10n.profileLogoutTooltip,
             onPressed: _isLoggingOut ? null : _handleLogout,
             icon: _isLoggingOut
                 ? const SizedBox(
@@ -322,13 +329,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _showReportsSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          "Els informes per a juntes encara no estan disponibles en aquest MVP.",
-        ),
-      ),
-    );
+    final l10n = AppLocalizations.of(context);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.profileReportsSoon)));
   }
 
   Widget _buildRoleActions() {
@@ -341,7 +346,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 child: ElevatedButton.icon(
                   onPressed: _openCreateBuilding,
                   icon: const Icon(Icons.add_business_outlined),
-                  label: const Text("Crear edifici"),
+                  label: Text(
+                    AppLocalizations.of(context).profileCreateBuilding,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -349,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 child: OutlinedButton.icon(
                   onPressed: _showReportsSoon,
                   icon: const Icon(Icons.description_outlined),
-                  label: const Text("Informes"),
+                  label: Text(AppLocalizations.of(context).profileReports),
                 ),
               ),
             ],
@@ -365,7 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 );
               },
               icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text("Els meus xats"),
+              label: Text(AppLocalizations.of(context).myChatsTitle),
             ),
           ),
         ],
@@ -381,8 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         border: Border.all(color: Colors.green.shade100),
       ),
       child: Text(
-        "Aquest compte pot consultar els edificis vinculats als seus habitatges. "
-        "La creació i administració d’edificis queda reservada als administradors de finca.",
+        AppLocalizations.of(context).profileNonAdminInfo,
         style: TextStyle(
           fontSize: 13,
           height: 1.35,
@@ -415,18 +421,21 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: const Icon(Icons.map_outlined, color: Colors.white),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Mapa d’edificis',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                    AppLocalizations.of(context).mapTitle,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'Visualitza els edificis registrats i consulta’n les estadístiques principals.',
-                    style: TextStyle(
+                    AppLocalizations.of(context).profileMapSubtitle,
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Colors.black54,
                       height: 1.25,
@@ -480,9 +489,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: const Text(
-              "Vincular nou edifici",
-              style: TextStyle(fontWeight: FontWeight.w600),
+            child: Text(
+              AppLocalizations.of(context).profileLinkNewBuilding,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -534,13 +543,13 @@ class _ProfileScreenState extends State<ProfileScreen>
             const Icon(Icons.error_outline, size: 42),
             const SizedBox(height: 12),
             Text(
-              _errorText ?? 'No s’ha pogut carregar el perfil.',
+              _errorText ?? AppLocalizations.of(context).profileLoadError,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadProfile,
-              child: const Text('Torna-ho a provar'),
+              child: Text(AppLocalizations.of(context).commonRetry),
             ),
           ],
         ),
@@ -588,7 +597,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
               ),
               IconButton(
-                tooltip: 'Editar perfil',
+                tooltip: AppLocalizations.of(context).editProfileTitle,
                 onPressed: _openEditProfile,
                 icon: const Icon(Icons.edit_outlined),
               ),
@@ -600,10 +609,18 @@ class _ProfileScreenState extends State<ProfileScreen>
             children: [
               _Metric(
                 title: _buildings.length.toString(),
-                subtitle: _isAdminFinca ? "EDIFICIS" : "VINCLES",
+                subtitle: _isAdminFinca
+                    ? AppLocalizations.of(context).profileMetricBuildings
+                    : AppLocalizations.of(context).profileMetricLinks,
               ),
-              const _Metric(title: "B+", subtitle: "RÀNQUING MITJÀ"),
-              const _Metric(title: "+14%", subtitle: "PROGRÉS"),
+              _Metric(
+                title: "B+",
+                subtitle: AppLocalizations.of(context).profileMetricAvgRanking,
+              ),
+              _Metric(
+                title: "+14%",
+                subtitle: AppLocalizations.of(context).profileMetricProgress,
+              ),
             ],
           ),
         ],
@@ -618,17 +635,20 @@ class _ProfileScreenState extends State<ProfileScreen>
         color: Colors.green,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Proper reinici de temporada",
-            style: TextStyle(color: Colors.white),
+            AppLocalizations.of(context).profileSeasonRestart,
+            style: const TextStyle(color: Colors.white),
           ),
-          SizedBox(height: 8),
-          LinearProgressIndicator(value: 0.7),
-          SizedBox(height: 8),
-          Text("Queden 12 dies", style: TextStyle(color: Colors.white)),
+          const SizedBox(height: 8),
+          const LinearProgressIndicator(value: 0.7),
+          const SizedBox(height: 8),
+          Text(
+            AppLocalizations.of(context).profileSeasonDaysLeft(12),
+            style: const TextStyle(color: Colors.white),
+          ),
         ],
       ),
     );
@@ -648,20 +668,21 @@ class _ProfileScreenState extends State<ProfileScreen>
         children: [
           Icon(Icons.emoji_events_outlined, color: Colors.green.shade700),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Insígnies d’edificis",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context).profileBadgesTitle,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
-                  "Les insígnies reals es mostren dins de la fitxa de cada edifici. "
-                  "Quan un edifici compleixi criteris de puntuació, qualitat de dades o millora, "
-                  "apareixeran en el seu detall.",
-                  style: TextStyle(color: Colors.black54, height: 1.35),
+                  AppLocalizations.of(context).profileBadgesBody,
+                  style: const TextStyle(color: Colors.black54, height: 1.35),
                 ),
               ],
             ),
@@ -681,14 +702,15 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
 
     final id = _readInt(building, const ['idEdifici', 'id']);
-    return id != null ? 'Edifici #$id' : 'Edifici';
+    final l10n = AppLocalizations.of(context);
+    return id != null ? l10n.profileBuildingNumber(id) : l10n.homeBuildingTitle;
   }
 
   String _buildBuildingAddress(Map<String, dynamic> building) {
     final localitzacio = _readMap(building['localitzacio']);
 
     if (localitzacio == null) {
-      return 'Localització no disponible';
+      return AppLocalizations.of(context).profileLocationUnavailable;
     }
 
     final barri = localitzacio['barri']?.toString().trim();
@@ -698,16 +720,19 @@ class _ProfileScreenState extends State<ProfileScreen>
     final parts = [
       if (barri != null && barri.isNotEmpty) barri,
       if (codiPostal != null && codiPostal.isNotEmpty) codiPostal,
-      if (zona != null && zona.isNotEmpty) 'Zona $zona',
+      if (zona != null && zona.isNotEmpty)
+        AppLocalizations.of(context).twinClimateZone(zona),
     ];
 
-    return parts.isEmpty ? 'Localització no disponible' : parts.join(' · ');
+    return parts.isEmpty
+        ? AppLocalizations.of(context).profileLocationUnavailable
+        : parts.join(' · ');
   }
 
   String _buildBuildingStatus(Map<String, dynamic> building) {
     final actiu = building['actiu'];
-    if (actiu == false) return 'Inactiu';
-    return 'Actiu';
+    if (actiu == false) return AppLocalizations.of(context).profileInactive;
+    return AppLocalizations.of(context).profileActive;
   }
 
   int _readScore(Map<String, dynamic> building) {

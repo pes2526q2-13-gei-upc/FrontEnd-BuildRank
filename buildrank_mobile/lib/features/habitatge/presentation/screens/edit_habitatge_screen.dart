@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:buildrank_mobile/features/habitatge/data/habitatge_form_data.dart';
 import 'package:buildrank_mobile/features/habitatge/data/habitatge_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class EditHabitatgeScreen extends StatefulWidget {
   final int idEdifici;
@@ -84,8 +85,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
 
         if (habitatges.isEmpty) {
           setState(() {
-            _loadError =
-                'No s’ha trobat cap habitatge vinculat al teu usuari en aquest edifici.';
+            _loadError = AppLocalizations.of(context).editHabitatgeNoLinkedHome;
             _isLoading = false;
           });
           return;
@@ -99,7 +99,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
 
         if (selectedHabitatge == null) {
           setState(() {
-            _loadError = 'No s’ha seleccionat cap habitatge per editar.';
+            _loadError = AppLocalizations.of(context).editHabitatgeNoneSelected;
             _isLoading = false;
           });
           return;
@@ -110,7 +110,9 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
 
         if (referenciaCadastral.isEmpty) {
           setState(() {
-            _loadError = 'L’habitatge seleccionat no té referència cadastral.';
+            _loadError = AppLocalizations.of(
+              context,
+            ).editHabitatgeMissingCadastralReference;
             _isLoading = false;
           });
           return;
@@ -140,7 +142,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
       if (!mounted) return;
 
       setState(() {
-        _loadError = 'No s’ha pogut carregar l’habitatge.';
+        _loadError = AppLocalizations.of(context).editHabitatgeLoadError;
         _isLoading = false;
       });
     }
@@ -153,16 +155,18 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
       context: context,
       showDragHandle: true,
       builder: (context) {
+        final l10n = AppLocalizations.of(context);
+
         return SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 12),
                   child: Text(
-                    'Quin habitatge vols editar?',
+                    l10n.editHabitatgeSelectorTitle,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -170,7 +174,10 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
                   ListTile(
                     leading: const Icon(Icons.home_outlined),
                     title: Text(
-                      'Planta ${habitatge['planta'] ?? '-'} · Porta ${habitatge['porta'] ?? '-'}',
+                      l10n.editHabitatgeSelectorFloorDoor(
+                        (habitatge['planta'] ?? '-').toString(),
+                        (habitatge['porta'] ?? '-').toString(),
+                      ),
                     ),
                     subtitle: Text(
                       [
@@ -322,11 +329,11 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
 
     final normalized = value?.trim().replaceAll(',', '.') ?? '';
     if (normalized.isEmpty) {
-      return 'Camp obligatori si informes dades energètiques';
+      return AppLocalizations.of(context).editHabitatgeEnergyRequired;
     }
 
     final parsed = double.tryParse(normalized);
-    if (parsed == null) return 'Introdueix un número vàlid';
+    if (parsed == null) return AppLocalizations.of(context).commonInvalidNumber;
 
     return null;
   }
@@ -335,7 +342,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
     if (!_hasAnyEnergyData) return null;
 
     if (value == null || value.trim().isEmpty) {
-      return 'Camp obligatori si informes dades energètiques';
+      return AppLocalizations.of(context).editHabitatgeEnergyRequired;
     }
 
     return null;
@@ -345,7 +352,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
     if (!_hasAnyEnergyData) return null;
 
     if (_dataEntrada == null) {
-      return 'Cal informar la data d’entrada si informes dades energètiques';
+      return AppLocalizations.of(context).editHabitatgeEnergyDateRequired;
     }
 
     return null;
@@ -379,8 +386,10 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         SnackBar(
           content: Text(
             _hasAnyEnergyData
-                ? 'Dades de l’habitatge i dades energètiques actualitzades.'
-                : 'Dades de l’habitatge actualitzades.',
+                ? AppLocalizations.of(
+                    context,
+                  ).editHabitatgeSaveWithEnergySuccess
+                : AppLocalizations.of(context).editHabitatgeSaveSuccess,
           ),
         ),
       );
@@ -460,18 +469,20 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
 
   String? _requiredText(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Camp obligatori';
+      return AppLocalizations.of(context).commonRequiredField;
     }
     return null;
   }
 
   String? _requiredPositiveNumber(String? value) {
     final normalized = value?.trim().replaceAll(',', '.') ?? '';
-    if (normalized.isEmpty) return 'Camp obligatori';
+    if (normalized.isEmpty) {
+      return AppLocalizations.of(context).commonRequiredField;
+    }
 
     final parsed = double.tryParse(normalized);
-    if (parsed == null) return 'Introdueix un número vàlid';
-    if (parsed <= 0) return 'Ha de ser superior a 0';
+    if (parsed == null) return AppLocalizations.of(context).commonInvalidNumber;
+    if (parsed <= 0) return AppLocalizations.of(context).commonGreaterThanZero;
 
     return null;
   }
@@ -483,14 +494,16 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
       appBar: AppBar(
-        title: const Text('Editar habitatge'),
+        title: Text(l10n.editHabitatgeAppBarTitle),
         centerTitle: true,
         actions: [
           IconButton(
-            tooltip: 'Refrescar',
+            tooltip: l10n.commonRefresh,
             onPressed: _isLoading ? null : _loadHabitatge,
             icon: _isLoading
                 ? const SizedBox(
@@ -525,14 +538,14 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
               color: Colors.black45,
             ),
             const SizedBox(height: 14),
-            const Text(
-              'No es pot editar l’habitatge',
+            Text(
+              AppLocalizations.of(context).editHabitatgeCannotEditTitle,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              _loadError ?? 'No s’ha pogut carregar l’habitatge.',
+              _loadError ?? AppLocalizations.of(context).editHabitatgeLoadError,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.black54, height: 1.35),
             ),
@@ -540,7 +553,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
             ElevatedButton.icon(
               onPressed: _loadHabitatge,
               icon: const Icon(Icons.refresh),
-              label: const Text('Torna-ho a provar'),
+              label: Text(AppLocalizations.of(context).commonRetry),
             ),
           ],
         ),
@@ -581,8 +594,8 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Guardar dades',
+                  : Text(
+                      AppLocalizations.of(context).editHabitatgeSaveButton,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -596,6 +609,8 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
   }
 
   Widget _buildIntroCard() {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -605,8 +620,8 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Completa les dades del teu habitatge',
+          Text(
+            l10n.editHabitatgeIntroTitle,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
@@ -618,8 +633,8 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Aquestes dades ajudaran a calcular millor la classificació estimada i la puntuació BuildRank de l’edifici.',
+          Text(
+            l10n.editHabitatgeIntroBody,
             style: TextStyle(color: Colors.black54, height: 1.4),
           ),
         ],
@@ -628,13 +643,15 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
   }
 
   Widget _buildHabitatgeSection() {
+    final l10n = AppLocalizations.of(context);
+
     return _SectionCard(
-      title: 'Dades de l’habitatge',
-      subtitle: 'Informació bàsica de l’habitatge vinculat al teu compte.',
+      title: l10n.editHabitatgeHomeDataTitle,
+      subtitle: l10n.editHabitatgeHomeDataSubtitle,
       children: [
         _BuildTextField(
           controller: _referenciaCadastralController,
-          label: 'Referència cadastral',
+          label: l10n.habitatgeCadastralReference,
           required: true,
           enabled: false,
           validator: _requiredText,
@@ -645,7 +662,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
             Expanded(
               child: _BuildTextField(
                 controller: _plantaController,
-                label: 'Planta',
+                label: l10n.habitatgeFloor,
                 required: true,
                 validator: _requiredText,
               ),
@@ -654,7 +671,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
             Expanded(
               child: _BuildTextField(
                 controller: _portaController,
-                label: 'Porta',
+                label: l10n.habitatgeDoor,
                 required: true,
                 validator: _requiredText,
               ),
@@ -664,7 +681,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _superficieController,
-          label: 'Superfície (m²)',
+          label: l10n.habitatgeSurface,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredPositiveNumber,
@@ -672,18 +689,18 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _anyReformaController,
-          label: 'Any reforma',
+          label: l10n.editHabitatgeRenovationYear,
           keyboardType: TextInputType.number,
           validator: (value) {
             final normalized = value?.trim() ?? '';
             if (normalized.isEmpty) return null;
 
             final parsed = int.tryParse(normalized);
-            if (parsed == null) return 'Introdueix un any vàlid';
+            if (parsed == null) return l10n.editHabitatgeInvalidYear;
 
             final currentYear = DateTime.now().year;
             if (parsed < 1800 || parsed > currentYear) {
-              return 'L’any no és vàlid';
+              return l10n.editHabitatgeYearOutOfRange;
             }
 
             return null;
@@ -694,10 +711,11 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
   }
 
   Widget _buildEnergySection() {
+    final l10n = AppLocalizations.of(context);
+
     return _SectionCard(
-      title: 'Dades energètiques',
-      subtitle:
-          'Afegeix la informació disponible del certificat o estimació energètica.',
+      title: l10n.editHabitatgeEnergyDataTitle,
+      subtitle: l10n.editHabitatgeEnergyDataSubtitle,
       children: [
         Container(
           width: double.infinity,
@@ -707,8 +725,8 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFFFCD34D)),
           ),
-          child: const Text(
-            'Les dades energètiques són opcionals. Si informes qualsevol camp d’aquesta secció, hauràs d’omplir tots els camps obligatoris del certificat energètic.',
+          child: Text(
+            l10n.editHabitatgeEnergyOptionalNotice,
             style: TextStyle(
               color: Color(0xFF92400E),
               height: 1.35,
@@ -719,7 +737,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 14),
         DropdownButtonFormField<String>(
           initialValue: _qualificacioGlobal,
-          decoration: _inputDecoration('Qualificació global'),
+          decoration: _inputDecoration(l10n.editHabitatgeGlobalRating),
           items: _grades
               .map(
                 (grade) => DropdownMenuItem(value: grade, child: Text(grade)),
@@ -734,7 +752,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _consumEnergiaPrimariaController,
-          label: 'Consum energia primària',
+          label: l10n.editHabitatgePrimaryEnergyConsumption,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -742,7 +760,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _consumEnergiaFinalController,
-          label: 'Consum energia final',
+          label: l10n.editHabitatgeFinalEnergyConsumption,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -750,7 +768,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _emissionsCO2Controller,
-          label: 'Emissions CO₂',
+          label: l10n.editHabitatgeCo2Emissions,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -758,17 +776,17 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _costAnualEnergiaController,
-          label: 'Cost anual energia (€)',
+          label: l10n.editHabitatgeAnnualEnergyCost,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
         ),
         const SizedBox(height: 18),
-        const _SubsectionTitle('Consums per ús'),
+        _SubsectionTitle(l10n.editHabitatgeConsumptionByUse),
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _energiaCalefaccioController,
-          label: 'Energia calefacció',
+          label: l10n.editHabitatgeHeatingEnergy,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -776,7 +794,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _energiaRefrigeracioController,
-          label: 'Energia refrigeració',
+          label: l10n.editHabitatgeCoolingEnergy,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -784,7 +802,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _energiaACSController,
-          label: 'Energia ACS',
+          label: l10n.editHabitatgeAcsEnergy,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -792,17 +810,17 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _energiaEnllumenamentController,
-          label: 'Energia enllumenament',
+          label: l10n.editHabitatgeLightingEnergy,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
         ),
         const SizedBox(height: 18),
-        const _SubsectionTitle('Emissions per ús'),
+        _SubsectionTitle(l10n.editHabitatgeEmissionsByUse),
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _emissionsCalefaccioController,
-          label: 'Emissions calefacció',
+          label: l10n.editHabitatgeHeatingEmissions,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -810,7 +828,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _emissionsRefrigeracioController,
-          label: 'Emissions refrigeració',
+          label: l10n.editHabitatgeCoolingEmissions,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -818,7 +836,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _emissionsACSController,
-          label: 'Emissions ACS',
+          label: l10n.editHabitatgeAcsEmissions,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -826,17 +844,17 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _emissionsEnllumenamentController,
-          label: 'Emissions enllumenament',
+          label: l10n.editHabitatgeLightingEmissions,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
         ),
         const SizedBox(height: 18),
-        const _SubsectionTitle('Certificació i envolupant'),
+        _SubsectionTitle(l10n.editHabitatgeCertificationEnvelope),
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _aillamentTermicController,
-          label: 'Aïllament tèrmic',
+          label: l10n.editHabitatgeThermalInsulation,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -844,7 +862,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _valorFinestresController,
-          label: 'Valor finestres',
+          label: l10n.editHabitatgeWindowValue,
           required: true,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           validator: _requiredEnergyNumberIfNeeded,
@@ -852,21 +870,21 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _normativaController,
-          label: 'Normativa',
+          label: l10n.buildingFormRegulationSummaryLabel,
           required: true,
           validator: _requiredEnergyTextIfNeeded,
         ),
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _einaCertificacioController,
-          label: 'Eina certificació',
+          label: l10n.editHabitatgeCertificationTool,
           required: true,
           validator: _requiredEnergyTextIfNeeded,
         ),
         const SizedBox(height: 12),
         _BuildTextField(
           controller: _motiuCertificacioController,
-          label: 'Motiu certificació',
+          label: l10n.editHabitatgeCertificationReason,
           required: true,
           maxLines: 2,
           validator: _requiredEnergyTextIfNeeded,
@@ -875,7 +893,7 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
         SwitchListTile(
           value: _rehabilitacioEnergetica,
           contentPadding: EdgeInsets.zero,
-          title: const Text('Rehabilitació energètica'),
+          title: Text(l10n.editHabitatgeEnergyRenovation),
           onChanged: (value) {
             setState(() {
               _rehabilitacioEnergetica = value;
@@ -888,8 +906,8 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
           icon: const Icon(Icons.calendar_month_outlined),
           label: Text(
             _dataEntrada == null
-                ? 'Seleccionar data d’entrada *'
-                : 'Data d’entrada: ${_formatDate(_dataEntrada!)}',
+                ? l10n.editHabitatgeSelectEntryDate
+                : l10n.editHabitatgeEntryDate(_formatDate(_dataEntrada!)),
           ),
         ),
       ],

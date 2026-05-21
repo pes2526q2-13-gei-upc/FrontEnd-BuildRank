@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 import '../../data/votacions_model.dart';
 import '../../data/votacions_service.dart';
@@ -99,7 +100,9 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
           _isVoting = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vot registrat correctament.')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).votesRegisteredSnack),
+          ),
         );
       }
     } on VotacionsApiException catch (e) {
@@ -160,19 +163,17 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar votació'),
-        content: const Text(
-          'Segur que vols eliminar aquesta votació? S\'esborraran totes les opcions i vots emesos. Aquesta acció no es pot desfer.',
-        ),
+        title: Text(AppLocalizations.of(context).votesDeleteTitle),
+        content: Text(AppLocalizations.of(context).votesDeleteBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel·lar'),
+            child: Text(AppLocalizations.of(context).commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red[700]),
-            child: const Text('Eliminar'),
+            child: Text(AppLocalizations.of(context).votesDelete),
           ),
         ],
       ),
@@ -197,7 +198,7 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          _votacio?.titol ?? 'Votació',
+          _votacio?.titol ?? AppLocalizations.of(context).votesFallbackTitle,
           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.white,
@@ -215,13 +216,13 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
                 if (value == 'eliminar') _confirmarEliminar();
               },
               itemBuilder: (_) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'editar',
                   child: Row(
                     children: [
                       Icon(Icons.edit_outlined, size: 18),
                       SizedBox(width: 10),
-                      Text('Editar'),
+                      Text(AppLocalizations.of(context).votesEdit),
                     ],
                   ),
                 ),
@@ -236,7 +237,7 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        'Eliminar',
+                        AppLocalizations.of(context).votesDelete,
                         style: TextStyle(color: Colors.red[700]),
                       ),
                     ],
@@ -303,8 +304,8 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[700],
               ),
-              child: const Text(
-                'Torna-ho a provar',
+              child: Text(
+                AppLocalizations.of(context).votesRetry,
                 style: TextStyle(color: Colors.white),
               ),
             ),
@@ -328,7 +329,13 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
                 _estatBadge(votacio.estat),
                 const Spacer(),
                 Text(
-                  '${votacio.numVotsTotal} vot${votacio.numVotsTotal == 1 ? '' : 's'}',
+                  votacio.numVotsTotal == 1
+                      ? AppLocalizations.of(
+                          context,
+                        ).votesCountSingular(votacio.numVotsTotal)
+                      : AppLocalizations.of(
+                          context,
+                        ).votesCount(votacio.numVotsTotal),
                   style: TextStyle(color: Colors.grey[600], fontSize: 13),
                 ),
               ],
@@ -345,7 +352,9 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
                   Icon(Icons.schedule, size: 14, color: Colors.grey[500]),
                   const SizedBox(width: 4),
                   Text(
-                    'Fins al ${_formatDate(votacio.dataLimit!)}',
+                    AppLocalizations.of(
+                      context,
+                    ).votesUntilDate(_formatDate(votacio.dataLimit!)),
                     style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                   ),
                 ],
@@ -376,7 +385,9 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          canVote ? 'Selecciona una opció' : 'Opcions',
+          canVote
+              ? 'Selecciona una opció'
+              : AppLocalizations.of(context).votesOptions,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
@@ -410,8 +421,8 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'Votar',
+                  : Text(
+                      AppLocalizations.of(context).votesVote,
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
             ),
@@ -423,7 +434,7 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
             onPressed: _loadResultats,
             icon: Icon(Icons.bar_chart, color: Colors.green[700]),
             label: Text(
-              'Veure resultats',
+              AppLocalizations.of(context).votesViewResults,
               style: TextStyle(color: Colors.green[700]),
             ),
           ),
@@ -472,8 +483,8 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Resultats',
+        Text(
+          AppLocalizations.of(context).votesResults,
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
@@ -482,7 +493,11 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Total: ${resultats.numVotsTotal} vot${resultats.numVotsTotal == 1 ? '' : 's'}',
+          resultats.numVotsTotal == 1
+              ? AppLocalizations.of(
+                  context,
+                ).votesTotalSingular(resultats.numVotsTotal)
+              : AppLocalizations.of(context).votesTotal(resultats.numVotsTotal),
           style: TextStyle(fontSize: 13, color: Colors.grey[600]),
         ),
       ],
@@ -539,7 +554,9 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
           ),
           const SizedBox(height: 2),
           Text(
-            '${opcio.numVots} vot${opcio.numVots == 1 ? '' : 's'}',
+            opcio.numVots == 1
+                ? AppLocalizations.of(context).votesCountSingular(opcio.numVots)
+                : AppLocalizations.of(context).votesCount(opcio.numVots),
             style: TextStyle(fontSize: 11, color: Colors.grey[500]),
           ),
         ],
@@ -553,15 +570,15 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
     switch (estat) {
       case 'oberta':
         color = Colors.green[700]!;
-        label = 'Oberta';
+        label = AppLocalizations.of(context).votesStatusOpen;
         break;
       case 'tancada':
         color = Colors.grey[600]!;
-        label = 'Tancada';
+        label = AppLocalizations.of(context).votesStatusClosed;
         break;
       default:
         color = Colors.red[600]!;
-        label = 'Cancel·lada';
+        label = AppLocalizations.of(context).votesStatusCancelled;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

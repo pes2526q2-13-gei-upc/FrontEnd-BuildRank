@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -35,8 +36,10 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Els meus xats")),
+      appBar: AppBar(title: Text(l10n.myChatsTitle)),
       body: StreamBuilder<ConnectionStatus>(
         stream: StreamService.client.wsConnectionStatusStream,
         initialData: StreamService.client.wsConnectionStatus,
@@ -58,6 +61,8 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
   }
 
   Widget _buildDisconnectedView() {
+    final l10n = AppLocalizations.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -70,10 +75,10 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
               color: Colors.grey.shade400,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No s\'ha pogut connectar al xat.',
+            Text(
+              l10n.myChatsConnectionError,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black54),
+              style: const TextStyle(color: Colors.black54),
             ),
             if (_connectionError != null) ...[
               const SizedBox(height: 12),
@@ -98,7 +103,7 @@ class _MyChatsScreenState extends State<MyChatsScreen> {
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Reconnectar'),
+              child: Text(l10n.myChatsReconnect),
             ),
           ],
         ),
@@ -135,12 +140,16 @@ class _ChannelListState extends State<_ChannelList> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return StreamChannelListView(
       controller: _controller,
       itemBuilder: (context, channels, index, _) {
         final channel = channels[index];
         final name =
-            channel.extraData['name'] as String? ?? channel.name ?? 'Xat';
+            channel.extraData['name'] as String? ??
+            channel.name ??
+            l10n.chatFallbackName;
         final lastMessage = channel.state?.messages
             .where((m) => !m.isDeleted)
             .toList()
@@ -166,7 +175,7 @@ class _ChannelListState extends State<_ChannelList> {
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                lastMessage?.text ?? 'Sense missatges',
+                lastMessage?.text ?? l10n.myChatsNoMessages,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -216,8 +225,7 @@ class _ChannelListState extends State<_ChannelList> {
                   builder: (_) => DirectChannelScreen(
                     channelId: channelId,
                     channelName: name,
-                    description:
-                        'Conversa directa o canal compartit entre administradors.',
+                    description: l10n.myChatsDirectDescription,
                   ),
                 ),
               );
@@ -225,12 +233,12 @@ class _ChannelListState extends State<_ChannelList> {
           ),
         );
       },
-      emptyBuilder: (_) => const Center(child: Text('No tens cap xat actiu.')),
+      emptyBuilder: (context) => Center(child: Text(l10n.myChatsEmpty)),
       errorBuilder: (context, error) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Error: $error',
+            l10n.commonErrorWithValue(error.toString()),
             style: TextStyle(color: Colors.red.shade700),
           ),
         ),

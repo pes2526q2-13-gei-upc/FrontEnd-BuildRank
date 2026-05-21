@@ -1,5 +1,6 @@
 import 'package:buildrank_mobile/features/admin/data/admin_user.dart';
 import 'package:buildrank_mobile/features/admin/data/user_management_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class UsersPanel extends StatefulWidget {
@@ -46,26 +47,31 @@ class _UsersPanelState extends State<UsersPanel> {
   }
 
   Future<void> _blockUser(AdminUser user) async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final updated = await _service.blockUser(user.id);
       _replaceUser(updated);
-      _showSnack('${user.email} ha estat bloquejat.');
+      _showSnack(l10n.adminUsersBlockedSnack(user.email));
     } catch (e) {
       _showSnack(e.toString().replaceFirst('Exception: ', ''), isError: true);
     }
   }
 
   Future<void> _unblockUser(AdminUser user) async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final updated = await _service.unblockUser(user.id);
       _replaceUser(updated);
-      _showSnack('${user.email} ha estat desbloquejat.');
+      _showSnack(l10n.adminUsersUnblockedSnack(user.email));
     } catch (e) {
       _showSnack(e.toString().replaceFirst('Exception: ', ''), isError: true);
     }
   }
 
   Future<void> _showSuspendDialog(AdminUser user) async {
+    final l10n = AppLocalizations.of(context);
     final reasonController = TextEditingController();
     DateTime? selectedDate;
 
@@ -73,7 +79,9 @@ class _UsersPanelState extends State<UsersPanel> {
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog(
-          title: Text('Suspendre ${user.email}'),
+          title: Text(
+            AppLocalizations.of(context).adminUsersSuspendTitle(user.email),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,10 +89,10 @@ class _UsersPanelState extends State<UsersPanel> {
               TextField(
                 controller: reasonController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Motiu (opcional)',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context).adminUsersReasonLabel,
                   border: OutlineInputBorder(),
-                  hintText: 'Descriu el motiu de la suspensió...',
+                  hintText: AppLocalizations.of(context).adminUsersReasonHint,
                 ),
               ),
               const SizedBox(height: 16),
@@ -93,14 +101,18 @@ class _UsersPanelState extends State<UsersPanel> {
                   Expanded(
                     child: Text(
                       selectedDate == null
-                          ? 'Suspensió indefinida'
-                          : 'Fins: ${_formatDate(selectedDate!)}',
+                          ? AppLocalizations.of(
+                              context,
+                            ).adminUsersIndefiniteSuspension
+                          : AppLocalizations.of(
+                              context,
+                            ).adminUsersUntilDate(_formatDate(selectedDate!)),
                       style: const TextStyle(fontSize: 13),
                     ),
                   ),
                   TextButton.icon(
                     icon: const Icon(Icons.calendar_today, size: 16),
-                    label: const Text('Data fi'),
+                    label: Text(AppLocalizations.of(context).adminUsersEndDate),
                     onPressed: () async {
                       final picked = await showDatePicker(
                         context: context,
@@ -118,7 +130,9 @@ class _UsersPanelState extends State<UsersPanel> {
                   if (selectedDate != null)
                     IconButton(
                       icon: const Icon(Icons.clear, size: 16),
-                      tooltip: 'Eliminar data',
+                      tooltip: AppLocalizations.of(
+                        context,
+                      ).adminUsersRemoveDate,
                       onPressed: () =>
                           setDialogState(() => selectedDate = null),
                     ),
@@ -129,7 +143,7 @@ class _UsersPanelState extends State<UsersPanel> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogCtx, false),
-              child: const Text('Cancel·lar'),
+              child: Text(AppLocalizations.of(context).commonCancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(dialogCtx, true),
@@ -137,7 +151,7 @@ class _UsersPanelState extends State<UsersPanel> {
                 backgroundColor: const Color(0xFFD97706),
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Confirmar'),
+              child: Text(AppLocalizations.of(context).adminUsersConfirm),
             ),
           ],
         ),
@@ -155,17 +169,19 @@ class _UsersPanelState extends State<UsersPanel> {
         suspendedUntil: selectedDate,
       );
       _replaceUser(updated);
-      _showSnack('${user.email} ha estat suspès.');
+      _showSnack(l10n.adminUsersSuspendedSnack(user.email));
     } catch (e) {
       _showSnack(e.toString().replaceFirst('Exception: ', ''), isError: true);
     }
   }
 
   Future<void> _unsuspendUser(AdminUser user) async {
+    final l10n = AppLocalizations.of(context);
+
     try {
       final updated = await _service.unsuspendUser(user.id);
       _replaceUser(updated);
-      _showSnack('La suspensió de ${user.email} ha estat aixecada.');
+      _showSnack(l10n.adminUsersUnsuspendedSnack(user.email));
     } catch (e) {
       _showSnack(e.toString().replaceFirst('Exception: ', ''), isError: true);
     }
@@ -216,9 +232,9 @@ class _UsersPanelState extends State<UsersPanel> {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'Gestió d\'usuaris',
+                    AppLocalizations.of(context).adminUsersTitle,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -236,7 +252,11 @@ class _UsersPanelState extends State<UsersPanel> {
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
-                    _loading ? '...' : '${_users?.length ?? 0} usuaris',
+                    _loading
+                        ? '...'
+                        : AppLocalizations.of(
+                            context,
+                          ).adminUsersCount(_users?.length ?? 0),
                     style: const TextStyle(
                       fontSize: 11,
                       color: Color(0xFF4B5563),
@@ -282,10 +302,10 @@ class _UsersPanelState extends State<UsersPanel> {
 
     final users = _users ?? [];
     if (users.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(24),
+      return Padding(
+        padding: const EdgeInsets.all(24),
         child: Text(
-          'No hi ha usuaris.',
+          AppLocalizations.of(context).adminUsersEmpty,
           style: TextStyle(color: Color(0xFF6B7280)),
         ),
       );
@@ -392,38 +412,42 @@ class _UserTile extends StatelessWidget {
           if (user.isSuspended && user.suspensionReason.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
-              'Motiu: ${user.suspensionReason}',
+              AppLocalizations.of(
+                context,
+              ).adminUsersReason(user.suspensionReason),
               style: const TextStyle(fontSize: 11, color: Color(0xFF92400E)),
             ),
           ],
           if (user.isSuspended && user.suspendedUntil != null) ...[
             const SizedBox(height: 2),
             Text(
-              'Fins: ${_formatIsoDate(user.suspendedUntil!)}',
+              AppLocalizations.of(
+                context,
+              ).adminUsersUntilDate(_formatIsoDate(user.suspendedUntil!)),
               style: const TextStyle(fontSize: 11, color: Color(0xFF92400E)),
             ),
           ],
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: _actionButtons(),
+            children: _actionButtons(context),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> _actionButtons() {
+  List<Widget> _actionButtons(BuildContext context) {
     if (user.isActiveStatus) {
       return [
         _ActionChip(
-          label: 'Bloquejar',
+          label: AppLocalizations.of(context).adminUsersBlock,
           color: const Color(0xFFDC2626),
           onTap: onBlock,
         ),
         const SizedBox(width: 8),
         _ActionChip(
-          label: 'Suspendre',
+          label: AppLocalizations.of(context).adminUsersSuspend,
           color: const Color(0xFFD97706),
           onTap: onSuspend,
         ),
@@ -432,7 +456,7 @@ class _UserTile extends StatelessWidget {
     if (user.isBlocked) {
       return [
         _ActionChip(
-          label: 'Desbloquejar',
+          label: AppLocalizations.of(context).adminUsersUnblock,
           color: const Color(0xFF19C463),
           onTap: onUnblock,
         ),
@@ -441,7 +465,7 @@ class _UserTile extends StatelessWidget {
     if (user.isSuspended) {
       return [
         _ActionChip(
-          label: 'Aixecar suspensió',
+          label: AppLocalizations.of(context).adminUsersUnsuspend,
           color: const Color(0xFF19C463),
           onTap: onUnsuspend,
         ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:buildrank_mobile/features/ranking/data/ranking_model.dart';
 import 'package:buildrank_mobile/features/ranking/data/ranking_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
 
 class RankingScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _RankingScreenState extends State<RankingScreen> {
   int _targetTop = 3;
   int _progressSeasonsCount = 3;
   RankingResponse? _ranking;
-  List<RankingProgressPoint> _progressEvolution = const [];
+  List<ProgressRankingEntry> _progressRanking = const [];
   bool _isLoadingProgress = false;
   String? _progressErrorText;
 
@@ -99,7 +100,7 @@ class _RankingScreenState extends State<RankingScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut carregar el rànquing.';
+        _errorText = AppLocalizations.of(context).rankingLoadError;
         _isLoading = false;
       });
     }
@@ -143,8 +144,8 @@ class _RankingScreenState extends State<RankingScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No s’han pogut carregar més competidors.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).rankingLoadMoreError),
         ),
       );
     }
@@ -169,25 +170,25 @@ class _RankingScreenState extends State<RankingScreen> {
       _errorText = null;
     });
 
-    _loadProgressEvolution();
+    _loadProgressRanking();
   }
 
-  Future<void> _loadProgressEvolution() async {
+  Future<void> _loadProgressRanking() async {
     setState(() {
       _isLoadingProgress = true;
       _progressErrorText = null;
     });
 
     try {
-      final result = await widget.rankingService.getProgressEvolution(
+      final result = await widget.rankingService.getProgressRanking(
         idEdifici: widget.idEdifici,
-        seasonsCount: _progressSeasonsCount,
+        window: _progressSeasonsCount,
       );
 
       if (!mounted) return;
 
       setState(() {
-        _progressEvolution = result;
+        _progressRanking = result;
         _isLoadingProgress = false;
       });
     } on RankingApiException catch (e) {
@@ -201,7 +202,9 @@ class _RankingScreenState extends State<RankingScreen> {
       if (!mounted) return;
 
       setState(() {
-        _progressErrorText = 'No s’ha pogut carregar l’evolució de progrés.';
+        _progressErrorText = AppLocalizations.of(
+          context,
+        ).rankingProgressLoadError;
         _isLoadingProgress = false;
       });
     }
@@ -227,8 +230,21 @@ class _RankingScreenState extends State<RankingScreen> {
     return _ranking?.entries ?? const [];
   }
 
+  String _scopeLabel(RankingScope scope, AppLocalizations l10n) {
+    switch (scope) {
+      case RankingScope.league:
+        return l10n.rankingScopeLeague;
+      case RankingScope.comparableLeague:
+        return l10n.rankingScopeComparableLeague;
+      case RankingScope.comparableSeason:
+        return l10n.rankingScopeComparableSeason;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _loadRanking,
@@ -250,7 +266,7 @@ class _RankingScreenState extends State<RankingScreen> {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text("Torna"),
+                  label: Text(l10n.commonBack),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -260,7 +276,7 @@ class _RankingScreenState extends State<RankingScreen> {
               ),
               actions: [
                 IconButton(
-                  tooltip: 'Refrescar',
+                  tooltip: l10n.commonRefresh,
                   onPressed: _isLoading ? null : _loadRanking,
                   icon: _isLoading
                       ? const SizedBox(
@@ -335,6 +351,8 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildErrorState() {
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -349,14 +367,14 @@ class _RankingScreenState extends State<RankingScreen> {
           Text(
             _errorText ==
                     'Aquest edifici encara no participa en cap temporada activa.'
-                ? 'Rànquing no disponible'
-                : 'No s’ha pogut carregar el rànquing',
+                ? l10n.rankingUnavailableTitle
+                : l10n.rankingLoadErrorTitle,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
-            _errorText ?? 'Error desconegut.',
+            _errorText ?? l10n.commonUnknownError,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
@@ -364,7 +382,7 @@ class _RankingScreenState extends State<RankingScreen> {
           ElevatedButton.icon(
             onPressed: _loadRanking,
             icon: const Icon(Icons.refresh),
-            label: const Text('Torna-ho a provar'),
+            label: Text(l10n.commonRetry),
           ),
         ],
       ),
@@ -392,6 +410,7 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildLeagueCard() {
+    final l10n = AppLocalizations.of(context);
     final summary = _summary;
 
     return Container(
@@ -407,8 +426,8 @@ class _RankingScreenState extends State<RankingScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _HeaderChip(text: 'Temporada activa: ${summary.seasonName}'),
-              _HeaderChip(text: _scope.label),
+              _HeaderChip(text: l10n.rankingActiveSeason(summary.seasonName)),
+              _HeaderChip(text: _scopeLabel(_scope, l10n)),
             ],
           ),
           const SizedBox(height: 12),
@@ -427,14 +446,17 @@ class _RankingScreenState extends State<RankingScreen> {
           ),
           const SizedBox(height: 14),
           Text(
-            'Progrés cap al Top $_targetTop',
+            l10n.rankingProgressToTop(_targetTop),
             style: const TextStyle(color: Colors.white70),
           ),
           const SizedBox(height: 16),
           _buildTargetTopSelectorCompact(),
           const SizedBox(height: 6),
           Text(
-            '${_formatPoints(summary.currentPoints)} / ${_formatPoints(summary.targetPoints)} punts',
+            l10n.rankingPointsProgress(
+              _formatPoints(summary.currentPoints),
+              _formatPoints(summary.targetPoints),
+            ),
             style: const TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 10),
@@ -447,13 +469,13 @@ class _RankingScreenState extends State<RankingScreen> {
           Text(
             summary.daysRemaining > 0
                 ? summary.promotionText
-                : 'Temporada pendent de calendari.',
+                : l10n.rankingSeasonPendingCalendar,
             style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
           if (summary.currentPosition > 0) ...[
             const SizedBox(height: 10),
             Text(
-              'Posició actual: #${summary.currentPosition}',
+              l10n.rankingCurrentPosition(summary.currentPosition),
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -466,6 +488,7 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildProgressControls() {
+    final l10n = AppLocalizations.of(context);
     const options = [3, 5, 10];
 
     return Container(
@@ -478,8 +501,8 @@ class _RankingScreenState extends State<RankingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Període de comparació',
+          Text(
+            l10n.rankingComparisonPeriod,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 10),
@@ -490,14 +513,14 @@ class _RankingScreenState extends State<RankingScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 3),
                     child: ChoiceChip(
-                      label: Text('Últimes $option'),
+                      label: Text(l10n.rankingLastSeasons(option)),
                       selected: _progressSeasonsCount == option,
                       onSelected: (_) {
                         setState(() {
                           _progressSeasonsCount = option;
                         });
 
-                        _loadProgressEvolution();
+                        _loadProgressRanking();
                       },
                     ),
                   ),
@@ -510,6 +533,7 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildTargetTopSelectorCompact() {
+    final l10n = AppLocalizations.of(context);
     const options = [3, 5, 10];
 
     return Container(
@@ -548,7 +572,7 @@ class _RankingScreenState extends State<RankingScreen> {
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
-                      'Top $option',
+                      l10n.rankingTopTarget(option),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
@@ -567,17 +591,19 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildBadges() {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Insígnies aconseguides',
+              l10n.rankingBadgesEarned,
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
-            Text('Veure-ho tot', style: TextStyle(color: Colors.green)),
+            Text(l10n.rankingViewAll, style: TextStyle(color: Colors.green)),
           ],
         ),
         const SizedBox(height: 12),
@@ -585,29 +611,29 @@ class _RankingScreenState extends State<RankingScreen> {
           height: 110,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            children: const [
+            children: [
               BadgeItem(
                 icon: Icons.bolt,
-                label: 'Mestre solar',
-                date: 'Oct 25',
+                label: l10n.rankingBadgeSolarMaster,
+                date: l10n.rankingBadgeDateOct25,
                 color: Colors.yellow,
               ),
               BadgeItem(
                 icon: Icons.trending_up,
-                label: 'Màxim estalvi',
-                date: 'Nov 25',
+                label: l10n.rankingBadgeMaxSavings,
+                date: l10n.rankingBadgeDateNov25,
                 color: Colors.green,
               ),
               BadgeItem(
                 icon: Icons.apartment,
-                label: 'Resilient',
-                date: 'Dec 25',
+                label: l10n.rankingBadgeResilient,
+                date: l10n.rankingBadgeDateDec25,
                 color: Colors.blue,
               ),
               BadgeItem(
                 icon: Icons.location_city,
-                label: 'Prova',
-                date: 'Gen 26',
+                label: l10n.rankingBadgeTest,
+                date: l10n.rankingBadgeDateJan26,
                 color: Colors.purple,
               ),
             ],
@@ -618,13 +644,15 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildToggle() {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: _ToggleButton(
-                text: RankingScope.league.label,
+                text: _scopeLabel(RankingScope.league, l10n),
                 selected: !_showProgress && _scope == RankingScope.league,
                 onTap: () => _changeScope(RankingScope.league),
               ),
@@ -632,7 +660,7 @@ class _RankingScreenState extends State<RankingScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: _ToggleButton(
-                text: RankingScope.comparableLeague.label,
+                text: _scopeLabel(RankingScope.comparableLeague, l10n),
                 selected:
                     !_showProgress && _scope == RankingScope.comparableLeague,
                 onTap: () => _changeScope(RankingScope.comparableLeague),
@@ -641,7 +669,7 @@ class _RankingScreenState extends State<RankingScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: _ToggleButton(
-                text: RankingScope.comparableSeason.label,
+                text: _scopeLabel(RankingScope.comparableSeason, l10n),
                 selected:
                     !_showProgress && _scope == RankingScope.comparableSeason,
                 onTap: () => _changeScope(RankingScope.comparableSeason),
@@ -659,11 +687,13 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildSearch() {
+    final l10n = AppLocalizations.of(context);
+
     return TextField(
       controller: _searchController,
       onChanged: _onSearchChanged,
       decoration: InputDecoration(
-        hintText: 'Cerca per carrer...',
+        hintText: l10n.rankingSearchHint,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _searchController.text.isEmpty
             ? null
@@ -690,6 +720,8 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildRanking() {
+    final l10n = AppLocalizations.of(context);
+
     if (_entries.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(18),
@@ -698,8 +730,8 @@ class _RankingScreenState extends State<RankingScreen> {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
-        child: const Text(
-          'No s’ha trobat cap competidor amb aquests filtres.',
+        child: Text(
+          l10n.rankingNoCompetitors,
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.black54, height: 1.35),
         ),
@@ -734,7 +766,7 @@ class _RankingScreenState extends State<RankingScreen> {
                   height: 22,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Carrega més competidors'),
+              : Text(AppLocalizations.of(context).rankingLoadMore),
         ),
       ),
     );
@@ -758,6 +790,8 @@ class _RankingScreenState extends State<RankingScreen> {
   }
 
   Widget _buildProgressRanking() {
+    final l10n = AppLocalizations.of(context);
+
     if (_isLoadingProgress) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 28),
@@ -781,7 +815,7 @@ class _RankingScreenState extends State<RankingScreen> {
       );
     }
 
-    if (_progressEvolution.isEmpty) {
+    if (_progressRanking.isEmpty) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
@@ -790,48 +824,46 @@ class _RankingScreenState extends State<RankingScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
-        child: const Text(
-          'Encara no hi ha historial de progrés per aquest edifici.',
-          style: TextStyle(color: Colors.black54, height: 1.35),
+        child: Text(
+          l10n.rankingNoProgressHistory,
+          style: const TextStyle(color: Colors.black54, height: 1.35),
         ),
       );
     }
 
-    final first = _progressEvolution.first;
-    final last = _progressEvolution.last;
-
-    final entry = _ProgressRankingEntry(
-      idEdifici: widget.idEdifici,
-      position: last.position,
-      name: _cleanBuildingDisplayName(widget.buildingName),
-      startPoints: first.points,
-      currentPoints: last.points,
-      isCurrentBuilding: true,
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Progrés de temporades',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+        Text(
+          l10n.rankingSeasonProgressTitle,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 6),
         Text(
-          'Evolució real durant les últimes ${_progressEvolution.length} temporades disponibles.',
+          l10n.rankingSeasonProgressSubtitle(_progressSeasonsCount),
           style: const TextStyle(color: Colors.black54, height: 1.35),
         ),
         const SizedBox(height: 14),
-        _ProgressRankingCard(
-          entry: entry,
-          onDetail: () => _showProgressDetailModal(entry),
+        ..._progressRanking.map(
+          (entry) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _ProgressRankingCard(
+              entry: entry,
+              onDetail: entry.series.isEmpty
+                  ? null
+                  : () => _showProgressDetailModal(entry),
+            ),
+          ),
         ),
       ],
     );
   }
 
-  void _showProgressDetailModal(_ProgressRankingEntry entry) {
-    final values = _progressEvolution.map((item) => item.points).toList();
+  void _showProgressDetailModal(ProgressRankingEntry entry) {
+    final l10n = AppLocalizations.of(context);
+    final values = entry.series.isEmpty
+        ? [entry.startPoints, entry.currentPoints]
+        : entry.series.map((item) => item.points).toList();
 
     showModalBottomSheet<void>(
       context: context,
@@ -862,7 +894,9 @@ class _RankingScreenState extends State<RankingScreen> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Progrés de ${_cleanBuildingDisplayName(entry.name)}',
+                  l10n.rankingProgressForBuilding(
+                    _cleanBuildingDisplayName(entry.name),
+                  ),
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
@@ -870,7 +904,7 @@ class _RankingScreenState extends State<RankingScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Evolució de puntuació durant les últimes $_progressSeasonsCount temporades.',
+                  l10n.rankingProgressModalSubtitle(_progressSeasonsCount),
                   style: const TextStyle(color: Colors.black54, height: 1.35),
                 ),
                 const SizedBox(height: 22),
@@ -884,7 +918,7 @@ class _RankingScreenState extends State<RankingScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    'Millora acumulada: +${entry.delta} punts',
+                    l10n.rankingAccumulatedImprovement(entry.delta),
                     style: const TextStyle(
                       color: Color(0xFF166534),
                       fontWeight: FontWeight.w800,
@@ -977,13 +1011,14 @@ class _ProgressBarPlot extends StatelessWidget {
 }
 
 class _ProgressRankingCard extends StatelessWidget {
-  final _ProgressRankingEntry entry;
+  final ProgressRankingEntry entry;
   final VoidCallback? onDetail;
 
   const _ProgressRankingCard({required this.entry, this.onDetail});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final deltaText = entry.delta >= 0 ? '+${entry.delta}' : '${entry.delta}';
     final percentageText = '${(entry.percentage * 100).toStringAsFixed(1)}%';
 
@@ -1029,7 +1064,10 @@ class _ProgressRankingCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${entry.startPoints} → ${entry.currentPoints} punts',
+                  l10n.rankingPointsRange(
+                    entry.startPoints,
+                    entry.currentPoints,
+                  ),
                   style: const TextStyle(color: Colors.black54),
                 ),
               ],
@@ -1040,7 +1078,7 @@ class _ProgressRankingCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '$deltaText pts',
+                l10n.rankingDeltaPoints(deltaText),
                 style: const TextStyle(
                   color: Color(0xFF16A34A),
                   fontWeight: FontWeight.w900,
@@ -1055,8 +1093,8 @@ class _ProgressRankingCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 InkWell(
                   onTap: onDetail,
-                  child: const Text(
-                    'Veure detall',
+                  child: Text(
+                    l10n.rankingViewDetail,
                     style: TextStyle(
                       color: Color(0xFF166534),
                       fontWeight: FontWeight.w800,
@@ -1073,31 +1111,6 @@ class _ProgressRankingCard extends StatelessWidget {
   }
 }
 
-class _ProgressRankingEntry {
-  final int idEdifici;
-  final int position;
-  final String name;
-  final int startPoints;
-  final int currentPoints;
-  final bool isCurrentBuilding;
-
-  const _ProgressRankingEntry({
-    required this.idEdifici,
-    required this.position,
-    required this.name,
-    required this.startPoints,
-    required this.currentPoints,
-    this.isCurrentBuilding = false,
-  });
-
-  int get delta => currentPoints - startPoints;
-
-  double get percentage {
-    if (startPoints <= 0) return 0;
-    return delta / startPoints;
-  }
-}
-
 class _ProgressToggleButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
@@ -1106,6 +1119,8 @@ class _ProgressToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Material(
       color: selected ? const Color(0xFF166534) : Colors.white,
       borderRadius: BorderRadius.circular(14),
@@ -1134,7 +1149,7 @@ class _ProgressToggleButton extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Progrés de temporades',
+                l10n.rankingSeasonProgressTitle,
                 style: TextStyle(
                   color: selected ? Colors.white : const Color(0xFF166534),
                   fontWeight: FontWeight.w800,

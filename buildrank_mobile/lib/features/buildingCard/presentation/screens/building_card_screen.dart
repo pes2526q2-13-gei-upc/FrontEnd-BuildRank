@@ -7,6 +7,7 @@ import '../../../../shared/widgets/league_info_card.dart';
 import '../../../../shared/widgets/revision_card.dart';
 import 'package:buildrank_mobile/features/buildingRequests/presentation/screens/pending_building_requests_screen.dart';
 import 'package:buildrank_mobile/features/habitatge/presentation/screens/edit_habitatge_screen.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class BuildingDetailScreen extends StatefulWidget {
   final int idEdifici;
@@ -79,7 +80,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut carregar el detall de l’edifici.';
+        _errorText = AppLocalizations.of(context).buildingCardDetailLoadError;
       });
     } finally {
       if (mounted) {
@@ -109,7 +110,11 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
 
       if (recalculate && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Insígnies recalculades correctament.')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).buildingCardBadgesRecalculated,
+            ),
+          ),
         );
       }
     } on BuildingApiException catch (e) {
@@ -122,7 +127,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       if (!mounted) return;
 
       setState(() {
-        _badgesErrorText = 'No s’han pogut carregar les insígnies.';
+        _badgesErrorText = AppLocalizations.of(
+          context,
+        ).buildingCardBadgesLoadError;
       });
     } finally {
       if (mounted) {
@@ -156,7 +163,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     return widget.title;
   }
 
-  String get _address {
+  String _address(AppLocalizations l10n) {
     final localitzacio = _localitzacio;
 
     if (localitzacio == null) {
@@ -170,17 +177,17 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     final parts = [
       if (barri != null && barri.isNotEmpty) barri,
       if (codiPostal != null && codiPostal.isNotEmpty) codiPostal,
-      if (zona != null && zona.isNotEmpty) 'Zona climàtica $zona',
+      if (zona != null && zona.isNotEmpty) l10n.buildingCardClimateZone(zona),
     ];
 
     return parts.isEmpty ? widget.address : parts.join(' · ');
   }
 
-  String get _scoreLabel {
-    if (_score >= 80) return 'EXCEL·LENT';
-    if (_score >= 65) return 'BO';
-    if (_score >= 50) return 'MILLORABLE';
-    return 'PRIORITARI';
+  String _scoreLabel(AppLocalizations l10n) {
+    if (_score >= 80) return l10n.buildingCardScoreExcellent;
+    if (_score >= 65) return l10n.buildingCardScoreGood;
+    if (_score >= 50) return l10n.buildingCardScoreImprove;
+    return l10n.buildingCardScorePriority;
   }
 
   Color get _scoreColor {
@@ -190,19 +197,19 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     return Colors.red;
   }
 
-  String _value(String key, {String fallback = 'No disponible'}) {
+  String _value(String key, {String? fallback}) {
+    final fallbackText =
+        fallback ?? AppLocalizations.of(context).commonUnavailable;
     final value = _building[key];
-    if (value == null) return fallback;
+    if (value == null) return fallbackText;
 
     final text = value.toString().trim();
-    return text.isEmpty ? fallback : text;
+    return text.isEmpty ? fallbackText : text;
   }
 
-  String _formatDouble(
-    String key, {
-    String suffix = '',
-    String fallback = 'No disponible',
-  }) {
+  String _formatDouble(String key, {String suffix = '', String? fallback}) {
+    final fallbackText =
+        fallback ?? AppLocalizations.of(context).commonUnavailable;
     final value = _building[key];
 
     if (value is int) {
@@ -218,7 +225,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       }
     }
 
-    return fallback;
+    return fallbackText;
   }
 
   int _readScore(Map<String, dynamic> building, {required int fallback}) {
@@ -263,11 +270,11 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     return letter;
   }
 
-  String get _energyMetricTitle {
+  String _energyMetricTitle(AppLocalizations l10n) {
     final label = _classificacioEnergetica?['etiqueta']?.toString();
 
     if (label == null || label.isEmpty || label == 'null') {
-      return 'QUALIFICACIÓ ESTIMADA';
+      return l10n.buildingCardEstimatedRating;
     }
 
     return label.toUpperCase();
@@ -283,24 +290,26 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     return detail;
   }
 
-  String? get _energyMissingDataText {
+  String? _energyMissingDataText(AppLocalizations l10n) {
     final missing = _classificacioEnergetica?['dades_insuficients'];
 
     if (missing is List && missing.isNotEmpty) {
-      return 'Dades pendents: ${missing.join(", ")}';
+      return l10n.buildingCardPendingData(missing.join(", "));
     }
 
     return null;
   }
 
-  String _activeStatusLabel() {
+  String _activeStatusLabel(AppLocalizations l10n) {
     final actiu = _building['actiu'];
-    if (actiu == false) return 'INACTIU';
-    return 'ACTIU';
+    if (actiu == false) return l10n.profileInactive.toUpperCase();
+    return l10n.profileActive.toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _refreshAll,
@@ -322,7 +331,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text("Torna"),
+                  label: Text(l10n.commonBack),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -332,7 +341,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
               ),
               actions: [
                 IconButton(
-                  tooltip: 'Refrescar',
+                  tooltip: l10n.commonRefresh,
                   onPressed: _isLoading ? null : _refreshAll,
                   icon: _isLoading
                       ? const SizedBox(
@@ -394,13 +403,13 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
           const Icon(Icons.error_outline, size: 42),
           const SizedBox(height: 12),
           Text(
-            _errorText ?? 'No s’ha pogut carregar l’edifici.',
+            _errorText ?? AppLocalizations.of(context).buildingCardLoadError,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadBuildingDetail,
-            child: const Text('Torna-ho a provar'),
+            child: Text(AppLocalizations.of(context).commonRetry),
           ),
         ],
       ),
@@ -408,6 +417,8 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       color: const Color(0xFFE8F4EC),
       padding: const EdgeInsets.all(20),
@@ -418,7 +429,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _StatusChip(text: _activeStatusLabel(), color: Colors.green),
+              _StatusChip(text: _activeStatusLabel(l10n), color: Colors.green),
               _StatusChip(
                 text: 'ID ${widget.idEdifici}',
                 color: Colors.blueGrey,
@@ -439,7 +450,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             children: [
               const Icon(Icons.location_on_outlined, size: 16),
               const SizedBox(width: 6),
-              Expanded(child: Text(_address)),
+              Expanded(child: Text(_address(l10n))),
             ],
           ),
 
@@ -467,7 +478,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                           ),
                         ),
                         Text(
-                          _scoreLabel,
+                          _scoreLabel(l10n),
                           style: TextStyle(
                             color: _scoreColor,
                             fontWeight: FontWeight.bold,
@@ -489,7 +500,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.grey.shade300),
                   ),
-                  child: const Text("Puntuació base BuildRank"),
+                  child: Text(l10n.buildingCardBaseScore),
                 ),
               ],
             ),
@@ -500,20 +511,22 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildPerformance() {
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "RENDIMENT",
+                l10n.buildingCardPerformance,
                 style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
               ),
               Text(
-                "Dades inicials",
+                l10n.buildingCardInitialData,
                 style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.w600,
@@ -533,22 +546,22 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             childAspectRatio: 1.7,
             children: [
               MetricCard(
-                title: _energyMetricTitle,
+                title: _energyMetricTitle(l10n),
                 value: _energyLetter,
                 icon: Icons.bolt,
               ),
               MetricCard(
-                title: "SUPERFÍCIE",
+                title: l10n.buildingCardSurface,
                 value: _formatDouble('superficieTotal', suffix: ' m²'),
                 icon: Icons.square_foot,
               ),
               MetricCard(
-                title: "PLANTES",
+                title: l10n.buildingCardFloors,
                 value: _value('nombrePlantes'),
                 icon: Icons.layers,
               ),
               MetricCard(
-                title: "ORIENTACIÓ",
+                title: l10n.buildingCardOrientation,
                 value: _value('orientacioPrincipal'),
                 icon: Icons.explore,
               ),
@@ -576,10 +589,10 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                       fontSize: 13,
                     ),
                   ),
-                  if (_energyMissingDataText != null) ...[
+                  if (_energyMissingDataText(l10n) != null) ...[
                     const SizedBox(height: 8),
                     Text(
-                      _energyMissingDataText!,
+                      _energyMissingDataText(l10n)!,
                       style: TextStyle(
                         color: Colors.blueGrey.shade700,
                         height: 1.35,
@@ -598,6 +611,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildBadgesSection() {
+    final l10n = AppLocalizations.of(context);
     final isAdmin = widget.userRole == 'admin';
 
     return Padding(
@@ -617,9 +631,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
               children: [
                 const Icon(Icons.emoji_events_outlined, color: Colors.amber),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'INSÍGNIES DE L’EDIFICI',
+                    l10n.buildingCardBadgesTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.7,
@@ -632,7 +646,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                         ? null
                         : () => _loadBuildingBadges(recalculate: true),
                     icon: const Icon(Icons.refresh, size: 18),
-                    label: const Text('Recalcular'),
+                    label: Text(l10n.buildingCardRecalculate),
                   ),
               ],
             ),
@@ -645,10 +659,9 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                 text: _badgesErrorText!,
               )
             else if (_badges.isEmpty)
-              const _BadgeStateMessage(
+              _BadgeStateMessage(
                 icon: Icons.emoji_events_outlined,
-                text:
-                    'Aquest edifici encara no té insígnies assignades. Es mostraran quan compleixi alguna fita.',
+                text: l10n.buildingCardNoBadges,
               )
             else
               SingleChildScrollView(
@@ -670,6 +683,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildActions() {
+    final l10n = AppLocalizations.of(context);
     final isAdmin = widget.userRole == 'admin';
 
     return Padding(
@@ -677,38 +691,37 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "ACCIONS RECOMANADES",
+          Text(
+            l10n.buildingCardRecommendedActions,
             style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
           ),
           const SizedBox(height: 14),
-          const ActionTile(
+          ActionTile(
             icon: Icons.bolt,
-            title: "Executa simulació",
-            subtitle: "Prova escenaris de millora per aquest edifici",
+            title: l10n.buildingCardActionSimulationTitle,
+            subtitle: l10n.buildingCardActionSimulationSubtitle,
             color: Color(0xFFE8F4EC),
           ),
           const SizedBox(height: 10),
-          const ActionTile(
+          ActionTile(
             icon: Icons.how_to_vote,
-            title: "Votació de la comunitat",
-            subtitle: "Funcionalitat preparada per futures propostes",
+            title: l10n.buildingCardActionVoteTitle,
+            subtitle: l10n.buildingCardActionVoteSubtitle,
             color: Color(0xFFE7ECF7),
           ),
           const SizedBox(height: 10),
-          const ActionTile(
+          ActionTile(
             icon: Icons.description,
-            title: "Informe de junta (properament)",
-            subtitle:
-                "La generació d’informes encara no està disponible en aquest MVP",
+            title: l10n.buildingCardActionReportTitle,
+            subtitle: l10n.buildingCardActionReportSubtitle,
             color: Color(0xFFF1F1F1),
           ),
           if (isAdmin) ...[
             const SizedBox(height: 10),
             ActionTile(
               icon: Icons.verified_user_outlined,
-              title: "Gestionar sol·licituds pendents",
-              subtitle: "Revisa i valida noves peticions d’unió a l’edifici",
+              title: l10n.buildingCardActionManageRequestsTitle,
+              subtitle: l10n.buildingCardActionManageRequestsSubtitle,
               color: const Color(0xFFFFF7ED),
               onTap: () {
                 Navigator.push(
@@ -727,8 +740,8 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             const SizedBox(height: 10),
             ActionTile(
               icon: Icons.home_outlined,
-              title: "Editar el meu habitatge",
-              subtitle: "Completa superfície, reforma i dades energètiques",
+              title: l10n.buildingCardActionEditHabitatgeTitle,
+              subtitle: l10n.buildingCardActionEditHabitatgeSubtitle,
               color: const Color(0xFFFFF7ED),
               onTap: () async {
                 final updated = await Navigator.push<Map<String, dynamic>?>(
@@ -755,13 +768,15 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildTabs() {
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SegmentedButton<int>(
-        segments: const [
-          ButtonSegment(value: 0, label: Text("Detalls")),
-          ButtonSegment(value: 1, label: Text("Historial")),
-          ButtonSegment(value: 2, label: Text("Documents")),
+        segments: [
+          ButtonSegment(value: 0, label: Text(l10n.buildingCardTabDetails)),
+          ButtonSegment(value: 1, label: Text(l10n.buildingCardTabHistory)),
+          ButtonSegment(value: 2, label: Text(l10n.buildingCardTabDocuments)),
         ],
         selected: {_tabIndex},
         onSelectionChanged: (value) {
@@ -774,21 +789,20 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildTabContent() {
+    final l10n = AppLocalizations.of(context);
+
     switch (_tabIndex) {
       case 1:
         return _buildPlaceholderTab(
           icon: Icons.history,
-          title: 'Historial encara no disponible',
-          text:
-              'En aquesta secció es mostraran canvis de puntuació, validacions i simulacions guardades.',
+          title: l10n.buildingCardHistoryUnavailableTitle,
+          text: l10n.buildingCardHistoryUnavailableBody,
         );
       case 2:
         return _buildPlaceholderTab(
           icon: Icons.folder_outlined,
-          title: 'Documents i informes (properament)',
-          text:
-              'Aquesta secció queda preparada per a una futura integració documental. '
-              'En aquest MVP no es mostren documents ni informes generats.',
+          title: l10n.buildingCardDocumentsSoonTitle,
+          text: l10n.buildingCardDocumentsSoonBody,
         );
       case 0:
       default:
@@ -829,6 +843,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   }
 
   Widget _buildDetails() {
+    final l10n = AppLocalizations.of(context);
     final localitzacio = _localitzacio;
 
     return Padding(
@@ -839,15 +854,15 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             children: [
               Expanded(
                 child: _DetailItem(
-                  label: "ANY DE CONSTRUCCIÓ",
+                  label: l10n.buildingCardConstructionYear,
                   value: _value("anyConstruccio"),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: _DetailItem(
-                  label: "PLANTES",
-                  value: "${_value("nombrePlantes")} plantes",
+                  label: l10n.buildingCardFloors,
+                  value: l10n.buildingCardFloorsCount(_value("nombrePlantes")),
                 ),
               ),
             ],
@@ -859,14 +874,14 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             children: [
               Expanded(
                 child: _DetailItem(
-                  label: "TIPOLOGIA",
+                  label: l10n.buildingCardTypology,
                   value: _value("tipologia"),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: _DetailItem(
-                  label: "SUPERFÍCIE",
+                  label: l10n.buildingCardSurface,
                   value: _formatDouble("superficieTotal", suffix: " m²"),
                 ),
               ),
@@ -879,14 +894,14 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             children: [
               Expanded(
                 child: _DetailItem(
-                  label: "REGLAMENT",
+                  label: l10n.buildingCardRegulation,
                   value: _value("reglament"),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: _DetailItem(
-                  label: "ORIENTACIÓ",
+                  label: l10n.buildingCardOrientation,
                   value: _value("orientacioPrincipal"),
                 ),
               ),
@@ -905,11 +920,13 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             ),
             child: Text(
               localitzacio == null
-                  ? 'Aquest edifici encara no té localització associada.'
-                  : 'Localització: ${localitzacio['carrer'] ?? '-'}, '
-                        '${localitzacio['numero'] ?? '-'} · '
-                        '${localitzacio['barri'] ?? '-'} · '
-                        '${localitzacio['codiPostal'] ?? '-'}',
+                  ? l10n.buildingCardNoLocation
+                  : l10n.buildingCardLocationSummary(
+                      (localitzacio['carrer'] ?? '-').toString(),
+                      (localitzacio['numero'] ?? '-').toString(),
+                      (localitzacio['barri'] ?? '-').toString(),
+                      (localitzacio['codiPostal'] ?? '-').toString(),
+                    ),
               style: TextStyle(height: 1.35, color: Colors.green.shade900),
             ),
           ),

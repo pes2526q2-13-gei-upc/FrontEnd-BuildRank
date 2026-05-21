@@ -1,4 +1,5 @@
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class PasswordResetScreen extends StatefulWidget {
@@ -26,11 +27,12 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   bool get _isConfirmStep => _uid != null && _token != null;
 
   Future<void> _requestReset() async {
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
       setState(() {
-        _errorText = 'Introdueix el teu correu electrònic.';
+        _errorText = l10n.passwordResetEmailRequiredError;
         _successText = null;
       });
       return;
@@ -48,8 +50,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
       if (!mounted) return;
 
       setState(() {
-        _successText =
-            'Si el correu existeix, rebràs un enllaç per restablir la contrasenya. Enganxa’l aquí quan el tinguis.';
+        _successText = l10n.passwordResetRequestSuccess;
       });
     } catch (e) {
       if (!mounted) return;
@@ -68,11 +69,12 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   }
 
   void _continueWithResetLink() {
+    final l10n = AppLocalizations.of(context);
     final rawLink = _resetLinkController.text.trim();
 
     if (rawLink.isEmpty) {
       setState(() {
-        _errorText = 'Enganxa l’enllaç de recuperació rebut per email.';
+        _errorText = l10n.passwordResetLinkRequiredError;
         _successText = null;
       });
       return;
@@ -82,8 +84,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
     if (credentials == null) {
       setState(() {
-        _errorText =
-            'No s’han pogut trobar els paràmetres uid i token dins l’enllaç.';
+        _errorText = l10n.passwordResetInvalidLinkError;
         _successText = null;
       });
       return;
@@ -93,7 +94,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
       _uid = credentials.uid;
       _token = credentials.token;
       _errorText = null;
-      _successText = 'Enllaç validat. Introdueix la nova contrasenya.';
+      _successText = l10n.passwordResetLinkValidatedSuccess;
     });
   }
 
@@ -126,12 +127,13 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   }
 
   Future<void> _confirmReset() async {
+    final l10n = AppLocalizations.of(context);
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
     if (password.isEmpty || confirmPassword.isEmpty) {
       setState(() {
-        _errorText = 'Introdueix i confirma la nova contrasenya.';
+        _errorText = l10n.passwordResetPasswordRequiredError;
         _successText = null;
       });
       return;
@@ -139,7 +141,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
     if (password != confirmPassword) {
       setState(() {
-        _errorText = 'Les contrasenyes no coincideixen.';
+        _errorText = l10n.registerPasswordsMismatchError;
         _successText = null;
       });
       return;
@@ -162,7 +164,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Contrasenya restablerta correctament.')),
+        SnackBar(content: Text(l10n.passwordResetSuccessSnackBar)),
       );
 
       Navigator.of(context).pop();
@@ -204,20 +206,21 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final title = _isConfirmStep
-        ? 'Crea una nova contrasenya'
-        : 'Recupera la contrasenya';
+        ? l10n.passwordResetConfirmTitle
+        : l10n.passwordResetRequestTitle;
 
     final subtitle = _isConfirmStep
-        ? 'Introdueix una nova contrasenya per al teu compte.'
-        : 'Escriu el correu associat al teu compte i enganxa l’enllaç rebut per email.';
+        ? l10n.passwordResetConfirmSubtitle
+        : l10n.passwordResetRequestSubtitle;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F2),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF6F7F2),
         elevation: 0,
-        title: const Text('Recuperar contrasenya'),
+        title: Text(l10n.passwordResetAppBarTitle),
       ),
       body: SafeArea(
         child: ListView(
@@ -260,11 +263,11 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Correu electrònic',
-                        hintText: 'nom@exemple.com',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        labelText: l10n.emailLabel,
+                        hintText: l10n.emailHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -280,26 +283,26 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text(
-                                'Enviar instruccions',
-                                style: TextStyle(fontSize: 16),
+                            : Text(
+                                l10n.passwordResetSendInstructions,
+                                style: const TextStyle(fontSize: 16),
                               ),
                       ),
                     ),
                     const SizedBox(height: 24),
                     const Divider(),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Ja tens l’enllaç?',
-                      style: TextStyle(
+                    Text(
+                      l10n.passwordResetHaveLinkTitle,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Enganxa aquí l’enllaç rebut per email. BuildRank n’extraurà automàticament el uid i el token.',
-                      style: TextStyle(
+                    Text(
+                      l10n.passwordResetHaveLinkBody,
+                      style: const TextStyle(
                         fontSize: 13,
                         height: 1.4,
                         color: Colors.black54,
@@ -310,12 +313,11 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                       controller: _resetLinkController,
                       minLines: 1,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Enllaç de recuperació',
-                        hintText:
-                            'https://.../reset-password?uid=...&token=...',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.link),
+                      decoration: InputDecoration(
+                        labelText: l10n.passwordResetLinkLabel,
+                        hintText: l10n.passwordResetLinkHint,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.link),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -323,9 +325,9 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                       height: 54,
                       child: OutlinedButton(
                         onPressed: _isLoading ? null : _continueWithResetLink,
-                        child: const Text(
-                          'Continuar amb l’enllaç',
-                          style: TextStyle(fontSize: 16),
+                        child: Text(
+                          l10n.passwordResetContinueWithLink,
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ),
@@ -333,20 +335,20 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                     TextField(
                       controller: _passwordController,
                       obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Nova contrasenya',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_outline),
+                      decoration: InputDecoration(
+                        labelText: l10n.newPasswordLabel,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock_outline),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: _confirmPasswordController,
                       obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirmar nova contrasenya',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock_outline),
+                      decoration: InputDecoration(
+                        labelText: l10n.confirmNewPasswordLabel,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.lock_outline),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -362,16 +364,16 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text(
-                                'Restablir contrasenya',
-                                style: TextStyle(fontSize: 16),
+                            : Text(
+                                l10n.passwordResetSubmit,
+                                style: const TextStyle(fontSize: 16),
                               ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: _isLoading ? null : _backToEmailStep,
-                      child: const Text('Tornar a enganxar un altre enllaç'),
+                      child: Text(l10n.passwordResetPasteAnotherLink),
                     ),
                   ],
                   if (_errorText != null) ...[

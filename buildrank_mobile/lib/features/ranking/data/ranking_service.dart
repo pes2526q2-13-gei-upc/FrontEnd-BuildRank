@@ -292,7 +292,7 @@ class RankingService {
 
     try {
       final decoded = await _getJson(
-        ApiConfig.rankingEvolution(buildingId: idEdifici),
+        ApiConfig.rankingEvolution(buildingId: idEdifici, limit: seasonsCount),
       );
 
       final items = _extractList(decoded)
@@ -300,9 +300,7 @@ class RankingService {
           .where((item) => item.seasonId != 0)
           .toList();
 
-      if (items.length <= seasonsCount) return items;
-
-      return items.sublist(items.length - seasonsCount);
+      return items;
     } on TimeoutException {
       throw const RankingApiException(
         'La consulta de progrés ha trigat massa. Torna-ho a provar.',
@@ -316,6 +314,121 @@ class RankingService {
     } catch (_) {
       throw const RankingApiException(
         'S’ha produït un error carregant l’evolució de progrés.',
+      );
+    }
+  }
+
+  Future<List<ProgressRankingEntry>> getProgressRanking({
+    required int idEdifici,
+    int window = 3,
+  }) async {
+    if (useMockData) {
+      await Future.delayed(const Duration(milliseconds: 350));
+
+      return [
+        ProgressRankingEntry(
+          idEdifici: idEdifici,
+          position: 1,
+          name: 'Edifici #$idEdifici',
+          startPoints: 610,
+          currentPoints: 820,
+          delta: 210,
+          division: 'Gold',
+          isCurrentBuilding: true,
+          series: const [
+            RankingProgressPoint(
+              seasonId: 1,
+              seasonName: 'T-3',
+              category: 'PROGRES',
+              points: 610,
+              position: 8,
+              division: 'Bronze',
+            ),
+            RankingProgressPoint(
+              seasonId: 2,
+              seasonName: 'T-2',
+              category: 'PROGRES',
+              points: 700,
+              position: 5,
+              division: 'Silver',
+            ),
+            RankingProgressPoint(
+              seasonId: 3,
+              seasonName: 'T-1',
+              category: 'PROGRES',
+              points: 820,
+              position: 1,
+              division: 'Gold',
+            ),
+          ],
+        ),
+        const ProgressRankingEntry(
+          idEdifici: 11,
+          position: 2,
+          name: 'Edifici #11',
+          startPoints: 640,
+          currentPoints: 790,
+          delta: 150,
+          division: 'Silver',
+          series: [
+            RankingProgressPoint(
+              seasonId: 1,
+              seasonName: 'T-3',
+              category: 'PROGRES',
+              points: 640,
+              position: 9,
+              division: 'Bronze',
+            ),
+            RankingProgressPoint(
+              seasonId: 2,
+              seasonName: 'T-2',
+              category: 'PROGRES',
+              points: 710,
+              position: 6,
+              division: 'Silver',
+            ),
+            RankingProgressPoint(
+              seasonId: 3,
+              seasonName: 'T-1',
+              category: 'PROGRES',
+              points: 790,
+              position: 2,
+              division: 'Silver',
+            ),
+          ],
+        ),
+      ];
+    }
+
+    try {
+      final context = await _loadRankingContext(idEdifici: idEdifici);
+
+      final decoded = await _getJson(
+        ApiConfig.progressRanking(seasonId: context.seasonId, window: window),
+      );
+
+      return _extractList(decoded)
+          .map(
+            (item) => ProgressRankingEntry.fromJson(
+              item,
+              currentBuildingId: idEdifici,
+            ),
+          )
+          .where((item) => item.idEdifici != 0)
+          .toList();
+    } on TimeoutException {
+      throw const RankingApiException(
+        'La consulta de progrés ha trigat massa. Torna-ho a provar.',
+      );
+    } on SocketException {
+      throw const RankingApiException(
+        'No s’ha pogut connectar amb el servidor.',
+      );
+    } on RankingApiException {
+      rethrow;
+    } catch (_) {
+      throw const RankingApiException(
+        'S’ha produït un error carregant el rànquing de progrés.',
       );
     }
   }

@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/votacions_service.dart';
@@ -72,6 +73,8 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context);
+
     if (!_formKey.currentState!.validate()) return;
 
     final opcions = _opcionsControllers
@@ -81,9 +84,9 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
 
     final duplicats = opcions.toSet().length != opcions.length;
     if (duplicats) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Hi ha opcions duplicades. Revisa\'ls.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.votesDuplicateOptionsError)));
       return;
     }
 
@@ -113,12 +116,14 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'Nova votació',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        title: Text(
+          l10n.votesCreateTitle,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -131,7 +136,7 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
           TextButton(
             onPressed: _isSubmitting ? null : _submit,
             child: Text(
-              'Crear',
+              l10n.votesCreateAction,
               style: TextStyle(
                 color: _isSubmitting ? Colors.grey : Colors.green[700],
                 fontWeight: FontWeight.w600,
@@ -147,18 +152,18 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             _buildSection(
-              'Títol',
+              l10n.votesTitleLabel,
               TextFormField(
                 controller: _titolController,
                 maxLength: 120,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: _inputDecoration('Escriu el títol de la votació'),
+                decoration: _inputDecoration(l10n.votesTitleHint),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return 'El títol és obligatori.';
+                    return l10n.votesTitleRequiredError;
                   }
                   if (v.trim().length < 4) {
-                    return 'El títol ha de tenir almenys 4 caràcters.';
+                    return l10n.votesTitleMinLengthError;
                   }
                   return null;
                 },
@@ -166,20 +171,18 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
             ),
             const SizedBox(height: 12),
             _buildSection(
-              'Descripció (opcional)',
+              l10n.votesDescriptionOptionalLabel,
               TextFormField(
                 controller: _descripcioController,
                 maxLines: 3,
                 maxLength: 500,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: _inputDecoration(
-                  'Explica el context de la votació...',
-                ),
+                decoration: _inputDecoration(l10n.votesDescriptionHint),
               ),
             ),
             const SizedBox(height: 12),
             _buildSection(
-              'Data límit (opcional)',
+              l10n.votesDeadlineOptionalLabel,
               GestureDetector(
                 onTap: _pickDate,
                 child: Container(
@@ -203,7 +206,7 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
                       Text(
                         _dataLimit != null
                             ? '${_dataLimit!.day.toString().padLeft(2, '0')}/${_dataLimit!.month.toString().padLeft(2, '0')}/${_dataLimit!.year}'
-                            : 'Sense data límit',
+                            : l10n.votesNoDeadline,
                         style: TextStyle(
                           fontSize: 15,
                           color: _dataLimit != null
@@ -229,13 +232,16 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
             const SizedBox(height: 20),
             Row(
               children: [
-                const Text(
-                  'Opcions',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                Text(
+                  l10n.votesOptionsLabel,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const Spacer(),
                 Text(
-                  'Mínim 2 · Màxim 8',
+                  l10n.votesOptionsLimitHint,
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ],
@@ -250,7 +256,7 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
                 onPressed: _addOpcio,
                 icon: Icon(Icons.add, color: Colors.green[700]),
                 label: Text(
-                  'Afegir opció',
+                  l10n.votesAddOption,
                   style: TextStyle(color: Colors.green[700]),
                 ),
               ),
@@ -275,9 +281,12 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text(
-                        'Crear votació',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                    : Text(
+                        l10n.votesCreateTitle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
               ),
             ),
@@ -307,6 +316,8 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
   }
 
   Widget _buildOpcioField(int index) {
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -315,10 +326,10 @@ class _CrearVotacioScreenState extends State<CrearVotacioScreen> {
             child: TextFormField(
               controller: _opcionsControllers[index],
               textCapitalization: TextCapitalization.sentences,
-              decoration: _inputDecoration('Opció ${index + 1}'),
+              decoration: _inputDecoration(l10n.votesOptionHint(index + 1)),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) {
-                  return 'Aquesta opció no pot estar buida.';
+                  return l10n.votesOptionRequiredError;
                 }
                 return null;
               },

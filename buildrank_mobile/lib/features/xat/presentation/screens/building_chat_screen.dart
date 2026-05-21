@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -54,7 +55,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
       }
       if (StreamService.client.state.currentUser == null) {
         setState(
-          () => _error = 'Usuari no connectat. Tanca sessió i torna a entrar.',
+          () => _error = AppLocalizations.of(context).chatUserNotConnectedError,
         );
         return;
       }
@@ -74,8 +75,6 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
     }
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
   int _djangoId(String streamUserId) =>
       int.tryParse(streamUserId.replaceFirst('user_', '')) ?? 0;
 
@@ -90,8 +89,8 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
     );
   }
 
-  /// Returns the reason text, or null if the user cancelled.
   Future<String?> _askReason(String title) {
+    final l10n = AppLocalizations.of(context);
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
@@ -99,18 +98,18 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         title: Text(title),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: 'Motiu (opcional)'),
+          decoration: InputDecoration(hintText: l10n.chatReasonOptionalHint),
           maxLines: 2,
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel·lar'),
+            child: Text(l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Confirmar'),
+            child: Text(l10n.commonConfirm),
           ),
         ],
       ),
@@ -118,24 +117,25 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
   }
 
   Future<bool> _confirm(String text) async {
+    final l10n = AppLocalizations.of(context);
     return await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Confirmar acció'),
+            title: Text(l10n.chatConfirmActionTitle),
             content: Text(text),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel·lar'),
+                child: Text(l10n.commonCancel),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
                 ),
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text(
-                  'Confirmar',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  l10n.commonConfirm,
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -144,10 +144,10 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         false;
   }
 
-  /// Duration + reason dialog for mute/ban. Returns null if cancelled.
   Future<({int? timeout, String? reason})?> _askDurationAndReason(
     String title,
   ) {
+    final l10n = AppLocalizations.of(context);
     final controller = TextEditingController();
     int? selectedTimeout;
     return showDialog<({int? timeout, String? reason})>(
@@ -159,21 +159,38 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<int?>(
-                decoration: const InputDecoration(labelText: 'Durada'),
+                decoration: InputDecoration(labelText: l10n.chatDurationLabel),
                 initialValue: selectedTimeout,
-                items: const [
-                  DropdownMenuItem(value: null, child: Text('Indefinit')),
-                  DropdownMenuItem(value: 30, child: Text('30 minuts')),
-                  DropdownMenuItem(value: 60, child: Text('1 hora')),
-                  DropdownMenuItem(value: 360, child: Text('6 hores')),
-                  DropdownMenuItem(value: 1440, child: Text('24 hores')),
+                items: [
+                  DropdownMenuItem(
+                    value: null,
+                    child: Text(l10n.chatDurationIndefinite),
+                  ),
+                  DropdownMenuItem(
+                    value: 30,
+                    child: Text(l10n.chatDuration30Minutes),
+                  ),
+                  DropdownMenuItem(
+                    value: 60,
+                    child: Text(l10n.chatDuration1Hour),
+                  ),
+                  DropdownMenuItem(
+                    value: 360,
+                    child: Text(l10n.chatDuration6Hours),
+                  ),
+                  DropdownMenuItem(
+                    value: 1440,
+                    child: Text(l10n.chatDuration24Hours),
+                  ),
                 ],
                 onChanged: (v) => setStateDialog(() => selectedTimeout = v),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
-                decoration: const InputDecoration(hintText: 'Motiu (opcional)'),
+                decoration: InputDecoration(
+                  hintText: l10n.chatReasonOptionalHint,
+                ),
                 maxLines: 2,
               ),
             ],
@@ -181,7 +198,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel·lar'),
+              child: Text(l10n.commonCancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, (
@@ -190,7 +207,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
                     ? null
                     : controller.text.trim(),
               )),
-              child: const Text('Confirmar'),
+              child: Text(l10n.commonConfirm),
             ),
           ],
         ),
@@ -198,10 +215,9 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
     );
   }
 
-  // ── Message moderation ────────────────────────────────────────────────────
-
   Future<void> _flagMessage(Message msg) async {
-    final reason = await _askReason('Reportar missatge');
+    final l10n = AppLocalizations.of(context);
+    final reason = await _askReason(l10n.chatReportMessage);
     if (reason == null) return;
     try {
       await ModerationService.flagMessage(
@@ -209,14 +225,15 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         _channelId,
         reason: reason.isEmpty ? null : reason,
       );
-      _showFeedback('Missatge reportat.');
+      _showFeedback(l10n.chatMessageReported);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _hideMessage(Message msg) async {
-    final reason = await _askReason('Ocultar missatge');
+    final l10n = AppLocalizations.of(context);
+    final reason = await _askReason(l10n.chatHideMessage);
     if (reason == null) return;
     try {
       await ModerationService.hideMessage(
@@ -224,56 +241,59 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         _channelId,
         reason: reason.isEmpty ? null : reason,
       );
-      _showFeedback('Missatge ocult.');
+      _showFeedback(l10n.chatMessageHidden);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _deleteOwnMessage(Message msg) async {
-    final ok = await _confirm('Segur que vols eliminar el teu missatge?');
+    final l10n = AppLocalizations.of(context);
+    final ok = await _confirm(l10n.chatDeleteOwnMessageConfirm);
     if (!ok) return;
     try {
       await ModerationService.deleteMessage(msg.id, _channelId, isOwn: true);
-      _showFeedback('Missatge eliminat.');
+      _showFeedback(l10n.chatMessageDeleted);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _deleteOtherMessage(Message msg) async {
-    final ok = await _confirm('Eliminar el missatge d\'aquest usuari?');
+    final l10n = AppLocalizations.of(context);
+    final ok = await _confirm(l10n.chatDeleteOtherMessageConfirm);
     if (!ok) return;
     try {
       await ModerationService.deleteMessage(msg.id, _channelId, isOwn: false);
-      _showFeedback('Missatge eliminat.');
+      _showFeedback(l10n.chatMessageDeleted);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _restoreMessage(Message msg) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await ModerationService.restoreMessage(msg.id, _channelId);
-      _showFeedback('Missatge restaurat.');
+      _showFeedback(l10n.chatMessageRestored);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _dismissFlag(Message msg) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await ModerationService.dismissFlag(msg.id, _channelId);
-      _showFeedback('Report desestimat.');
+      _showFeedback(l10n.chatReportDismissed);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
-  // ── User moderation ───────────────────────────────────────────────────────
-
   Future<void> _warnUser(int djangoId) async {
-    final reason = await _askReason('Advertir usuari');
+    final l10n = AppLocalizations.of(context);
+    final reason = await _askReason(l10n.chatWarnUser);
     if (reason == null) return;
     try {
       await ModerationService.warnUser(
@@ -281,14 +301,15 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         _channelId,
         reason: reason.isEmpty ? null : reason,
       );
-      _showFeedback('Advertència enviada.');
+      _showFeedback(l10n.chatWarningSent);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _muteUser(int djangoId) async {
-    final params = await _askDurationAndReason('Silenciar usuari');
+    final l10n = AppLocalizations.of(context);
+    final params = await _askDurationAndReason(l10n.chatMuteUser);
     if (params == null) return;
     try {
       await ModerationService.muteUser(
@@ -297,23 +318,25 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         timeout: params.timeout,
         reason: params.reason,
       );
-      _showFeedback('Usuari silenciat.');
+      _showFeedback(l10n.chatUserMuted);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _unmuteUser(int djangoId) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await ModerationService.unmuteUser(djangoId, _channelId);
-      _showFeedback('Usuari dessilenciat.');
+      _showFeedback(l10n.chatUserUnmuted);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _banUser(int djangoId) async {
-    final params = await _askDurationAndReason('Expulsar del canal');
+    final l10n = AppLocalizations.of(context);
+    final params = await _askDurationAndReason(l10n.chatBanFromChannel);
     if (params == null) return;
     try {
       await ModerationService.banUser(
@@ -322,74 +345,78 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         timeout: params.timeout,
         reason: params.reason,
       );
-      _showFeedback('Usuari expulsat del canal.');
+      _showFeedback(l10n.chatUserBannedFromChannel);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _unbanUser(int djangoId) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await ModerationService.unbanUser(djangoId, _channelId);
-      _showFeedback('Usuari readmès al canal.');
+      _showFeedback(l10n.chatUserUnbannedFromChannel);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _globalBanUser(int djangoId) async {
-    final reason = await _askReason('Expulsió global');
+    final l10n = AppLocalizations.of(context);
+    final reason = await _askReason(l10n.chatGlobalBan);
     if (reason == null) return;
     try {
       await ModerationService.globalBanUser(
         djangoId,
         reason: reason.isEmpty ? null : reason,
       );
-      _showFeedback('Usuari expulsat globalment.');
+      _showFeedback(l10n.chatUserGloballyBanned);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _globalUnbanUser(int djangoId) async {
-    final ok = await _confirm('Aixecar l\'expulsió global d\'aquest usuari?');
+    final l10n = AppLocalizations.of(context);
+    final ok = await _confirm(l10n.chatGlobalUnbanConfirm);
     if (!ok) return;
     try {
       await ModerationService.globalUnbanUser(djangoId);
-      _showFeedback('Expulsió global aixecada.');
+      _showFeedback(l10n.chatGlobalBanLifted);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _shadowBanUser(int djangoId) async {
-    final reason = await _askReason('Shadow ban');
+    final l10n = AppLocalizations.of(context);
+    final reason = await _askReason(l10n.chatShadowBan);
     if (reason == null) return;
     try {
       await ModerationService.shadowBanUser(
         djangoId,
         reason: reason.isEmpty ? null : reason,
       );
-      _showFeedback('Shadow ban aplicat.');
+      _showFeedback(l10n.chatShadowBanApplied);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
   Future<void> _shadowUnbanUser(int djangoId) async {
-    final ok = await _confirm('Aixecar el shadow ban d\'aquest usuari?');
+    final l10n = AppLocalizations.of(context);
+    final ok = await _confirm(l10n.chatShadowUnbanConfirm);
     if (!ok) return;
     try {
       await ModerationService.shadowUnbanUser(djangoId);
-      _showFeedback('Shadow ban aixecat.');
+      _showFeedback(l10n.chatShadowBanLifted);
     } catch (e) {
       _showFeedback(e.toString(), isError: true);
     }
   }
 
-  // ── User moderation bottom sheet ──────────────────────────────────────────
-
   void _showUserModerationSheet(User user) {
+    final l10n = AppLocalizations.of(context);
     final djangoId = _djangoId(user.id);
     if (djangoId == 0) return;
 
@@ -420,32 +447,32 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
                 _sheetTile(
                   ctx,
                   Icons.warning_amber_outlined,
-                  'Advertir',
+                  l10n.chatWarn,
                   () => _warnUser(djangoId),
                 ),
                 _sheetTile(
                   ctx,
                   Icons.volume_off_outlined,
-                  'Silenciar',
+                  l10n.chatMute,
                   () => _muteUser(djangoId),
                 ),
                 _sheetTile(
                   ctx,
                   Icons.volume_up_outlined,
-                  'Dessilenciar',
+                  l10n.chatUnmute,
                   () => _unmuteUser(djangoId),
                 ),
                 _sheetTile(
                   ctx,
                   Icons.block_outlined,
-                  'Expulsar del canal',
+                  l10n.chatBanFromChannel,
                   () => _banUser(djangoId),
                   color: Colors.orange,
                 ),
                 _sheetTile(
                   ctx,
                   Icons.how_to_reg_outlined,
-                  'Readmetre al canal',
+                  l10n.chatReadmitToChannel,
                   () => _unbanUser(djangoId),
                 ),
               ],
@@ -454,27 +481,27 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
                 _sheetTile(
                   ctx,
                   Icons.gavel,
-                  'Expulsió global',
+                  l10n.chatGlobalBan,
                   () => _globalBanUser(djangoId),
                   color: Colors.red,
                 ),
                 _sheetTile(
                   ctx,
                   Icons.how_to_reg,
-                  'Aixecar expulsió global',
+                  l10n.chatLiftGlobalBan,
                   () => _globalUnbanUser(djangoId),
                 ),
                 _sheetTile(
                   ctx,
                   Icons.visibility_off,
-                  'Shadow ban',
+                  l10n.chatShadowBan,
                   () => _shadowBanUser(djangoId),
                   color: Colors.purple,
                 ),
                 _sheetTile(
                   ctx,
                   Icons.visibility,
-                  'Aixecar shadow ban',
+                  l10n.chatLiftShadowBan,
                   () => _shadowUnbanUser(djangoId),
                   color: Colors.purple,
                 ),
@@ -504,23 +531,22 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
     );
   }
 
-  // ── Message actions builder ───────────────────────────────────────────────
-
   List<StreamMessageAction> _buildMessageActions(Message message) {
+    final l10n = AppLocalizations.of(context);
     final currentUserId = StreamService.client.state.currentUser?.id;
     final isOwn = message.user?.id == currentUserId;
 
     return [
       StreamMessageAction(
         leading: const Icon(Icons.flag_outlined),
-        title: const Text('Reportar missatge'),
+        title: Text(l10n.chatReportMessage),
         onTap: _flagMessage,
       ),
       if (isOwn)
         StreamMessageAction(
           leading: Icon(Icons.delete_outline, color: Colors.red.shade700),
           title: Text(
-            'Eliminar el meu missatge',
+            l10n.chatDeleteMyMessage,
             style: TextStyle(color: Colors.red.shade700),
           ),
           onTap: _deleteOwnMessage,
@@ -528,7 +554,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
       if (_canModerate) ...[
         StreamMessageAction(
           leading: const Icon(Icons.visibility_off_outlined),
-          title: const Text('Ocultar missatge'),
+          title: Text(l10n.chatHideMessage),
           onTap: _hideMessage,
         ),
         if (!isOwn)
@@ -538,35 +564,35 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
               color: Colors.red.shade700,
             ),
             title: Text(
-              'Eliminar missatge',
+              l10n.chatDeleteMessage,
               style: TextStyle(color: Colors.red.shade700),
             ),
             onTap: _deleteOtherMessage,
           ),
         StreamMessageAction(
           leading: const Icon(Icons.restore_outlined),
-          title: const Text('Restaurar missatge'),
+          title: Text(l10n.chatRestoreMessage),
           onTap: _restoreMessage,
         ),
         StreamMessageAction(
           leading: const Icon(Icons.check_circle_outline),
-          title: const Text('Desestimar report'),
+          title: Text(l10n.chatDismissReport),
           onTap: _dismissFlag,
         ),
       ],
     ];
   }
 
-  // ── Build ─────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (_error != null) {
       return Scaffold(
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text('Error al connectar el xat:\n$_error'),
+            child: Text(l10n.chatConnectionError(_error!)),
           ),
         ),
       );
@@ -588,7 +614,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
             child: ElevatedButton.icon(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back),
-              label: const Text("Torna"),
+              label: Text(l10n.commonBack),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
@@ -600,7 +626,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              _buildHeader(),
+              _buildHeader(l10n),
               const Divider(height: 1),
               Expanded(
                 child: StreamMessageListView(
@@ -624,7 +650,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -633,13 +659,13 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Comunitat de ${widget.buildingName}",
+            l10n.chatCommunityTitle(widget.buildingName),
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
-          const Text(
-            "Parla amb els membres d'aquest edifici sobre millores, incidències i propostes.",
-            style: TextStyle(color: Colors.black54, height: 1.35),
+          Text(
+            l10n.chatCommunitySubtitle,
+            style: const TextStyle(color: Colors.black54, height: 1.35),
           ),
           if (widget.userRole == 'admin') ...[
             const SizedBox(height: 12),
@@ -658,7 +684,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
                   );
                 },
                 icon: const Icon(Icons.apartment_outlined),
-                label: const Text('Contactar admins similars'),
+                label: Text(l10n.chatContactSimilarAdmins),
               ),
             ),
           ],

@@ -5,6 +5,7 @@ import 'package:buildrank_mobile/features/simulation/data/improvement_model.dart
 import 'package:buildrank_mobile/features/simulation/data/saved_simulation_model.dart';
 import 'package:buildrank_mobile/features/simulation/data/simulation_result_model.dart';
 import 'package:buildrank_mobile/features/simulation/data/simulation_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class SimulationScreen extends StatefulWidget {
   final int idEdifici;
@@ -79,7 +80,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut carregar el catàleg de millores.';
+        _errorText = AppLocalizations.of(context).simulationCatalogLoadError;
       });
     } finally {
       if (mounted) {
@@ -119,7 +120,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut carregar l’historial de simulacions.';
+        _errorText = AppLocalizations.of(context).simulationHistoryLoadError;
       });
     } finally {
       if (mounted) {
@@ -189,7 +190,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut calcular la simulació.';
+        _errorText = AppLocalizations.of(context).simulationCalculateError;
       });
     } finally {
       if (mounted) {
@@ -222,7 +223,9 @@ class _SimulationScreenState extends State<SimulationScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Simulació guardada correctament.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).simulationSavedSnack),
+        ),
       );
 
       await _loadHistory();
@@ -242,7 +245,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
       if (!mounted) return;
 
       setState(() {
-        _errorText = 'No s’ha pogut guardar la simulació.';
+        _errorText = AppLocalizations.of(context).simulationSaveError;
       });
     } finally {
       if (mounted) {
@@ -310,7 +313,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text("Torna"),
+                  label: Text(AppLocalizations.of(context).commonBack),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
@@ -320,7 +323,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
               ),
               actions: [
                 IconButton(
-                  tooltip: 'Refrescar',
+                  tooltip: AppLocalizations.of(context).commonRefresh,
                   onPressed: isRefreshing ? null : _refreshAll,
                   icon: isRefreshing
                       ? const SizedBox(
@@ -389,8 +392,8 @@ class _SimulationScreenState extends State<SimulationScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Simulador de millores',
+          Text(
+            AppLocalizations.of(context).simulationTitle,
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
@@ -411,7 +414,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: _ScoreBox(
-                  label: 'Simulat',
+                  label: AppLocalizations.of(context).simulationSimulated,
                   value: simulatedScore,
                   color: const Color(0xFF16A34A),
                 ),
@@ -419,8 +422,8 @@ class _SimulationScreenState extends State<SimulationScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Els resultats són estimacions orientatives. No substitueixen una auditoria energètica professional.',
+          Text(
+            AppLocalizations.of(context).simulationDisclaimer,
             style: TextStyle(fontSize: 12, height: 1.35, color: Colors.black54),
           ),
         ],
@@ -430,20 +433,20 @@ class _SimulationScreenState extends State<SimulationScreen> {
 
   Widget _buildSimulationTabs() {
     return SegmentedButton<int>(
-      segments: const [
+      segments: [
         ButtonSegment(
           value: 0,
-          label: Text('Simular'),
+          label: Text(AppLocalizations.of(context).simulationTabSimulate),
           icon: Icon(Icons.analytics_outlined),
         ),
         ButtonSegment(
           value: 1,
-          label: Text('Guardades'),
+          label: Text(AppLocalizations.of(context).simulationTabSaved),
           icon: Icon(Icons.save_outlined),
         ),
         ButtonSegment(
           value: 2,
-          label: Text('Aplicades'),
+          label: Text(AppLocalizations.of(context).simulationTabImplemented),
           icon: Icon(Icons.verified_outlined),
         ),
       ],
@@ -471,9 +474,9 @@ class _SimulationScreenState extends State<SimulationScreen> {
       children: [
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Text(
-                'Catàleg de millores',
+                AppLocalizations.of(context).simulationCatalogTitle,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
             ),
@@ -485,7 +488,9 @@ class _SimulationScreenState extends State<SimulationScreen> {
                 color: const Color(0xFFEAF8EE),
               ),
               child: Text(
-                '$selectedCount seleccionades',
+                AppLocalizations.of(
+                  context,
+                ).simulationSelectedCount(selectedCount),
                 style: const TextStyle(
                   color: Color(0xFF16A34A),
                   fontWeight: FontWeight.w600,
@@ -536,17 +541,14 @@ class _SimulationScreenState extends State<SimulationScreen> {
     }
 
     if (_savedSimulations.isEmpty) {
-      return const _InfoCard(
-        text:
-            'Encara no hi ha simulacions guardades per aquest edifici. Calcula un preview i prem “Guardar simulació”.',
-      );
+      return _InfoCard(text: AppLocalizations.of(context).simulationNoSaved);
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Simulacions guardades',
+        Text(
+          AppLocalizations.of(context).simulationSavedTitle,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
@@ -566,17 +568,16 @@ class _SimulationScreenState extends State<SimulationScreen> {
     }
 
     if (_implementedImprovements.isEmpty) {
-      return const _InfoCard(
-        text:
-            'Encara no hi ha millores aplicades registrades. Les simulacions guardades són escenaris; les aplicades representen actuacions realment executades o en validació.',
+      return _InfoCard(
+        text: AppLocalizations.of(context).simulationNoImplemented,
       );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Millores aplicades',
+        Text(
+          AppLocalizations.of(context).simulationImplementedTitle,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
@@ -608,7 +609,9 @@ class _SimulationScreenState extends State<SimulationScreen> {
                   )
                 : const Icon(Icons.analytics_outlined),
             label: Text(
-              _isPreviewLoading ? 'Calculant preview...' : 'Calcular preview',
+              _isPreviewLoading
+                  ? AppLocalizations.of(context).simulationCalculatingPreview
+                  : AppLocalizations.of(context).simulationCalculatePreview,
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF22C55E),
@@ -636,7 +639,9 @@ class _SimulationScreenState extends State<SimulationScreen> {
                     )
                   : const Icon(Icons.save_outlined),
               label: Text(
-                _isSaving ? 'Guardant simulació...' : 'Guardar simulació',
+                _isSaving
+                    ? AppLocalizations.of(context).simulationSaving
+                    : AppLocalizations.of(context).simulationSave,
               ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF16A34A),
@@ -649,10 +654,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
           ),
         ] else ...[
           const SizedBox(height: 10),
-          const _InfoCard(
-            text:
-                'Aquest rol pot consultar el preview, però la gestió formal de simulacions queda reservada a l’administrador de finca.',
-          ),
+          _InfoCard(text: AppLocalizations.of(context).simulationReadOnlyRole),
         ],
       ],
     );
@@ -817,8 +819,8 @@ class _SimulationResultCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Resultat de la simulació',
+        Text(
+          AppLocalizations.of(context).simulationResultTitle,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
@@ -832,7 +834,7 @@ class _SimulationResultCard extends StatelessWidget {
             children: [
               _ResultRow(
                 icon: Icons.bolt_outlined,
-                title: 'Consum anual',
+                title: AppLocalizations.of(context).simulationAnnualConsumption,
                 oldValue:
                     '${result.abans.consumFinalKwhAny.toStringAsFixed(0)} kWh',
                 newValue:
@@ -852,19 +854,23 @@ class _SimulationResultCard extends StatelessWidget {
               ),
               _ResultRow(
                 icon: Icons.euro_outlined,
-                title: 'Cost anual estimat',
+                title: AppLocalizations.of(
+                  context,
+                ).simulationEstimatedAnnualCost,
                 oldValue: _formatCurrency(result.abans.costAnualEnergia),
                 newValue: _formatCurrency(result.despres.costAnualEnergia),
-                detail:
-                    'Estalvi ${_formatCurrency(result.delta.estalviAnualEstimatiu)}',
+                detail: AppLocalizations.of(context).simulationSavings(
+                  _formatCurrency(result.delta.estalviAnualEstimatiu),
+                ),
               ),
               _ResultRow(
                 icon: Icons.trending_up,
-                title: 'Puntuació',
+                title: AppLocalizations.of(context).simulationScore,
                 oldValue: result.abans.score.toStringAsFixed(0),
                 newValue: result.despres.score.toStringAsFixed(0),
-                detail:
-                    '+${result.delta.incrementScore.toStringAsFixed(1)} punts',
+                detail: AppLocalizations.of(context).simulationPointsDelta(
+                  result.delta.incrementScore.toStringAsFixed(1),
+                ),
                 isLast: true,
               ),
             ],
@@ -872,8 +878,10 @@ class _SimulationResultCard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _InfoCard(
-          text:
-              'Cost total estimat: ${_formatCurrency(result.delta.costTotalEstimat)} · Motor ${result.versioMotor}',
+          text: AppLocalizations.of(context).simulationTotalCostAndEngine(
+            _formatCurrency(result.delta.costTotalEstimat),
+            result.versioMotor,
+          ),
         ),
       ],
     );
@@ -904,7 +912,10 @@ class _SavedSimulationCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Data: ${simulation.dataSimulacio} · Motor ${simulation.versioMotor}',
+            AppLocalizations.of(context).simulationDateAndEngine(
+              simulation.dataSimulacio,
+              simulation.versioMotor,
+            ),
             style: const TextStyle(color: Colors.black54, fontSize: 12),
           ),
           const SizedBox(height: 10),
@@ -921,10 +932,14 @@ class _SavedSimulationCard extends StatelessWidget {
                     '-${simulation.reduccioEmissionsPrevista.toStringAsFixed(0)} kg CO₂',
               ),
               _MiniChip(
-                text: 'Cost ${_formatCurrency(simulation.costEstimat)}',
+                text: AppLocalizations.of(
+                  context,
+                ).simulationCost(_formatCurrency(simulation.costEstimat)),
               ),
               _MiniChip(
-                text: 'Estalvi ${_formatCurrency(simulation.estalviAnual)}',
+                text: AppLocalizations.of(
+                  context,
+                ).simulationSavings(_formatCurrency(simulation.estalviAnual)),
               ),
             ],
           ),
@@ -958,7 +973,9 @@ class _ImplementedImprovementCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Execució: ${improvement.dataExecucio}',
+            AppLocalizations.of(
+              context,
+            ).simulationExecutionDate(improvement.dataExecucio),
             style: const TextStyle(color: Colors.black54, fontSize: 12),
           ),
           const SizedBox(height: 10),
@@ -968,7 +985,9 @@ class _ImplementedImprovementCard extends StatelessWidget {
             children: [
               _MiniChip(text: improvement.estatValidacio),
               _MiniChip(
-                text: 'Cost real ${_formatCurrency(improvement.costReal)}',
+                text: AppLocalizations.of(
+                  context,
+                ).simulationRealCost(_formatCurrency(improvement.costReal)),
               ),
             ],
           ),
@@ -1098,7 +1117,10 @@ class _ErrorBanner extends StatelessWidget {
             ),
           ),
           if (onRetry != null)
-            TextButton(onPressed: onRetry, child: const Text('Reintenta')),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context).commonRetry),
+            ),
         ],
       ),
     );
@@ -1137,10 +1159,7 @@ class _EmptyCatalogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _InfoCard(
-      text:
-          'Encara no hi ha millores actives al catàleg. Carrega el seed de millores al backend.',
-    );
+    return _InfoCard(text: AppLocalizations.of(context).simulationEmptyCatalog);
   }
 }
 
