@@ -46,7 +46,7 @@ class ChatService {
     // 3. Connecta a GetStream amb el token nou
     await StreamService.connectUser(
       userId: streamUserId,
-      userName: userName ?? StreamService.lastUserName ?? streamUserId,
+      userName: userName ?? streamUserId,
       token: streamToken,
     );
   }

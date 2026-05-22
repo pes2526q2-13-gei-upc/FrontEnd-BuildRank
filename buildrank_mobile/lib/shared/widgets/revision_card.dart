@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class RevisionCard extends StatelessWidget {
@@ -13,36 +14,30 @@ class RevisionCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Row(
             children: [
-              Icon(Icons.access_time, color: Colors.white, size: 20),
-
-              SizedBox(width: 8),
-
+              const Icon(Icons.access_time, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
               Text(
-                "Propera revisió: 15 des. 2026",
-                style: TextStyle(
+                AppLocalizations.of(context).revisionCardNextReview,
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-
-          SizedBox(height: 12),
-
-          LinearProgressIndicator(
+          const SizedBox(height: 12),
+          const LinearProgressIndicator(
             value: 0.75,
             color: Colors.green,
             backgroundColor: Colors.white24,
           ),
-
-          SizedBox(height: 12),
-
+          const SizedBox(height: 12),
           Text(
-            "Les dades de verificació estan completes al 75%.",
-            style: TextStyle(color: Colors.white70),
+            AppLocalizations.of(context).revisionCardDataComplete,
+            style: const TextStyle(color: Colors.white70),
           ),
         ],
       ),

@@ -353,6 +353,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get adminUserManagementTitle => 'Gestió d\'usuaris';
 
   @override
+  String get adminUsersRefreshList => 'Actualitzar llistat';
+
+  @override
   String get notificationsTitle => 'Notificacions';
 
   @override
@@ -2420,6 +2423,38 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get adminHomeUnexpectedVerificationError =>
       'S\'ha produït un error inesperat revisant la verificació.';
+
+  @override
+  String get revisionCardNextReview => 'Propera revisió: 15 des. 2026';
+
+  @override
+  String get revisionCardDataComplete =>
+      'Les dades de verificació estan completes al 75%.';
+
+  @override
+  String get buildingListScoreLabel => 'PUNTUACIÓ BUILDRANK';
+
+  @override
+  String get adminHomeChatsModerationTitle => 'Moderació de xats';
+
+  @override
+  String get adminHomeAuditButton => 'Auditoria';
+
+  @override
+  String get adminHomeLogoutButton => 'Tanca sessió';
+
+  @override
+  String get adminHomeLoggingOut => 'Sortint...';
+
+  @override
+  String get adminHomeNoAccessPermission =>
+      'No tens permisos per accedir al panell d\'administració del sistema.';
+
+  @override
+  String get adminHomeIntegrityAlertTitle => 'Alerta d\'integritat de dades';
+
+  @override
+  String get adminHomeRunAuditNow => 'Executa l\'auditoria d\'integritat ara';
 
   @override
   String get adminHomeRejectionReason => 'Motiu de rebuig';

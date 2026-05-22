@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/main/presentation/screens/building_main_screen.dart';
 
@@ -142,9 +143,9 @@ class BuildingListItem extends StatelessWidget {
 
                   const SizedBox(height: 8),
 
-                  const Text(
-                    "PUNTUACIÓ BUILDRANK",
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context).buildingListScoreLabel,
+                    style: const TextStyle(
                       fontSize: 11,
                       color: Colors.black38,
                       fontWeight: FontWeight.w700,

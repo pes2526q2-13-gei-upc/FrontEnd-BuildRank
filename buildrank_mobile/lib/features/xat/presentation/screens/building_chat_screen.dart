@@ -4,6 +4,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import '../../../../core/services/stream_service.dart';
 import '../../../auth/data/auth_service.dart';
+import '../../data/chat_service.dart';
 import '../../data/moderation_service.dart';
 import 'twin_building_admins_screen.dart';
 
@@ -51,7 +52,7 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
   Future<void> _initChannel() async {
     try {
       if (StreamService.client.state.currentUser == null) {
-        await StreamService.reconnect();
+        await ChatService.provisionAndReconnect();
       }
       if (StreamService.client.state.currentUser == null) {
         setState(
@@ -631,10 +632,51 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
               Expanded(
                 child: StreamMessageListView(
                   messageBuilder: (context, details, messages, defaultWidget) {
+                    final msg = details.message;
+                    final currentUserId =
+                        StreamService.client.state.currentUser?.id;
+
+                    // Ocultar missatges d'usuaris silenciats
+                    final mutedIds =
+                        StreamService.client.state.currentUser?.mutes
+                            .map((m) => m.target.id)
+                            .toSet() ??
+                        {};
+                    if (msg.user?.id != null &&
+                        msg.user!.id != currentUserId &&
+                        mutedIds.contains(msg.user!.id)) {
+                      return const SizedBox.shrink();
+                    }
+
+                    final isHidden = msg.extraData['moderated'] == true;
+
+                    if (isHidden) {
+                      final chatTheme = StreamChatTheme.of(context);
+                      final isOwn = msg.user?.id == currentUserId;
+                      final base = isOwn
+                          ? chatTheme.ownMessageTheme
+                          : chatTheme.otherMessageTheme;
+                      return defaultWidget.copyWith(
+                        showFlagButton: false,
+                        showDeleteMessage: false,
+                        customActions: _buildMessageActions(msg),
+                        onUserAvatarTap: _canModerate
+                            ? _showUserModerationSheet
+                            : null,
+                        messageTheme: base.copyWith(
+                          messageTextStyle: base.messageTextStyle?.copyWith(
+                            color: Colors.grey.shade600,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          messageBackgroundColor: Colors.grey.shade200,
+                        ),
+                      );
+                    }
+
                     return defaultWidget.copyWith(
                       showFlagButton: false,
                       showDeleteMessage: false,
-                      customActions: _buildMessageActions(details.message),
+                      customActions: _buildMessageActions(msg),
                       onUserAvatarTap: _canModerate
                           ? _showUserModerationSheet
                           : null,

@@ -85,7 +85,9 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
     final opcioId = _selectedOpcioId;
     if (opcioId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona una opció per votar.')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).votesSelectOptionSnack),
+        ),
       );
       return;
     }
@@ -386,7 +388,7 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
       children: [
         Text(
           canVote
-              ? 'Selecciona una opció'
+              ? AppLocalizations.of(context).votesSelectOption
               : AppLocalizations.of(context).votesOptions,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
@@ -395,8 +397,7 @@ class _VotacioDetallScreenState extends State<VotacioDetallScreen> {
         if (!_canVoteCommunity && votacio.estat == 'oberta') ...[
           const SizedBox(height: 12),
           _PermissionInfoBox(
-            text:
-                'Només els propietaris i administradors de finca vinculats a aquest edifici poden emetre vot.',
+            text: AppLocalizations.of(context).votesPermissionOnlyOwners,
           ),
         ],
         if (canVote) ...[

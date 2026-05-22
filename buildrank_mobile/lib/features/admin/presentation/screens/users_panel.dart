@@ -329,21 +329,21 @@ class _UsersPanelState extends State<UsersPanel> {
     return InkWell(
       onTap: _loadUsers,
       borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Actualitzar llistat',
-              style: TextStyle(
+              AppLocalizations.of(context).adminUsersRefreshList,
+              style: const TextStyle(
                 color: Color(0xFF19C463),
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
               ),
             ),
-            SizedBox(width: 8),
-            Icon(Icons.refresh, size: 17, color: Color(0xFF19C463)),
+            const SizedBox(width: 8),
+            const Icon(Icons.refresh, size: 17, color: Color(0xFF19C463)),
           ],
         ),
       ),

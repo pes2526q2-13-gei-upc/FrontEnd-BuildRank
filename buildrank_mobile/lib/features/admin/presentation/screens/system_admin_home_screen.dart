@@ -132,13 +132,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             onPressed: () => Navigator.of(context).maybePop(),
           ),
         ),
-        body: const Center(
+        body: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Text(
-              'No tens permisos per accedir al panell d’administració del sistema.',
+              AppLocalizations.of(context).adminHomeNoAccessPermission,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
           ),
         ),
@@ -206,7 +206,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 )
               : const Icon(Icons.logout, size: 18),
           label: Text(
-            _isLoggingOut ? 'Sortint...' : 'Tanca sessió',
+            _isLoggingOut
+                ? AppLocalizations.of(context).adminHomeLoggingOut
+                : AppLocalizations.of(context).adminHomeLogoutButton,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
         ),
@@ -285,9 +287,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             ),
           ),
           icon: const Icon(Icons.verified_user_outlined, size: 18),
-          label: const Text(
-            'Auditoria',
-            style: TextStyle(fontWeight: FontWeight.w800),
+          label: Text(
+            AppLocalizations.of(context).adminHomeAuditButton,
+            style: const TextStyle(fontWeight: FontWeight.w800),
           ),
         ),
       ],
@@ -577,17 +579,19 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Moderació de xats',
-                        style: TextStyle(
+                        AppLocalizations.of(
+                          context,
+                        ).adminHomeChatsModerationTitle,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF111827),
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Accedeix als xats dels edificis i aplica accions de moderació.',
-                        style: TextStyle(
+                        AppLocalizations.of(context).adminHomeChatsBody,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF6B7280),
                         ),
@@ -704,14 +708,18 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.shield_outlined, color: Color(0xFF19C463), size: 18),
-              SizedBox(width: 10),
+              const Icon(
+                Icons.shield_outlined,
+                color: Color(0xFF19C463),
+                size: 18,
+              ),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Alerta d’integritat de dades',
-                  style: TextStyle(
+                  AppLocalizations.of(context).adminHomeIntegrityAlertTitle,
+                  style: const TextStyle(
                     color: Color(0xFF19C463),
                     fontWeight: FontWeight.w900,
                     fontSize: 15,
@@ -721,11 +729,11 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.only(left: 28),
+          Padding(
+            padding: const EdgeInsets.only(left: 28),
             child: Text(
-              '5 edificis de la categoria “Comercial” han presentat dades que superen els punts de referència històrics en més d’un 20%. Cal una auditoria manual.',
-              style: TextStyle(
+              AppLocalizations.of(context).adminHomeAnomalyBody,
+              style: const TextStyle(
                 color: Color(0xFF51606F),
                 fontSize: 13,
                 height: 1.28,
@@ -738,11 +746,11 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             child: InkWell(
               onTap: _showAuditSnackBar,
               borderRadius: BorderRadius.circular(6),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 4),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Text(
-                  'Executa l’auditoria d’integritat ara',
-                  style: TextStyle(
+                  AppLocalizations.of(context).adminHomeRunAuditNow,
+                  style: const TextStyle(
                     color: Color(0xFF19C463),
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
@@ -783,9 +791,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                   ),
                 );
               },
-              child: const Text(
-                'Política de privacitat',
-                style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+              child: Text(
+                AppLocalizations.of(context).legalPrivacyTitle,
+                style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12),
               ),
             ),
             TextButton(
@@ -798,9 +806,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                   ),
                 );
               },
-              child: const Text(
-                'Termes del servei',
-                style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+              child: Text(
+                AppLocalizations.of(context).legalTermsTitle,
+                style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12),
               ),
             ),
           ],

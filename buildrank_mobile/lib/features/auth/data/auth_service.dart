@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:buildrank_mobile/core/config/api_config.dart';
 import 'package:buildrank_mobile/core/services/api_client.dart';
+import 'package:buildrank_mobile/core/services/stream_service.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -221,6 +222,7 @@ class AuthService {
     }
 
     await TokenStorage.clearTokens();
+    await StreamService.disconnectUser();
   }
 
   // Comprueba si hay token guardado.

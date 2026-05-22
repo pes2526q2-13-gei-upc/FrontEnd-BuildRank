@@ -474,18 +474,20 @@ class _VotationCard extends StatelessWidget {
                   votacio.descripcio.isNotEmpty
                       ? votacio.descripcio
                       : simulation?.descripcio ??
-                            'Proposta de millora energètica.',
+                            AppLocalizations.of(
+                              context,
+                            ).votesEnergyProposalFallback,
                   style: const TextStyle(color: Colors.black54, height: 1.35),
                 ),
                 const SizedBox(height: 14),
                 _ProgressBox(
-                  title: 'Progrés del quòrum',
+                  title: AppLocalizations.of(context).votesQuorumProgress,
                   valueLabel:
                       '${participation.toStringAsFixed(0)}% / ${votacio.quorumPercent.toStringAsFixed(0)}%',
                   value: participation / 100,
                   helper: votacio.participacioPercent >= votacio.quorumPercent
                       ? AppLocalizations.of(context).votesQuorumReached
-                      : 'Cal més participació',
+                      : AppLocalizations.of(context).votesNeedMoreParticipation,
                 ),
                 const SizedBox(height: 18),
                 Text(

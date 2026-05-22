@@ -1,4 +1,5 @@
 import 'package:buildrank_mobile/core/services/stream_service.dart';
+import 'package:buildrank_mobile/features/xat/data/chat_service.dart';
 import 'package:buildrank_mobile/features/admin/presentation/screens/system_admin_home_screen.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/legal/presentation/screens/legal_document_screen.dart';
@@ -122,13 +123,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final isSystemAdmin = me['is_system_admin'] == true;
 
     try {
-      final userId = 'user_${me['id']}';
       final userName = '${me['first_name'] ?? ''} ${me['last_name'] ?? ''}'
           .trim();
 
-      await StreamService.connectUser(
-        userId: userId,
-        userName: userName.isNotEmpty ? userName : userId,
+      await ChatService.provisionAndReconnect(
+        userName: userName.isNotEmpty ? userName : null,
       );
 
       final token = await FirebaseMessaging.instance.getToken();
