@@ -1340,6 +1340,36 @@
     "adminHomeVerificationLoadError":  "No s\u0027han pogut carregar les verificacions",
     "adminHomeRefreshVerifications":  "Actualitza verificacions",
     "adminHomeRecordsCount":  "{count} registres",
+    "adminHomeClosedSeasonsCount":  "{count} tancades",
+    "adminHomeSeasonsLoading":  "Carregant",
+    "adminHomeCreateAndStartSeason":  "Crear i iniciar temporada",
+    "adminHomeCreatingAndStartingSeason":  "Creant i iniciant temporada...",
+    "adminHomeRefreshSeasonHistory":  "Actualitza historial",
+    "adminHomeRetryLoadSeasons":  "Reintenta carregar temporades",
+    "adminHomeSeasonLoadErrorTitle":  "No s\u0027han pogut carregar les temporades",
+    "adminHomeSeasonUnexpectedLoadError":  "S\u0027ha produït un error inesperat carregant temporades.",
+    "adminHomeNoClosedSeasonsTitle":  "No hi ha temporades tancades",
+    "adminHomeNoClosedSeasonsBody":  "Quan una temporada es tanqui apareixerà en aquest historial.",
+    "adminHomeSeasonActivationTitle":  "Crear i iniciar temporada",
+    "adminHomeSeasonActivationBody":  "El backend tancarà automàticament la temporada activa actual, si n\u0027hi ha, crearà la nova temporada i actualitzarà puntuacions i snapshots del rànquing.",
+    "adminHomeSeasonNameLabel":  "Nom de la temporada",
+    "adminHomeSeasonStartDateLabel":  "Data d’inici",
+    "adminHomeSeasonEndDateLabel":  "Data de fi",
+    "adminHomeSeasonSelectStartDate":  "Selecciona la data d’inici",
+    "adminHomeSeasonSelectEndDate":  "Selecciona la data de fi",
+    "adminHomeSeasonNameRequired":  "El nom de la temporada és obligatori",
+    "adminHomeSeasonStartDateRequired":  "La data d’inici és obligatòria",
+    "adminHomeSeasonEndDateRequired":  "La data de fi és obligatòria",
+    "adminHomeSeasonEndBeforeStart":  "La data de fi no pot ser anterior a la data d’inici",
+    "adminHomeSeasonActivationConfirm":  "Crear i iniciar",
+    "adminHomeSeasonActivationDefaultSummary":  "Temporada creada i iniciada correctament.",
+    "adminHomeSeasonActivationSuccess":  "Temporada iniciada: {summary}",
+    "adminHomeSeasonActivationUnexpectedError":  "S\u0027ha produït un error inesperat creant la temporada.",
+    "adminHomeSeasonStatusActive":  "ACTIVA",
+    "adminHomeSeasonStatusClosed":  "TANCADA",
+    "adminHomeSeasonDatesUnavailable":  "Dates no disponibles",
+    "adminHomeSeasonStartedOn":  "Des de {date}",
+    "adminHomeSeasonEndedOn":  "Fins {date}",
     "adminHomeRolesAndPermissions":  "Rols i permisos",
     "adminHomeRolesCount":  "{count} rols",
     "adminHomeReviewPermissionsMatrix":  "Revisar matriu de permisos",
@@ -1397,6 +1427,34 @@
                                                                   }
                                                     }
                                },
+    "@adminHomeClosedSeasonsCount":  {
+                                         "placeholders":  {
+                                                              "count":  {
+                                                                            "type":  "int"
+                                                                        }
+                                                          }
+                                     },
+    "@adminHomeSeasonActivationSuccess":  {
+                                              "placeholders":  {
+                                                                   "summary":  {
+                                                                                   "type":  "String"
+                                                                               }
+                                                               }
+                                          },
+    "@adminHomeSeasonStartedOn":  {
+                                      "placeholders":  {
+                                                           "date":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                       }
+                                  },
+    "@adminHomeSeasonEndedOn":  {
+                                    "placeholders":  {
+                                                         "date":  {
+                                                                      "type":  "String"
+                                                                  }
+                                                     }
+                                },
     "@adminHomeRolesCount":  {
                                  "placeholders":  {
                                                       "count":  {

@@ -4527,6 +4527,186 @@ abstract class AppLocalizations {
   /// **'{count} registres'**
   String adminHomeRecordsCount(int count);
 
+  /// No description provided for @adminHomeClosedSeasonsCount.
+  ///
+  /// In ca, this message translates to:
+  /// **'{count} tancades'**
+  String adminHomeClosedSeasonsCount(int count);
+
+  /// No description provided for @adminHomeSeasonsLoading.
+  ///
+  /// In ca, this message translates to:
+  /// **'Carregant'**
+  String get adminHomeSeasonsLoading;
+
+  /// No description provided for @adminHomeCreateAndStartSeason.
+  ///
+  /// In ca, this message translates to:
+  /// **'Crear i iniciar temporada'**
+  String get adminHomeCreateAndStartSeason;
+
+  /// No description provided for @adminHomeCreatingAndStartingSeason.
+  ///
+  /// In ca, this message translates to:
+  /// **'Creant i iniciant temporada...'**
+  String get adminHomeCreatingAndStartingSeason;
+
+  /// No description provided for @adminHomeRefreshSeasonHistory.
+  ///
+  /// In ca, this message translates to:
+  /// **'Actualitza historial'**
+  String get adminHomeRefreshSeasonHistory;
+
+  /// No description provided for @adminHomeRetryLoadSeasons.
+  ///
+  /// In ca, this message translates to:
+  /// **'Reintenta carregar temporades'**
+  String get adminHomeRetryLoadSeasons;
+
+  /// No description provided for @adminHomeSeasonLoadErrorTitle.
+  ///
+  /// In ca, this message translates to:
+  /// **'No s\'han pogut carregar les temporades'**
+  String get adminHomeSeasonLoadErrorTitle;
+
+  /// No description provided for @adminHomeSeasonUnexpectedLoadError.
+  ///
+  /// In ca, this message translates to:
+  /// **'S\'ha produït un error inesperat carregant temporades.'**
+  String get adminHomeSeasonUnexpectedLoadError;
+
+  /// No description provided for @adminHomeNoClosedSeasonsTitle.
+  ///
+  /// In ca, this message translates to:
+  /// **'No hi ha temporades tancades'**
+  String get adminHomeNoClosedSeasonsTitle;
+
+  /// No description provided for @adminHomeNoClosedSeasonsBody.
+  ///
+  /// In ca, this message translates to:
+  /// **'Quan una temporada es tanqui apareixerà en aquest historial.'**
+  String get adminHomeNoClosedSeasonsBody;
+
+  /// No description provided for @adminHomeSeasonActivationTitle.
+  ///
+  /// In ca, this message translates to:
+  /// **'Crear i iniciar temporada'**
+  String get adminHomeSeasonActivationTitle;
+
+  /// No description provided for @adminHomeSeasonActivationBody.
+  ///
+  /// In ca, this message translates to:
+  /// **'El backend tancarà automàticament la temporada activa actual, si n\'hi ha, crearà la nova temporada i actualitzarà puntuacions i snapshots del rànquing.'**
+  String get adminHomeSeasonActivationBody;
+
+  /// No description provided for @adminHomeSeasonNameLabel.
+  ///
+  /// In ca, this message translates to:
+  /// **'Nom de la temporada'**
+  String get adminHomeSeasonNameLabel;
+
+  /// No description provided for @adminHomeSeasonStartDateLabel.
+  ///
+  /// In ca, this message translates to:
+  /// **'Data d’inici'**
+  String get adminHomeSeasonStartDateLabel;
+
+  /// No description provided for @adminHomeSeasonEndDateLabel.
+  ///
+  /// In ca, this message translates to:
+  /// **'Data de fi'**
+  String get adminHomeSeasonEndDateLabel;
+
+  /// No description provided for @adminHomeSeasonSelectStartDate.
+  ///
+  /// In ca, this message translates to:
+  /// **'Selecciona la data d’inici'**
+  String get adminHomeSeasonSelectStartDate;
+
+  /// No description provided for @adminHomeSeasonSelectEndDate.
+  ///
+  /// In ca, this message translates to:
+  /// **'Selecciona la data de fi'**
+  String get adminHomeSeasonSelectEndDate;
+
+  /// No description provided for @adminHomeSeasonNameRequired.
+  ///
+  /// In ca, this message translates to:
+  /// **'El nom de la temporada és obligatori'**
+  String get adminHomeSeasonNameRequired;
+
+  /// No description provided for @adminHomeSeasonStartDateRequired.
+  ///
+  /// In ca, this message translates to:
+  /// **'La data d’inici és obligatòria'**
+  String get adminHomeSeasonStartDateRequired;
+
+  /// No description provided for @adminHomeSeasonEndDateRequired.
+  ///
+  /// In ca, this message translates to:
+  /// **'La data de fi és obligatòria'**
+  String get adminHomeSeasonEndDateRequired;
+
+  /// No description provided for @adminHomeSeasonEndBeforeStart.
+  ///
+  /// In ca, this message translates to:
+  /// **'La data de fi no pot ser anterior a la data d’inici'**
+  String get adminHomeSeasonEndBeforeStart;
+
+  /// No description provided for @adminHomeSeasonActivationConfirm.
+  ///
+  /// In ca, this message translates to:
+  /// **'Crear i iniciar'**
+  String get adminHomeSeasonActivationConfirm;
+
+  /// No description provided for @adminHomeSeasonActivationDefaultSummary.
+  ///
+  /// In ca, this message translates to:
+  /// **'Temporada creada i iniciada correctament.'**
+  String get adminHomeSeasonActivationDefaultSummary;
+
+  /// No description provided for @adminHomeSeasonActivationSuccess.
+  ///
+  /// In ca, this message translates to:
+  /// **'Temporada iniciada: {summary}'**
+  String adminHomeSeasonActivationSuccess(String summary);
+
+  /// No description provided for @adminHomeSeasonActivationUnexpectedError.
+  ///
+  /// In ca, this message translates to:
+  /// **'S\'ha produït un error inesperat creant la temporada.'**
+  String get adminHomeSeasonActivationUnexpectedError;
+
+  /// No description provided for @adminHomeSeasonStatusActive.
+  ///
+  /// In ca, this message translates to:
+  /// **'ACTIVA'**
+  String get adminHomeSeasonStatusActive;
+
+  /// No description provided for @adminHomeSeasonStatusClosed.
+  ///
+  /// In ca, this message translates to:
+  /// **'TANCADA'**
+  String get adminHomeSeasonStatusClosed;
+
+  /// No description provided for @adminHomeSeasonDatesUnavailable.
+  ///
+  /// In ca, this message translates to:
+  /// **'Dates no disponibles'**
+  String get adminHomeSeasonDatesUnavailable;
+
+  /// No description provided for @adminHomeSeasonStartedOn.
+  ///
+  /// In ca, this message translates to:
+  /// **'Des de {date}'**
+  String adminHomeSeasonStartedOn(String date);
+
+  /// No description provided for @adminHomeSeasonEndedOn.
+  ///
+  /// In ca, this message translates to:
+  /// **'Fins {date}'**
+  String adminHomeSeasonEndedOn(String date);
+
   /// No description provided for @adminHomeRolesAndPermissions.
   ///
   /// In ca, this message translates to:

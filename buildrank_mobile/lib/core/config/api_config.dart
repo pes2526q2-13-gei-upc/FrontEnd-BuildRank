@@ -174,6 +174,9 @@ class ApiConfig {
   // Ranking / leagues / seasons endpoints
   // =========================
   static const String seasons = '$baseUrl/api/seasons/';
+  static const String seasonsCreateAndStart =
+      '$baseUrl/api/seasons/crear-i-iniciar/';
+  static const String previousSeasons = '$baseUrl/api/seasons/anteriors/';
   static const String leagues = '$baseUrl/api/leagues/';
   static const String participations = '$baseUrl/api/participations/';
 

@@ -1340,6 +1340,36 @@
     "adminHomeVerificationLoadError":  "No se han podido cargar las verificaciones",
     "adminHomeRefreshVerifications":  "Actualizar verificaciones",
     "adminHomeRecordsCount":  "{count} registros",
+    "adminHomeClosedSeasonsCount":  "{count} cerradas",
+    "adminHomeSeasonsLoading":  "Cargando",
+    "adminHomeCreateAndStartSeason":  "Crear e iniciar temporada",
+    "adminHomeCreatingAndStartingSeason":  "Creando e iniciando temporada...",
+    "adminHomeRefreshSeasonHistory":  "Actualizar historial",
+    "adminHomeRetryLoadSeasons":  "Reintentar cargar temporadas",
+    "adminHomeSeasonLoadErrorTitle":  "No se han podido cargar las temporadas",
+    "adminHomeSeasonUnexpectedLoadError":  "Se ha producido un error inesperado cargando temporadas.",
+    "adminHomeNoClosedSeasonsTitle":  "No hay temporadas cerradas",
+    "adminHomeNoClosedSeasonsBody":  "Cuando una temporada se cierre aparecerá en este historial.",
+    "adminHomeSeasonActivationTitle":  "Crear e iniciar temporada",
+    "adminHomeSeasonActivationBody":  "El backend cerrará automáticamente la temporada activa actual, si existe, creará la nueva temporada y actualizará puntuaciones y snapshots del ranking.",
+    "adminHomeSeasonNameLabel":  "Nombre de la temporada",
+    "adminHomeSeasonStartDateLabel":  "Fecha de inicio",
+    "adminHomeSeasonEndDateLabel":  "Fecha de fin",
+    "adminHomeSeasonSelectStartDate":  "Selecciona la fecha de inicio",
+    "adminHomeSeasonSelectEndDate":  "Selecciona la fecha de fin",
+    "adminHomeSeasonNameRequired":  "El nombre de la temporada es obligatorio",
+    "adminHomeSeasonStartDateRequired":  "La fecha de inicio es obligatoria",
+    "adminHomeSeasonEndDateRequired":  "La fecha de fin es obligatoria",
+    "adminHomeSeasonEndBeforeStart":  "La fecha de fin no puede ser anterior a la fecha de inicio",
+    "adminHomeSeasonActivationConfirm":  "Crear e iniciar",
+    "adminHomeSeasonActivationDefaultSummary":  "Temporada creada e iniciada correctamente.",
+    "adminHomeSeasonActivationSuccess":  "Temporada iniciada: {summary}",
+    "adminHomeSeasonActivationUnexpectedError":  "Se ha producido un error inesperado creando la temporada.",
+    "adminHomeSeasonStatusActive":  "ACTIVA",
+    "adminHomeSeasonStatusClosed":  "CERRADA",
+    "adminHomeSeasonDatesUnavailable":  "Fechas no disponibles",
+    "adminHomeSeasonStartedOn":  "Desde {date}",
+    "adminHomeSeasonEndedOn":  "Hasta {date}",
     "adminHomeRolesAndPermissions":  "Roles y permisos",
     "adminHomeRolesCount":  "{count} roles",
     "adminHomeReviewPermissionsMatrix":  "Revisar matriz de permisos",
@@ -1397,6 +1427,34 @@
                                                                   }
                                                     }
                                },
+    "@adminHomeClosedSeasonsCount":  {
+                                         "placeholders":  {
+                                                              "count":  {
+                                                                            "type":  "int"
+                                                                        }
+                                                          }
+                                     },
+    "@adminHomeSeasonActivationSuccess":  {
+                                              "placeholders":  {
+                                                                   "summary":  {
+                                                                                   "type":  "String"
+                                                                               }
+                                                               }
+                                          },
+    "@adminHomeSeasonStartedOn":  {
+                                      "placeholders":  {
+                                                           "date":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                       }
+                                  },
+    "@adminHomeSeasonEndedOn":  {
+                                    "placeholders":  {
+                                                         "date":  {
+                                                                      "type":  "String"
+                                                                  }
+                                                     }
+                                },
     "@adminHomeRolesCount":  {
                                  "placeholders":  {
                                                       "count":  {

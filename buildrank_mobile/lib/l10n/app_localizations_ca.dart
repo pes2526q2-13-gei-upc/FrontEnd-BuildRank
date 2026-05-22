@@ -2546,6 +2546,114 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
+  String adminHomeClosedSeasonsCount(int count) {
+    return '$count tancades';
+  }
+
+  @override
+  String get adminHomeSeasonsLoading => 'Carregant';
+
+  @override
+  String get adminHomeCreateAndStartSeason => 'Crear i iniciar temporada';
+
+  @override
+  String get adminHomeCreatingAndStartingSeason =>
+      'Creant i iniciant temporada...';
+
+  @override
+  String get adminHomeRefreshSeasonHistory => 'Actualitza historial';
+
+  @override
+  String get adminHomeRetryLoadSeasons => 'Reintenta carregar temporades';
+
+  @override
+  String get adminHomeSeasonLoadErrorTitle =>
+      'No s\'han pogut carregar les temporades';
+
+  @override
+  String get adminHomeSeasonUnexpectedLoadError =>
+      'S\'ha produït un error inesperat carregant temporades.';
+
+  @override
+  String get adminHomeNoClosedSeasonsTitle => 'No hi ha temporades tancades';
+
+  @override
+  String get adminHomeNoClosedSeasonsBody =>
+      'Quan una temporada es tanqui apareixerà en aquest historial.';
+
+  @override
+  String get adminHomeSeasonActivationTitle => 'Crear i iniciar temporada';
+
+  @override
+  String get adminHomeSeasonActivationBody =>
+      'El backend tancarà automàticament la temporada activa actual, si n\'hi ha, crearà la nova temporada i actualitzarà puntuacions i snapshots del rànquing.';
+
+  @override
+  String get adminHomeSeasonNameLabel => 'Nom de la temporada';
+
+  @override
+  String get adminHomeSeasonStartDateLabel => 'Data d’inici';
+
+  @override
+  String get adminHomeSeasonEndDateLabel => 'Data de fi';
+
+  @override
+  String get adminHomeSeasonSelectStartDate => 'Selecciona la data d’inici';
+
+  @override
+  String get adminHomeSeasonSelectEndDate => 'Selecciona la data de fi';
+
+  @override
+  String get adminHomeSeasonNameRequired =>
+      'El nom de la temporada és obligatori';
+
+  @override
+  String get adminHomeSeasonStartDateRequired =>
+      'La data d’inici és obligatòria';
+
+  @override
+  String get adminHomeSeasonEndDateRequired => 'La data de fi és obligatòria';
+
+  @override
+  String get adminHomeSeasonEndBeforeStart =>
+      'La data de fi no pot ser anterior a la data d’inici';
+
+  @override
+  String get adminHomeSeasonActivationConfirm => 'Crear i iniciar';
+
+  @override
+  String get adminHomeSeasonActivationDefaultSummary =>
+      'Temporada creada i iniciada correctament.';
+
+  @override
+  String adminHomeSeasonActivationSuccess(String summary) {
+    return 'Temporada iniciada: $summary';
+  }
+
+  @override
+  String get adminHomeSeasonActivationUnexpectedError =>
+      'S\'ha produït un error inesperat creant la temporada.';
+
+  @override
+  String get adminHomeSeasonStatusActive => 'ACTIVA';
+
+  @override
+  String get adminHomeSeasonStatusClosed => 'TANCADA';
+
+  @override
+  String get adminHomeSeasonDatesUnavailable => 'Dates no disponibles';
+
+  @override
+  String adminHomeSeasonStartedOn(String date) {
+    return 'Des de $date';
+  }
+
+  @override
+  String adminHomeSeasonEndedOn(String date) {
+    return 'Fins $date';
+  }
+
+  @override
   String get adminHomeRolesAndPermissions => 'Rols i permisos';
 
   @override

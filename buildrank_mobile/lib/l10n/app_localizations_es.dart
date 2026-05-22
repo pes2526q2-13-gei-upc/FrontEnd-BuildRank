@@ -2556,6 +2556,114 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String adminHomeClosedSeasonsCount(int count) {
+    return '$count cerradas';
+  }
+
+  @override
+  String get adminHomeSeasonsLoading => 'Cargando';
+
+  @override
+  String get adminHomeCreateAndStartSeason => 'Crear e iniciar temporada';
+
+  @override
+  String get adminHomeCreatingAndStartingSeason =>
+      'Creando e iniciando temporada...';
+
+  @override
+  String get adminHomeRefreshSeasonHistory => 'Actualizar historial';
+
+  @override
+  String get adminHomeRetryLoadSeasons => 'Reintentar cargar temporadas';
+
+  @override
+  String get adminHomeSeasonLoadErrorTitle =>
+      'No se han podido cargar las temporadas';
+
+  @override
+  String get adminHomeSeasonUnexpectedLoadError =>
+      'Se ha producido un error inesperado cargando temporadas.';
+
+  @override
+  String get adminHomeNoClosedSeasonsTitle => 'No hay temporadas cerradas';
+
+  @override
+  String get adminHomeNoClosedSeasonsBody =>
+      'Cuando una temporada se cierre aparecerá en este historial.';
+
+  @override
+  String get adminHomeSeasonActivationTitle => 'Crear e iniciar temporada';
+
+  @override
+  String get adminHomeSeasonActivationBody =>
+      'El backend cerrará automáticamente la temporada activa actual, si existe, creará la nueva temporada y actualizará puntuaciones y snapshots del ranking.';
+
+  @override
+  String get adminHomeSeasonNameLabel => 'Nombre de la temporada';
+
+  @override
+  String get adminHomeSeasonStartDateLabel => 'Fecha de inicio';
+
+  @override
+  String get adminHomeSeasonEndDateLabel => 'Fecha de fin';
+
+  @override
+  String get adminHomeSeasonSelectStartDate => 'Selecciona la fecha de inicio';
+
+  @override
+  String get adminHomeSeasonSelectEndDate => 'Selecciona la fecha de fin';
+
+  @override
+  String get adminHomeSeasonNameRequired =>
+      'El nombre de la temporada es obligatorio';
+
+  @override
+  String get adminHomeSeasonStartDateRequired =>
+      'La fecha de inicio es obligatoria';
+
+  @override
+  String get adminHomeSeasonEndDateRequired => 'La fecha de fin es obligatoria';
+
+  @override
+  String get adminHomeSeasonEndBeforeStart =>
+      'La fecha de fin no puede ser anterior a la fecha de inicio';
+
+  @override
+  String get adminHomeSeasonActivationConfirm => 'Crear e iniciar';
+
+  @override
+  String get adminHomeSeasonActivationDefaultSummary =>
+      'Temporada creada e iniciada correctamente.';
+
+  @override
+  String adminHomeSeasonActivationSuccess(String summary) {
+    return 'Temporada iniciada: $summary';
+  }
+
+  @override
+  String get adminHomeSeasonActivationUnexpectedError =>
+      'Se ha producido un error inesperado creando la temporada.';
+
+  @override
+  String get adminHomeSeasonStatusActive => 'ACTIVA';
+
+  @override
+  String get adminHomeSeasonStatusClosed => 'CERRADA';
+
+  @override
+  String get adminHomeSeasonDatesUnavailable => 'Fechas no disponibles';
+
+  @override
+  String adminHomeSeasonStartedOn(String date) {
+    return 'Desde $date';
+  }
+
+  @override
+  String adminHomeSeasonEndedOn(String date) {
+    return 'Hasta $date';
+  }
+
+  @override
   String get adminHomeRolesAndPermissions => 'Roles y permisos';
 
   @override

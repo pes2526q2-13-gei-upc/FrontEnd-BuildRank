@@ -1340,6 +1340,36 @@
     "adminHomeVerificationLoadError":  "Could not load verifications",
     "adminHomeRefreshVerifications":  "Refresh verifications",
     "adminHomeRecordsCount":  "{count} records",
+    "adminHomeClosedSeasonsCount":  "{count} closed",
+    "adminHomeSeasonsLoading":  "Loading",
+    "adminHomeCreateAndStartSeason":  "Create and start season",
+    "adminHomeCreatingAndStartingSeason":  "Creating and starting season...",
+    "adminHomeRefreshSeasonHistory":  "Refresh history",
+    "adminHomeRetryLoadSeasons":  "Retry loading seasons",
+    "adminHomeSeasonLoadErrorTitle":  "Could not load seasons",
+    "adminHomeSeasonUnexpectedLoadError":  "An unexpected error occurred while loading seasons.",
+    "adminHomeNoClosedSeasonsTitle":  "No closed seasons",
+    "adminHomeNoClosedSeasonsBody":  "When a season is closed, it will appear in this history.",
+    "adminHomeSeasonActivationTitle":  "Create and start season",
+    "adminHomeSeasonActivationBody":  "The backend will automatically close the current active season, if any, create the new season, and update ranking scores and snapshots.",
+    "adminHomeSeasonNameLabel":  "Season name",
+    "adminHomeSeasonStartDateLabel":  "Start date",
+    "adminHomeSeasonEndDateLabel":  "End date",
+    "adminHomeSeasonSelectStartDate":  "Select start date",
+    "adminHomeSeasonSelectEndDate":  "Select end date",
+    "adminHomeSeasonNameRequired":  "Season name is required",
+    "adminHomeSeasonStartDateRequired":  "Start date is required",
+    "adminHomeSeasonEndDateRequired":  "End date is required",
+    "adminHomeSeasonEndBeforeStart":  "End date cannot be before start date",
+    "adminHomeSeasonActivationConfirm":  "Create and start",
+    "adminHomeSeasonActivationDefaultSummary":  "Season created and started successfully.",
+    "adminHomeSeasonActivationSuccess":  "Season started: {summary}",
+    "adminHomeSeasonActivationUnexpectedError":  "An unexpected error occurred while creating the season.",
+    "adminHomeSeasonStatusActive":  "ACTIVE",
+    "adminHomeSeasonStatusClosed":  "CLOSED",
+    "adminHomeSeasonDatesUnavailable":  "Dates unavailable",
+    "adminHomeSeasonStartedOn":  "From {date}",
+    "adminHomeSeasonEndedOn":  "Until {date}",
     "adminHomeRolesAndPermissions":  "Roles and permissions",
     "adminHomeRolesCount":  "{count} roles",
     "adminHomeReviewPermissionsMatrix":  "Review permissions matrix",
@@ -1397,6 +1427,34 @@
                                                                   }
                                                     }
                                },
+    "@adminHomeClosedSeasonsCount":  {
+                                         "placeholders":  {
+                                                              "count":  {
+                                                                            "type":  "int"
+                                                                        }
+                                                          }
+                                     },
+    "@adminHomeSeasonActivationSuccess":  {
+                                              "placeholders":  {
+                                                                   "summary":  {
+                                                                                   "type":  "String"
+                                                                               }
+                                                               }
+                                          },
+    "@adminHomeSeasonStartedOn":  {
+                                      "placeholders":  {
+                                                           "date":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                       }
+                                  },
+    "@adminHomeSeasonEndedOn":  {
+                                    "placeholders":  {
+                                                         "date":  {
+                                                                      "type":  "String"
+                                                                  }
+                                                     }
+                                },
     "@adminHomeRolesCount":  {
                                  "placeholders":  {
                                                       "count":  {

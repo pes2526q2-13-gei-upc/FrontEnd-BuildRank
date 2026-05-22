@@ -2525,6 +2525,111 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String adminHomeClosedSeasonsCount(int count) {
+    return '$count closed';
+  }
+
+  @override
+  String get adminHomeSeasonsLoading => 'Loading';
+
+  @override
+  String get adminHomeCreateAndStartSeason => 'Create and start season';
+
+  @override
+  String get adminHomeCreatingAndStartingSeason =>
+      'Creating and starting season...';
+
+  @override
+  String get adminHomeRefreshSeasonHistory => 'Refresh history';
+
+  @override
+  String get adminHomeRetryLoadSeasons => 'Retry loading seasons';
+
+  @override
+  String get adminHomeSeasonLoadErrorTitle => 'Could not load seasons';
+
+  @override
+  String get adminHomeSeasonUnexpectedLoadError =>
+      'An unexpected error occurred while loading seasons.';
+
+  @override
+  String get adminHomeNoClosedSeasonsTitle => 'No closed seasons';
+
+  @override
+  String get adminHomeNoClosedSeasonsBody =>
+      'When a season is closed, it will appear in this history.';
+
+  @override
+  String get adminHomeSeasonActivationTitle => 'Create and start season';
+
+  @override
+  String get adminHomeSeasonActivationBody =>
+      'The backend will automatically close the current active season, if any, create the new season, and update ranking scores and snapshots.';
+
+  @override
+  String get adminHomeSeasonNameLabel => 'Season name';
+
+  @override
+  String get adminHomeSeasonStartDateLabel => 'Start date';
+
+  @override
+  String get adminHomeSeasonEndDateLabel => 'End date';
+
+  @override
+  String get adminHomeSeasonSelectStartDate => 'Select start date';
+
+  @override
+  String get adminHomeSeasonSelectEndDate => 'Select end date';
+
+  @override
+  String get adminHomeSeasonNameRequired => 'Season name is required';
+
+  @override
+  String get adminHomeSeasonStartDateRequired => 'Start date is required';
+
+  @override
+  String get adminHomeSeasonEndDateRequired => 'End date is required';
+
+  @override
+  String get adminHomeSeasonEndBeforeStart =>
+      'End date cannot be before start date';
+
+  @override
+  String get adminHomeSeasonActivationConfirm => 'Create and start';
+
+  @override
+  String get adminHomeSeasonActivationDefaultSummary =>
+      'Season created and started successfully.';
+
+  @override
+  String adminHomeSeasonActivationSuccess(String summary) {
+    return 'Season started: $summary';
+  }
+
+  @override
+  String get adminHomeSeasonActivationUnexpectedError =>
+      'An unexpected error occurred while creating the season.';
+
+  @override
+  String get adminHomeSeasonStatusActive => 'ACTIVE';
+
+  @override
+  String get adminHomeSeasonStatusClosed => 'CLOSED';
+
+  @override
+  String get adminHomeSeasonDatesUnavailable => 'Dates unavailable';
+
+  @override
+  String adminHomeSeasonStartedOn(String date) {
+    return 'From $date';
+  }
+
+  @override
+  String adminHomeSeasonEndedOn(String date) {
+    return 'Until $date';
+  }
+
+  @override
   String get adminHomeRolesAndPermissions => 'Roles and permissions';
 
   @override
