@@ -6,6 +6,7 @@ import 'package:buildrank_mobile/features/vots/presentation/screens/crear_votaci
 import 'package:buildrank_mobile/features/vots/presentation/screens/votacio_detall_screen.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 class VotacionsScreen extends StatefulWidget {
   final int idEdifici;
@@ -29,10 +30,13 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
 
   bool _loading = true;
   bool _voting = false;
+  bool _accrediting = false;
   String? _error;
   int _tab = 0;
   List<VotationModel> _votacions = [];
   List<VotacioResumModel> _comunitats = [];
+  DateTime? _lastAutoRefresh;
+  bool _autoRefreshing = false;
 
   String get _normalizedRole =>
       widget.userRole.trim().toLowerCase().replaceAll('-', '_');
@@ -55,9 +59,11 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
     _load();
   }
 
-  Future<void> _load() async {
+  Future<void> _load({bool silent = false}) async {
     setState(() {
-      _loading = true;
+      if (!silent) {
+        _loading = true;
+      }
       _error = null;
     });
 
@@ -79,8 +85,34 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
       if (!mounted) return;
       setState(() => _error = e.toString());
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() {
+          if (!silent) {
+            _loading = false;
+          }
+          _autoRefreshing = false;
+        });
+      }
     }
+  }
+
+  void _scheduleAutoRefresh() {
+    if (_loading || _autoRefreshing) return;
+
+    final now = DateTime.now();
+    final last = _lastAutoRefresh;
+
+    if (last != null && now.difference(last).inSeconds < 3) {
+      return;
+    }
+
+    _lastAutoRefresh = now;
+    _autoRefreshing = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _load(silent: true);
+    });
   }
 
   List<VotationModel> get _filtered {
@@ -149,6 +181,8 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _scheduleAutoRefresh();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7F5),
       floatingActionButton: _isAdmin
@@ -160,7 +194,7 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
           : null,
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _load,
+          onRefresh: () => _load(),
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
             children: [
@@ -199,7 +233,10 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
                   _VotationCard(
                     votacio: votacio,
                     voting: _voting,
+                    accrediting: _accrediting,
+                    canAccredit: _isAdmin,
                     onVote: (sentit) => _vote(votacio, sentit),
+                    onAccredit: () => _acreditarImplementacio(votacio),
                   ),
                   const SizedBox(height: 14),
                 ],
@@ -240,6 +277,57 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> _acreditarImplementacio(VotationModel votacio) async {
+    final simulation = votacio.simulacio;
+    if (simulation == null || simulation.id <= 0 || _accrediting) {
+      return;
+    }
+
+    final result = await showDialog<_ImplementationAccreditationData>(
+      context: context,
+      builder: (_) => _ImplementationAccreditationDialog(
+        initialCost: simulation.costEstimat,
+      ),
+    );
+
+    if (result == null || !mounted) return;
+
+    setState(() => _accrediting = true);
+
+    try {
+      await _service.acreditarImplementacio(
+        idEdifici: widget.idEdifici,
+        simulacioId: simulation.id,
+        dataExecucio: result.dataExecucio,
+        costReal: result.costReal,
+        documentBytes: result.documentBytes,
+        documentName: result.documentName,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Implementació acreditada. Queda pendent de validació.',
+          ),
+        ),
+      );
+
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      if (mounted) {
+        setState(() => _accrediting = false);
+      }
+    }
   }
 
   Future<void> _createVotacio() async {
@@ -325,7 +413,7 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
           ),
           const SizedBox(height: 10),
           OutlinedButton(
-            onPressed: _load,
+            onPressed: () => _load(),
             child: Text(AppLocalizations.of(context).votesRetry),
           ),
         ],
@@ -398,12 +486,18 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
 class _VotationCard extends StatelessWidget {
   final VotationModel votacio;
   final bool voting;
+  final bool accrediting;
+  final bool canAccredit;
   final ValueChanged<String> onVote;
+  final VoidCallback onAccredit;
 
   const _VotationCard({
     required this.votacio,
     required this.voting,
+    required this.accrediting,
+    required this.canAccredit,
     required this.onVote,
+    required this.onAccredit,
   });
 
   @override
@@ -413,6 +507,17 @@ class _VotationCard extends StatelessWidget {
     final participation = votacio.participacioPercent.clamp(0, 100).toDouble();
     final favor = votacio.favorPercent.clamp(0, 100).toDouble();
     final contra = (100 - favor).clamp(0, 100).toDouble();
+    final simulationStatus = simulation?.estatAplicacio
+        .trim()
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll('-', '_');
+    final canShowAccreditation =
+        canAccredit &&
+        votacio.effectiveNormalizedEstat == 'aprovada' &&
+        simulation != null &&
+        simulation.id > 0 &&
+        simulationStatus != 'implementada';
 
     return Container(
       decoration: BoxDecoration(
@@ -519,6 +624,40 @@ class _VotationCard extends StatelessWidget {
                   onTap: () => onVote('contra'),
                   subtitle: AppLocalizations.of(context).votesKeepCurrentState,
                 ),
+
+                if (canShowAccreditation) ...[
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: accrediting ? null : onAccredit,
+                      icon: accrediting
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.upload_file_outlined),
+                      label: Text(
+                        accrediting
+                            ? 'Acreditant implementació...'
+                            : 'Acreditar implementació',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF16A34A),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Un cop acreditada, la millora quedarà pendent de validació per part de l’administrador del sistema.',
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                ],
               ],
             ),
           ),
@@ -872,6 +1011,167 @@ class _TabChip extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ImplementationAccreditationData {
+  final String dataExecucio;
+  final double costReal;
+  final List<int> documentBytes;
+  final String documentName;
+
+  const _ImplementationAccreditationData({
+    required this.dataExecucio,
+    required this.costReal,
+    required this.documentBytes,
+    required this.documentName,
+  });
+}
+
+class _ImplementationAccreditationDialog extends StatefulWidget {
+  final double initialCost;
+
+  const _ImplementationAccreditationDialog({required this.initialCost});
+
+  @override
+  State<_ImplementationAccreditationDialog> createState() =>
+      _ImplementationAccreditationDialogState();
+}
+
+class _ImplementationAccreditationDialogState
+    extends State<_ImplementationAccreditationDialog> {
+  late final TextEditingController _dateController;
+  late final TextEditingController _costController;
+
+  PlatformFile? _file;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final now = DateTime.now();
+    final today =
+        '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+    _dateController = TextEditingController(text: today);
+    _costController = TextEditingController(
+      text: widget.initialCost > 0 ? widget.initialCost.toStringAsFixed(0) : '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    _costController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      withData: true,
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png', 'webp'],
+    );
+
+    if (result == null || result.files.isEmpty) return;
+
+    setState(() {
+      _file = result.files.single;
+      _error = null;
+    });
+  }
+
+  void _submit() {
+    final cost = double.tryParse(
+      _costController.text.trim().replaceAll(',', '.'),
+    );
+
+    if (_dateController.text.trim().isEmpty) {
+      setState(() => _error = 'Introdueix la data d’execució.');
+      return;
+    }
+
+    if (cost == null || cost <= 0) {
+      setState(() => _error = 'Introdueix un cost real vàlid.');
+      return;
+    }
+
+    final file = _file;
+    final bytes = file?.bytes;
+
+    if (file == null || bytes == null || bytes.isEmpty) {
+      setState(() => _error = 'Adjunta un document d’evidència.');
+      return;
+    }
+
+    Navigator.pop(
+      context,
+      _ImplementationAccreditationData(
+        dataExecucio: _dateController.text.trim(),
+        costReal: cost,
+        documentBytes: bytes,
+        documentName: file.name,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Acreditar implementació'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Aporta la informació real de la millora executada. Quedarà pendent de validació per l’administrador del sistema.',
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _dateController,
+              decoration: const InputDecoration(
+                labelText: 'Data d’execució',
+                hintText: 'YYYY-MM-DD',
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _costController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Cost real (€)'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _pickFile,
+              icon: const Icon(Icons.attach_file),
+              label: Text(_file == null ? 'Adjuntar evidència' : _file!.name),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                _error!,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel·lar'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _submit,
+          icon: const Icon(Icons.upload_file_outlined),
+          label: const Text('Acreditar'),
+        ),
+      ],
     );
   }
 }

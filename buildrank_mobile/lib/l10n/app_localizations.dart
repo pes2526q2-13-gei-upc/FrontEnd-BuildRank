@@ -4898,6 +4898,114 @@ abstract class AppLocalizations {
   /// In ca, this message translates to:
   /// **'Irradiància solar no disponible'**
   String get weatherSolarIrradianceUnavailable;
+
+  /// No description provided for @adminHomeDashboardLoadError.
+  ///
+  /// In ca, this message translates to:
+  /// **'No s’han pogut carregar les mètriques del panell.'**
+  String get adminHomeDashboardLoadError;
+
+  /// No description provided for @adminHomeTotalUsers.
+  ///
+  /// In ca, this message translates to:
+  /// **'Usuaris totals'**
+  String get adminHomeTotalUsers;
+
+  /// No description provided for @adminHomePendingImprovements.
+  ///
+  /// In ca, this message translates to:
+  /// **'Millores pendents'**
+  String get adminHomePendingImprovements;
+
+  /// No description provided for @adminHomeManagedBuildings.
+  ///
+  /// In ca, this message translates to:
+  /// **'Edificis gestionats'**
+  String get adminHomeManagedBuildings;
+
+  /// No description provided for @adminHomeImprovementsTab.
+  ///
+  /// In ca, this message translates to:
+  /// **'Millores'**
+  String get adminHomeImprovementsTab;
+
+  /// No description provided for @adminHomeImprovementValidationQueue.
+  ///
+  /// In ca, this message translates to:
+  /// **'Validació de millores'**
+  String get adminHomeImprovementValidationQueue;
+
+  /// No description provided for @adminHomeImprovementLoadError.
+  ///
+  /// In ca, this message translates to:
+  /// **'No s’han pogut carregar les millores pendents'**
+  String get adminHomeImprovementLoadError;
+
+  /// No description provided for @adminHomeNoPendingImprovements.
+  ///
+  /// In ca, this message translates to:
+  /// **'No hi ha millores pendents'**
+  String get adminHomeNoPendingImprovements;
+
+  /// No description provided for @adminHomeNoPendingImprovementsBody.
+  ///
+  /// In ca, this message translates to:
+  /// **'Quan un administrador de finca acrediti una millora implementada, apareixerà aquí per revisar-la.'**
+  String get adminHomeNoPendingImprovementsBody;
+
+  /// No description provided for @adminHomeRefreshImprovements.
+  ///
+  /// In ca, this message translates to:
+  /// **'Actualitza millores'**
+  String get adminHomeRefreshImprovements;
+
+  /// No description provided for @adminHomeApproveImprovement.
+  ///
+  /// In ca, this message translates to:
+  /// **'Validar millora'**
+  String get adminHomeApproveImprovement;
+
+  /// No description provided for @adminHomeRejectImprovement.
+  ///
+  /// In ca, this message translates to:
+  /// **'Rebutjar millora'**
+  String get adminHomeRejectImprovement;
+
+  /// No description provided for @adminHomeImprovementApproved.
+  ///
+  /// In ca, this message translates to:
+  /// **'Millora validada correctament.'**
+  String get adminHomeImprovementApproved;
+
+  /// No description provided for @adminHomeImprovementRejected.
+  ///
+  /// In ca, this message translates to:
+  /// **'Millora rebutjada correctament.'**
+  String get adminHomeImprovementRejected;
+
+  /// No description provided for @adminHomeUnexpectedImprovementError.
+  ///
+  /// In ca, this message translates to:
+  /// **'S’ha produït un error inesperat revisant la millora.'**
+  String get adminHomeUnexpectedImprovementError;
+
+  /// No description provided for @adminHomeImprovementCost.
+  ///
+  /// In ca, this message translates to:
+  /// **'Cost'**
+  String get adminHomeImprovementCost;
+
+  /// No description provided for @adminHomeImprovementDate.
+  ///
+  /// In ca, this message translates to:
+  /// **'Data'**
+  String get adminHomeImprovementDate;
+
+  /// No description provided for @adminHomeImprovementObservations.
+  ///
+  /// In ca, this message translates to:
+  /// **'Observacions'**
+  String get adminHomeImprovementObservations;
 }
 
 class _AppLocalizationsDelegate

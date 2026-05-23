@@ -6,6 +6,7 @@ import 'package:buildrank_mobile/core/config/api_config.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:buildrank_mobile/features/vots/data/votation_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class VotationService {
   Future<Map<String, String>> _headers() async {
@@ -164,6 +165,85 @@ class VotationService {
     }
   }
 
+  Future<void> acreditarImplementacio({
+    required int idEdifici,
+    required int simulacioId,
+    required String dataExecucio,
+    required double costReal,
+    required List<int> documentBytes,
+    required String documentName,
+  }) async {
+    try {
+      final headers = await _headers();
+      headers.remove('Content-Type');
+
+      final request = http.MultipartRequest(
+        'POST',
+        ApiConfig.uri(
+          ApiConfig.acreditarSimulacioImplementacio(
+            idEdifici: idEdifici,
+            simulacioId: simulacioId,
+          ),
+        ),
+      );
+
+      request.headers.addAll(headers);
+      request.fields['dataExecucio'] = dataExecucio;
+      request.fields['costReal'] = costReal.toString();
+
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'documentacioAdjunta',
+          documentBytes,
+          filename: documentName,
+          contentType: _mediaTypeForFile(documentName),
+        ),
+      );
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 20),
+      );
+
+      final response = await http.Response.fromStream(streamedResponse);
+      final decoded = _decode(response.body);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw VotationApiException(
+          _extractError(decoded, 'No s’ha pogut acreditar la implementació.'),
+          statusCode: response.statusCode,
+        );
+      }
+    } on VotationApiException {
+      rethrow;
+    } on TimeoutException {
+      throw const VotationApiException(
+        'L’acreditació de la implementació ha trigat massa.',
+      );
+    } catch (_) {
+      throw const VotationApiException(
+        'No s’ha pogut acreditar la implementació.',
+      );
+    }
+  }
+
+  MediaType _mediaTypeForFile(String fileName) {
+    final ext = fileName.split('.').last.toLowerCase();
+
+    switch (ext) {
+      case 'pdf':
+        return MediaType('application', 'pdf');
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'png':
+        return MediaType('image', 'png');
+      case 'webp':
+        return MediaType('image', 'webp');
+      default:
+        return MediaType('application', 'octet-stream');
+    }
+  }
+
   dynamic _decode(String body) {
     if (body.isEmpty) return {};
     return jsonDecode(body);
@@ -177,7 +257,7 @@ class VotationService {
     if (decoded is Map) {
       final map = Map<String, dynamic>.from(decoded);
 
-      for (final key in ['results', 'data', 'items', 'votacions']) {
+      for (final key in ['results', 'data', 'items', 'votacions', 'value']) {
         final value = map[key];
         if (value is List) {
           return value;

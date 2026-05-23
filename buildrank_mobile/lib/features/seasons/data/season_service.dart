@@ -9,10 +9,10 @@ import 'package:buildrank_mobile/features/seasons/data/season_models.dart';
 class SeasonService {
   const SeasonService();
 
-  Future<List<Season>> getPreviousSeasons() async {
+  Future<List<Season>> getSeasons() async {
     try {
       final response = await ApiClient.get(
-        Uri.parse(ApiConfig.previousSeasons),
+        Uri.parse(ApiConfig.seasons),
         timeout: const Duration(seconds: 15),
       );
 
@@ -22,7 +22,7 @@ class SeasonService {
         throw SeasonApiException(
           _extractErrorMessage(
             decoded,
-            fallback: 'No s’han pogut carregar les temporades anteriors.',
+            fallback: 'No s’han pogut carregar les temporades.',
           ),
           statusCode: response.statusCode,
           details: decoded,
@@ -50,6 +50,8 @@ class SeasonService {
       );
     }
   }
+
+  Future<List<Season>> getPreviousSeasons() => getSeasons();
 
   Future<SeasonActivationResult> createAndStartSeason({
     required String name,

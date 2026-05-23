@@ -47,6 +47,9 @@ class ApiConfig {
   static String adminSuspendUser(int id) => '$adminUsers$id/suspend/';
   static String adminUnsuspendUser(int id) => '$adminUsers$id/unsuspend/';
 
+  static const String adminDashboardSummary =
+      '$baseUrl/api/accounts/admin/dashboard-summary/';
+
   // Audit logs (requires is_superuser)
   static Uri auditLogs({
     int? userId,
@@ -169,6 +172,12 @@ class ApiConfig {
 
   static String milloresImplementades(int idEdifici) =>
       '$baseUrl/api/buildings/edificis/$idEdifici/millores-implementades/';
+
+  static const String pendingImplementedImprovements =
+      '$baseUrl/api/buildings/millores-implementades/pendents/';
+
+  static String validateImplementedImprovement(int id) =>
+      '$baseUrl/api/buildings/millores-implementades/$id/validar/';
 
   // =========================
   // Ranking / leagues / seasons endpoints

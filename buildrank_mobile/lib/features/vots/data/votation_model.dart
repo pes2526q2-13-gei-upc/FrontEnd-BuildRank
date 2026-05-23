@@ -73,7 +73,61 @@ class VotationModel {
     );
   }
 
-  bool get isActive => estat == 'activa';
+  String get normalizedEstat {
+    return estat
+        .trim()
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll('-', '_')
+        .replaceAll('ó', 'o')
+        .replaceAll('ò', 'o')
+        .replaceAll('à', 'a')
+        .replaceAll('è', 'e')
+        .replaceAll('é', 'e')
+        .replaceAll('í', 'i')
+        .replaceAll('ï', 'i')
+        .replaceAll('ú', 'u')
+        .replaceAll('ü', 'u');
+  }
+
+  bool get hasReachedQuorum => participacioPercent >= quorumPercent;
+
+  bool get isApprovedByVotes =>
+      hasReachedQuorum && favorPercent >= majoriaPercent;
+
+  bool get isRejectedByVotes =>
+      hasReachedQuorum && favorPercent < majoriaPercent;
+
+  String get effectiveNormalizedEstat {
+    final value = normalizedEstat;
+
+    final backendSaysActive =
+        value == 'activa' ||
+        value == 'actiu' ||
+        value == 'active' ||
+        value == 'oberta' ||
+        value == 'open' ||
+        value == 'en_curs' ||
+        value == 'en_votacio';
+
+    if (backendSaysActive && hasReachedQuorum) {
+      return isApprovedByVotes ? 'aprovada' : 'rebutjada';
+    }
+
+    return value;
+  }
+
+  bool get isActive {
+    final value = effectiveNormalizedEstat;
+
+    return value == 'activa' ||
+        value == 'actiu' ||
+        value == 'active' ||
+        value == 'oberta' ||
+        value == 'open' ||
+        value == 'en_curs' ||
+        value == 'en_votacio';
+  }
 
   bool get isCompleted => !isActive;
 
@@ -87,7 +141,7 @@ class VotationModel {
   }
 
   String get estatLabel {
-    switch (estat) {
+    switch (effectiveNormalizedEstat) {
       case 'activa':
         return 'Activa';
       case 'aprovada':

@@ -1524,5 +1524,23 @@
                                                                    }
                                                      }
                                 }
+,
+  "adminHomeDashboardLoadError": "No se han podido cargar las métricas del panel.",
+  "adminHomeTotalUsers": "Usuarios totales",
+  "adminHomePendingImprovements": "Mejoras pendientes",
+  "adminHomeManagedBuildings": "Edificios gestionados",
+  "adminHomeImprovementsTab": "Mejoras",
+  "adminHomeImprovementValidationQueue": "Validación de mejoras",
+  "adminHomeImprovementLoadError": "No se han podido cargar las mejoras pendientes",
+  "adminHomeNoPendingImprovements": "No hay mejoras pendientes",
+  "adminHomeNoPendingImprovementsBody": "Cuando un administrador de finca acredite una mejora implementada, aparecerá aquí para revisarla.",
+  "adminHomeRefreshImprovements": "Actualizar mejoras",
+  "adminHomeApproveImprovement": "Validar mejora",
+  "adminHomeRejectImprovement": "Rechazar mejora",
+  "adminHomeImprovementApproved": "Mejora validada correctamente.",
+  "adminHomeImprovementRejected": "Mejora rechazada correctamente.",
+  "adminHomeUnexpectedImprovementError": "Se ha producido un error inesperado revisando la mejora.",
+  "adminHomeImprovementCost": "Coste",
+  "adminHomeImprovementDate": "Fecha",
+  "adminHomeImprovementObservations": "Observaciones"
 }
-

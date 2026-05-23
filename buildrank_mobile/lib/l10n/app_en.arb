@@ -1524,5 +1524,23 @@
                                                                    }
                                                      }
                                 }
+,
+  "adminHomeDashboardLoadError": "The dashboard metrics could not be loaded.",
+  "adminHomeTotalUsers": "Total users",
+  "adminHomePendingImprovements": "Pending improvements",
+  "adminHomeManagedBuildings": "Managed buildings",
+  "adminHomeImprovementsTab": "Improvements",
+  "adminHomeImprovementValidationQueue": "Improvement validation",
+  "adminHomeImprovementLoadError": "Pending improvements could not be loaded",
+  "adminHomeNoPendingImprovements": "No pending improvements",
+  "adminHomeNoPendingImprovementsBody": "When a building administrator submits evidence for an implemented improvement, it will appear here for review.",
+  "adminHomeRefreshImprovements": "Refresh improvements",
+  "adminHomeApproveImprovement": "Validate improvement",
+  "adminHomeRejectImprovement": "Reject improvement",
+  "adminHomeImprovementApproved": "Improvement validated successfully.",
+  "adminHomeImprovementRejected": "Improvement rejected successfully.",
+  "adminHomeUnexpectedImprovementError": "An unexpected error occurred while reviewing the improvement.",
+  "adminHomeImprovementCost": "Cost",
+  "adminHomeImprovementDate": "Date",
+  "adminHomeImprovementObservations": "Notes"
 }
-

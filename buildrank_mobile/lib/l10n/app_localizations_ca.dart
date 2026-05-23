@@ -2766,4 +2766,62 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get weatherSolarIrradianceUnavailable =>
       'Irradiància solar no disponible';
+
+  @override
+  String get adminHomeDashboardLoadError =>
+      'No s’han pogut carregar les mètriques del panell.';
+
+  @override
+  String get adminHomeTotalUsers => 'Usuaris totals';
+
+  @override
+  String get adminHomePendingImprovements => 'Millores pendents';
+
+  @override
+  String get adminHomeManagedBuildings => 'Edificis gestionats';
+
+  @override
+  String get adminHomeImprovementsTab => 'Millores';
+
+  @override
+  String get adminHomeImprovementValidationQueue => 'Validació de millores';
+
+  @override
+  String get adminHomeImprovementLoadError =>
+      'No s’han pogut carregar les millores pendents';
+
+  @override
+  String get adminHomeNoPendingImprovements => 'No hi ha millores pendents';
+
+  @override
+  String get adminHomeNoPendingImprovementsBody =>
+      'Quan un administrador de finca acrediti una millora implementada, apareixerà aquí per revisar-la.';
+
+  @override
+  String get adminHomeRefreshImprovements => 'Actualitza millores';
+
+  @override
+  String get adminHomeApproveImprovement => 'Validar millora';
+
+  @override
+  String get adminHomeRejectImprovement => 'Rebutjar millora';
+
+  @override
+  String get adminHomeImprovementApproved => 'Millora validada correctament.';
+
+  @override
+  String get adminHomeImprovementRejected => 'Millora rebutjada correctament.';
+
+  @override
+  String get adminHomeUnexpectedImprovementError =>
+      'S’ha produït un error inesperat revisant la millora.';
+
+  @override
+  String get adminHomeImprovementCost => 'Cost';
+
+  @override
+  String get adminHomeImprovementDate => 'Data';
+
+  @override
+  String get adminHomeImprovementObservations => 'Observacions';
 }

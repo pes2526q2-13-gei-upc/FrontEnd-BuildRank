@@ -5,6 +5,7 @@ import 'package:buildrank_mobile/features/simulation/data/improvement_model.dart
 import 'package:buildrank_mobile/features/simulation/data/saved_simulation_model.dart';
 import 'package:buildrank_mobile/features/simulation/data/simulation_result_model.dart';
 import 'package:buildrank_mobile/features/simulation/data/simulation_service.dart';
+import 'package:buildrank_mobile/features/vots/data/votation_service.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class SimulationScreen extends StatefulWidget {
@@ -27,6 +28,9 @@ class SimulationScreen extends StatefulWidget {
 
 class _SimulationScreenState extends State<SimulationScreen> {
   final _simulationService = SimulationService();
+  final _votationService = VotationService();
+  DateTime? _lastHistoryAutoRefresh;
+  bool _historyAutoRefreshing = false;
 
   int _selectedTab = 0;
 
@@ -41,9 +45,14 @@ class _SimulationScreenState extends State<SimulationScreen> {
   List<ImplementedImprovementModel> _implementedImprovements = [];
 
   final Set<int> _selectedIds = {};
+  final Set<int> _submittingSimulationIds = {};
+  final Map<int, String> _effectiveVotationStatusBySimulationId = {};
+  DateTime? _lastEffectiveVotationStatusRefresh;
+  bool _effectiveVotationStatusRefreshing = false;
   SimulationResultModel? _previewResult;
 
   bool get _canSaveSimulation => widget.userRole == 'admin';
+  bool get _canSubmitSimulationToVote => widget.userRole == 'admin';
 
   @override
   void initState() {
@@ -229,6 +238,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
       );
 
       await _loadHistory();
+      await _loadEffectiveVotationStatuses();
 
       if (!mounted) return;
 
@@ -251,6 +261,176 @@ class _SimulationScreenState extends State<SimulationScreen> {
       if (mounted) {
         setState(() {
           _isSaving = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadEffectiveVotationStatuses() async {
+    try {
+      final votations = await _votationService.getVotacions(widget.idEdifici);
+      final next = <int, String>{};
+
+      for (final votation in votations) {
+        final simulation = votation.simulacio;
+        if (simulation == null || simulation.id <= 0) {
+          continue;
+        }
+
+        final status = votation.effectiveNormalizedEstat;
+
+        if (status == 'aprovada') {
+          next[simulation.id] = 'aprovada';
+        } else if (status == 'rebutjada' || status == 'denegada') {
+          next[simulation.id] = 'rebutjada';
+        } else if (votation.isActive) {
+          next[simulation.id] = 'en_votacio';
+        }
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _effectiveVotationStatusBySimulationId
+          ..clear()
+          ..addAll(next);
+      });
+    } catch (_) {
+      // És una sincronització auxiliar. Si falla, no bloquegem el simulador.
+    }
+  }
+
+  void _scheduleEffectiveVotationStatusRefresh() {
+    if (_effectiveVotationStatusRefreshing) return;
+
+    final now = DateTime.now();
+    final last = _lastEffectiveVotationStatusRefresh;
+
+    if (last != null && now.difference(last).inSeconds < 3) {
+      return;
+    }
+
+    _lastEffectiveVotationStatusRefresh = now;
+    _effectiveVotationStatusRefreshing = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      _loadEffectiveVotationStatuses().whenComplete(() {
+        if (!mounted) return;
+        setState(() {
+          _effectiveVotationStatusRefreshing = false;
+        });
+      });
+    });
+  }
+
+  String? _effectiveVotationStatusFor(SavedSimulationModel simulation) {
+    return _effectiveVotationStatusBySimulationId[simulation.id];
+  }
+
+  bool _canSubmitSavedSimulation(SavedSimulationModel simulation) {
+    final effectiveStatus = _effectiveVotationStatusFor(simulation);
+
+    if (effectiveStatus == 'aprovada' ||
+        effectiveStatus == 'rebutjada' ||
+        effectiveStatus == 'denegada' ||
+        effectiveStatus == 'en_votacio') {
+      return false;
+    }
+
+    return simulation.canBeSubmittedToVote;
+  }
+
+  Future<void> _submitSimulationToVote(SavedSimulationModel simulation) async {
+    if (!_canSubmitSimulationToVote ||
+        _submittingSimulationIds.contains(simulation.id)) {
+      return;
+    }
+
+    if (simulation.id <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No es pot sotmetre aquesta simulació a votació.'),
+        ),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Sotmetre simulació a votació?'),
+          content: Text(
+            'Es crearà una votació comunitària perquè els propietaris puguin decidir sobre aquesta proposta:\n\n${simulation.proposalTitle}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel·lar'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              icon: const Icon(Icons.how_to_vote_outlined),
+              label: const Text('Crear votació'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() {
+      _submittingSimulationIds.add(simulation.id);
+      _errorText = null;
+    });
+
+    try {
+      await _votationService.sotmetreSimulacioAVotacio(
+        idEdifici: widget.idEdifici,
+        simulacioId: simulation.id,
+        titol: simulation.votationTitle,
+        descripcio: simulation.votationDescription,
+        diesDurada: 14,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Simulació sotmesa a votació correctament.'),
+        ),
+      );
+
+      await _loadHistory();
+    } on VotationApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorText = e.message;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (!mounted) return;
+
+      const message = 'No s’ha pogut crear la votació de la simulació.';
+
+      setState(() {
+        _errorText = message;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text(message)));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _submittingSimulationIds.remove(simulation.id);
         });
       }
     }
@@ -287,8 +467,35 @@ class _SimulationScreenState extends State<SimulationScreen> {
     return Icons.construction_outlined;
   }
 
+  void _scheduleHistoryAutoRefresh() {
+    if (_historyAutoRefreshing) return;
+
+    final now = DateTime.now();
+    final last = _lastHistoryAutoRefresh;
+
+    if (last != null && now.difference(last).inSeconds < 3) {
+      return;
+    }
+
+    _lastHistoryAutoRefresh = now;
+    _historyAutoRefreshing = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      _loadHistory().whenComplete(() {
+        if (!mounted) return;
+        setState(() {
+          _historyAutoRefreshing = false;
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _scheduleEffectiveVotationStatusRefresh();
+    _scheduleHistoryAutoRefresh();
     final isRefreshing = _isLoadingCatalog || _isLoadingHistory;
 
     return Scaffold(
@@ -553,7 +760,15 @@ class _SimulationScreenState extends State<SimulationScreen> {
         ),
         const SizedBox(height: 12),
         ..._savedSimulations.map(
-          (simulation) => _SavedSimulationCard(simulation: simulation),
+          (simulation) => _SavedSimulationCard(
+            simulation: simulation,
+            effectiveStatus: _effectiveVotationStatusFor(simulation),
+            canSubmit:
+                _canSubmitSimulationToVote &&
+                _canSubmitSavedSimulation(simulation),
+            isSubmitting: _submittingSimulationIds.contains(simulation.id),
+            onSubmit: () => _submitSimulationToVote(simulation),
+          ),
         ),
       ],
     );
@@ -890,11 +1105,66 @@ class _SimulationResultCard extends StatelessWidget {
 
 class _SavedSimulationCard extends StatelessWidget {
   final SavedSimulationModel simulation;
+  final String? effectiveStatus;
+  final bool canSubmit;
+  final bool isSubmitting;
+  final VoidCallback onSubmit;
 
-  const _SavedSimulationCard({required this.simulation});
+  const _SavedSimulationCard({
+    required this.simulation,
+    this.effectiveStatus,
+    required this.canSubmit,
+    required this.isSubmitting,
+    required this.onSubmit,
+  });
+
+  String get _statusLabel {
+    final status = effectiveStatus;
+
+    if (status == 'aprovada') {
+      return 'Aprovada';
+    }
+    if (status == 'rebutjada' || status == 'denegada') {
+      return 'Rebutjada';
+    }
+    if (status == 'en_votacio') {
+      return 'En votació';
+    }
+
+    return simulation.estatAplicacioLabel;
+  }
+
+  bool get _isInVoting {
+    return effectiveStatus == 'en_votacio' ||
+        (effectiveStatus == null && simulation.isInVoting);
+  }
+
+  Color _statusColor() {
+    if (effectiveStatus == 'en_votacio' || simulation.isInVoting) {
+      return const Color(0xFF2563EB);
+    }
+    if (effectiveStatus == 'aprovada' || simulation.isApproved) {
+      return const Color(0xFF16A34A);
+    }
+    if (effectiveStatus == 'rebutjada' || effectiveStatus == 'denegada') {
+      return const Color(0xFFDC2626);
+    }
+    if (simulation.isImplemented) {
+      return const Color(0xFF15803D);
+    }
+
+    final normalized = _statusLabel.toLowerCase();
+    if (normalized.contains('rebut')) {
+      return const Color(0xFFDC2626);
+    }
+
+    return const Color(0xFF6B7280);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final showSubmitButton = canSubmit && simulation.id > 0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
@@ -906,9 +1176,18 @@ class _SavedSimulationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            simulation.descripcio,
-            style: const TextStyle(fontWeight: FontWeight.w800),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  simulation.proposalTitle,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _StatusChip(label: _statusLabel, color: _statusColor()),
+            ],
           ),
           const SizedBox(height: 6),
           Text(
@@ -943,6 +1222,38 @@ class _SavedSimulationCard extends StatelessWidget {
               ),
             ],
           ),
+          if (showSubmitButton) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: isSubmitting ? null : onSubmit,
+                icon: isSubmitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.how_to_vote_outlined),
+                label: Text(
+                  isSubmitting ? 'Creant votació...' : 'Sotmetre a votació',
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF16A34A),
+                  side: const BorderSide(color: Color(0xFF22C55E)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ] else if (_isInVoting) ...[
+            const SizedBox(height: 12),
+            const _InfoCard(
+              text:
+                  'Aquesta simulació ja està en votació. Pots seguir-la a la secció de votacions.',
+            ),
+          ],
         ],
       ),
     );
@@ -1068,6 +1379,33 @@ class _ResultRow extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _StatusChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+        ),
       ),
     );
   }

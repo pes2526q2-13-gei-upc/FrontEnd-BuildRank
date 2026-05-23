@@ -1,4 +1,8 @@
 import 'package:buildrank_mobile/core/services/stream_service.dart';
+import 'package:buildrank_mobile/features/admin/data/admin_dashboard_service.dart';
+import 'package:buildrank_mobile/features/admin/data/admin_dashboard_summary.dart';
+import 'package:buildrank_mobile/features/admin/data/admin_improvement_validation_service.dart';
+import 'package:buildrank_mobile/features/admin/data/implemented_improvement_validation.dart';
 import 'package:buildrank_mobile/features/admin/presentation/screens/audit_logs_screen.dart';
 import 'package:buildrank_mobile/features/admin/presentation/screens/user_management_screen.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
@@ -28,7 +32,7 @@ class AdminPanelScreen extends StatefulWidget {
   State<AdminPanelScreen> createState() => _AdminPanelScreenState();
 }
 
-enum _AdminTab { tasks, seasons, roles }
+enum _AdminTab { tasks, seasons, improvements }
 
 class _SeasonCreationFormData {
   final String name;
@@ -47,7 +51,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   final AdminVerificationService _verificationService =
       const AdminVerificationService();
   final SeasonService _seasonService = const SeasonService();
-  final List<_RoleRow> _roles = _RoleRow.samples();
+  final AdminDashboardService _dashboardService = const AdminDashboardService();
+  final AdminImprovementValidationService _improvementValidationService =
+      const AdminImprovementValidationService();
 
   _AdminTab _selectedTab = _AdminTab.tasks;
   String _search = '';
@@ -61,6 +67,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   bool _isCreatingSeason = false;
   String? _seasonsError;
   List<Season> _seasons = [];
+  AdminDashboardSummary _dashboardSummary = AdminDashboardSummary.empty();
+  bool _isLoadingDashboardSummary = true;
+  String? _dashboardError;
+  bool _isLoadingImprovements = true;
+  String? _improvementsError;
+  List<ImplementedImprovementValidationItem> _pendingImprovements = [];
+  final Set<int> _processingImprovementIds = {};
 
   List<_VerificationTask> get _tasks {
     return _verifications.map(_VerificationTask.fromVerification).toList();
@@ -72,8 +85,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     _searchController.addListener(() {
       setState(() => _search = _searchController.text.trim().toLowerCase());
     });
+    _loadDashboardSummary();
     _loadVerifications();
     _loadSeasons();
+    _loadPendingImprovements();
   }
 
   @override
@@ -83,7 +98,12 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Future<void> _refresh() async {
-    await Future.wait([_loadVerifications(), _loadSeasons()]);
+    await Future.wait([
+      _loadDashboardSummary(),
+      _loadVerifications(),
+      _loadSeasons(),
+      _loadPendingImprovements(),
+    ]);
   }
 
   Future<void> _handleLogout() async {
@@ -297,12 +317,31 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Widget _buildMetricCards() {
-    final pending = _verifications
+    final pendingVerificationsFallback = _verifications
         .where((item) => item.status.toLowerCase() == 'review')
         .length;
-    final verified = _verifications
+    final validatedVerificationsFallback = _verifications
         .where((item) => item.status.toLowerCase() == 'approved')
         .length;
+
+    final summary = _dashboardSummary;
+    final pendingVerifications = summary.hasRealData
+        ? summary.pendingVerifications
+        : pendingVerificationsFallback;
+    final totalUsers = summary.totalUsers;
+    final pendingImprovements = summary.hasRealData
+        ? summary.pendingImprovements
+        : _pendingImprovements.length;
+    final managedBuildings = summary.managedBuildings;
+    final validatedImprovements = summary.hasRealData
+        ? summary.validatedImprovements
+        : validatedVerificationsFallback;
+
+    final trend = _isLoadingDashboardSummary
+        ? '...'
+        : _dashboardError == null
+        ? 'API'
+        : 'local';
 
     return SizedBox(
       height: 126,
@@ -311,38 +350,40 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         children: [
           _MetricCard(
             icon: Icons.error_outline,
-            title: pending.toString(),
+            title: pendingVerifications.toString(),
             subtitle: AppLocalizations.of(context).adminHomeVerificationPending,
-            trend: '+12%',
+            trend: trend,
             iconBackground: const Color(0xFFE5F9ED),
             iconColor: const Color(0xFF19C463),
           ),
           const SizedBox(width: 12),
           _MetricCard(
             icon: Icons.groups_2_outlined,
-            title: '1,284',
-            subtitle: AppLocalizations.of(context).adminHomeActiveUsers,
-            trend: '+5.4%',
+            title: totalUsers.toString(),
+            subtitle: AppLocalizations.of(context).adminHomeTotalUsers,
+            trend: trend,
             iconBackground: const Color(0xFFE5F9ED),
             iconColor: const Color(0xFF19C463),
           ),
           const SizedBox(width: 12),
           _MetricCard(
-            icon: Icons.verified_outlined,
-            title: verified.toString(),
-            subtitle: AppLocalizations.of(
-              context,
-            ).adminHomeValidatedImprovements,
-            trend: '+8%',
+            icon: Icons.handyman_outlined,
+            title: pendingImprovements.toString(),
+            subtitle: AppLocalizations.of(context).adminHomePendingImprovements,
+            trend: trend,
             iconBackground: const Color(0xFFEAF2FF),
             iconColor: const Color(0xFF2563EB),
           ),
           const SizedBox(width: 12),
           _MetricCard(
-            icon: Icons.warning_amber_rounded,
-            title: '5',
-            subtitle: AppLocalizations.of(context).adminHomeIntegrityAlerts,
-            trend: AppLocalizations.of(context).adminHomeNewTrend,
+            icon: Icons.apartment_outlined,
+            title: managedBuildings == 0
+                ? validatedImprovements.toString()
+                : managedBuildings.toString(),
+            subtitle: managedBuildings == 0
+                ? AppLocalizations.of(context).adminHomeValidatedImprovements
+                : AppLocalizations.of(context).adminHomeManagedBuildings,
+            trend: trend,
             iconBackground: const Color(0xFFFFF7E6),
             iconColor: const Color(0xFFE08A00),
           ),
@@ -406,9 +447,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             onTap: () => setState(() => _selectedTab = _AdminTab.seasons),
           ),
           _AdminTabButton(
-            label: AppLocalizations.of(context).adminHomeRolesTab,
-            selected: _selectedTab == _AdminTab.roles,
-            onTap: () => setState(() => _selectedTab = _AdminTab.roles),
+            label: AppLocalizations.of(context).adminHomeImprovementsTab,
+            selected: _selectedTab == _AdminTab.improvements,
+            onTap: () => setState(() => _selectedTab = _AdminTab.improvements),
           ),
         ],
       ),
@@ -419,7 +460,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     return switch (_selectedTab) {
       _AdminTab.tasks => _buildVerificationQueue(),
       _AdminTab.seasons => _buildSeasonsPanel(),
-      _AdminTab.roles => _buildRolesPanel(),
+      _AdminTab.improvements => _buildImprovementsPanel(),
     };
   }
 
@@ -525,16 +566,53 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     );
   }
 
-  Widget _buildRolesPanel() {
+  Widget _buildImprovementsPanel() {
+    final filteredImprovements = _pendingImprovements.where((item) {
+      if (_search.isEmpty) return true;
+      return item.improvementName.toLowerCase().contains(_search) ||
+          item.edificiTitle.toLowerCase().contains(_search) ||
+          item.requesterName.toLowerCase().contains(_search) ||
+          item.requesterEmail.toLowerCase().contains(_search) ||
+          item.status.toLowerCase().contains(_search);
+    }).toList();
+
     return _PanelCard(
-      title: AppLocalizations.of(context).adminHomeRolesAndPermissions,
-      badge: AppLocalizations.of(context).adminHomeRolesCount(_roles.length),
+      title: AppLocalizations.of(context).adminHomeImprovementValidationQueue,
+      badge: AppLocalizations.of(
+        context,
+      ).adminHomePendingCount(filteredImprovements.length),
       children: [
-        for (final role in _roles) _RoleTile(role: role),
+        if (_isLoadingImprovements)
+          const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_improvementsError != null)
+          _EmptyState(
+            icon: Icons.error_outline,
+            title: AppLocalizations.of(context).adminHomeImprovementLoadError,
+            subtitle: _improvementsError!,
+          )
+        else if (filteredImprovements.isEmpty)
+          _EmptyState(
+            icon: Icons.handyman_outlined,
+            title: AppLocalizations.of(context).adminHomeNoPendingImprovements,
+            subtitle: AppLocalizations.of(
+              context,
+            ).adminHomeNoPendingImprovementsBody,
+          )
+        else
+          for (final improvement in filteredImprovements)
+            _PendingImprovementTile(
+              item: improvement,
+              isProcessing: _processingImprovementIds.contains(improvement.id),
+              onApprove: () => _reviewImprovement(improvement.id, true),
+              onReject: () => _reviewImprovement(improvement.id, false),
+            ),
         _PanelActionButton(
-          label: AppLocalizations.of(context).adminHomeReviewPermissionsMatrix,
-          icon: Icons.admin_panel_settings_outlined,
-          onTap: _showRolesSnackBar,
+          label: AppLocalizations.of(context).adminHomeRefreshImprovements,
+          icon: Icons.refresh,
+          onTap: _loadPendingImprovements,
         ),
       ],
     );
@@ -817,6 +895,127 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     );
   }
 
+  Future<void> _loadDashboardSummary() async {
+    setState(() {
+      _isLoadingDashboardSummary = true;
+      _dashboardError = null;
+    });
+
+    try {
+      final summary = await _dashboardService.getSummary();
+
+      if (!mounted) return;
+
+      setState(() {
+        _dashboardSummary = summary;
+      });
+    } on AdminDashboardApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _dashboardError = e.message;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _dashboardError = AppLocalizations.of(
+          context,
+        ).adminHomeDashboardLoadError;
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingDashboardSummary = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadPendingImprovements() async {
+    setState(() {
+      _isLoadingImprovements = true;
+      _improvementsError = null;
+    });
+
+    try {
+      final improvements = await _improvementValidationService
+          .listPendingImprovements();
+
+      if (!mounted) return;
+
+      setState(() {
+        _pendingImprovements = improvements;
+      });
+    } on AdminImprovementValidationApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _improvementsError = e.message;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _improvementsError = AppLocalizations.of(
+          context,
+        ).adminHomeImprovementLoadError;
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingImprovements = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _reviewImprovement(int improvementId, bool approve) async {
+    String? reason;
+
+    if (!approve) {
+      reason = await _askRejectReason();
+      if (!mounted) return;
+      if (reason == null || reason.trim().isEmpty) return;
+    }
+
+    setState(() {
+      _processingImprovementIds.add(improvementId);
+    });
+
+    try {
+      await _improvementValidationService.reviewImprovement(
+        improvementId: improvementId,
+        approve: approve,
+        reason: reason,
+      );
+
+      if (!mounted) return;
+
+      _showSnackBar(
+        approve
+            ? AppLocalizations.of(context).adminHomeImprovementApproved
+            : AppLocalizations.of(context).adminHomeImprovementRejected,
+      );
+
+      await Future.wait([_loadDashboardSummary(), _loadPendingImprovements()]);
+    } on AdminImprovementValidationApiException catch (e) {
+      if (!mounted) return;
+      _showSnackBar(e.message);
+    } catch (_) {
+      if (!mounted) return;
+      _showSnackBar(
+        AppLocalizations.of(context).adminHomeUnexpectedImprovementError,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processingImprovementIds.remove(improvementId);
+        });
+      }
+    }
+  }
+
   Future<void> _loadVerifications() async {
     setState(() {
       _isLoadingVerifications = true;
@@ -860,7 +1059,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     });
 
     try {
-      final seasons = await _seasonService.getPreviousSeasons();
+      final seasons = await _seasonService.getSeasons();
 
       if (!mounted) return;
 
@@ -916,7 +1115,12 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         ),
       );
 
-      await Future.wait([_loadSeasons(), _loadVerifications()]);
+      await Future.wait([
+        _loadDashboardSummary(),
+        _loadSeasons(),
+        _loadVerifications(),
+        _loadPendingImprovements(),
+      ]);
     } on SeasonApiException catch (e) {
       if (!mounted) return;
       _showSnackBar(_seasonCreationErrorMessage(e, l10n));
@@ -982,7 +1186,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         approve ? 'Verificació aprovada.' : 'Verificació rebutjada.',
       );
 
-      await _loadVerifications();
+      await Future.wait([_loadDashboardSummary(), _loadVerifications()]);
     } on AdminVerificationApiException catch (e) {
       if (!mounted) return;
       _showSnackBar(e.message);
@@ -1020,9 +1224,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   void _showFiltersSnackBar() =>
       _showSnackBar(AppLocalizations.of(context).adminHomeFiltersPending);
-
-  void _showRolesSnackBar() =>
-      _showSnackBar(AppLocalizations.of(context).adminHomeRolesPending);
 }
 
 class _CreateSeasonDialog extends StatefulWidget {
@@ -1434,6 +1635,132 @@ class _PanelCard extends StatelessWidget {
   }
 }
 
+class _PendingImprovementTile extends StatelessWidget {
+  final ImplementedImprovementValidationItem item;
+  final bool isProcessing;
+  final VoidCallback onApprove;
+  final VoidCallback onReject;
+
+  const _PendingImprovementTile({
+    required this.item,
+    required this.isProcessing,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final costText = item.realCost == null
+        ? l10n.commonUnavailable
+        : '${item.realCost!.toStringAsFixed(0)} €';
+    final executionDate = item.executionDate ?? l10n.commonUnavailable;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFE6E9ED))),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              border: Border.all(color: const Color(0xFFDDE2E8)),
+              borderRadius: BorderRadius.circular(7),
+            ),
+            child: const Icon(
+              Icons.handyman_outlined,
+              color: Color(0xFF607080),
+              size: 25,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.improvementName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF20252C),
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${item.edificiTitle} • ${item.requesterName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${l10n.adminHomeImprovementCost}: $costText • ${l10n.adminHomeImprovementDate}: $executionDate',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+                if (item.observations != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '${l10n.adminHomeImprovementObservations}: ${item.observations}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                _StatusPill(status: _TaskStatus.pending),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            children: [
+              if (isProcessing)
+                const SizedBox(
+                  width: 34,
+                  height: 34,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              else ...[
+                _CircleActionButton(
+                  icon: Icons.check_circle_outline,
+                  color: const Color(0xFF1F2937),
+                  onTap: onApprove,
+                  tooltip: l10n.adminHomeApproveImprovement,
+                ),
+                const SizedBox(height: 8),
+                _CircleActionButton(
+                  icon: Icons.cancel_outlined,
+                  color: const Color(0xFFFF5555),
+                  onTap: onReject,
+                  tooltip: l10n.adminHomeRejectImprovement,
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _VerificationTaskTile extends StatelessWidget {
   final _VerificationTask task;
   final bool isProcessing;
@@ -1776,62 +2103,6 @@ class _SeasonTile extends StatelessWidget {
   }
 }
 
-class _RoleTile extends StatelessWidget {
-  final _RoleRow role;
-
-  const _RoleTile({required this.role});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFE6E9ED))),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              border: Border.all(color: const Color(0xFFDDE2E8)),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(role.icon, color: const Color(0xFF607080)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  role.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  AppLocalizations.of(
-                    context,
-                  ).adminHomeRoleStats(role.users, role.permissions),
-                  style: const TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF)),
-        ],
-      ),
-    );
-  }
-}
-
 class _SmallLabel extends StatelessWidget {
   final String text;
   final bool active;
@@ -1955,42 +2226,5 @@ class _VerificationTask {
       status: status,
       rawStatus: item.status,
     );
-  }
-}
-
-class _RoleRow {
-  final String name;
-  final int users;
-  final int permissions;
-  final IconData icon;
-
-  const _RoleRow({
-    required this.name,
-    required this.users,
-    required this.permissions,
-    required this.icon,
-  });
-
-  static List<_RoleRow> samples() {
-    return const [
-      _RoleRow(
-        name: 'Administrador de sistema',
-        users: 6,
-        permissions: 18,
-        icon: Icons.admin_panel_settings_outlined,
-      ),
-      _RoleRow(
-        name: 'Administrador de finca',
-        users: 214,
-        permissions: 11,
-        icon: Icons.manage_accounts_outlined,
-      ),
-      _RoleRow(
-        name: 'Propietari / Llogater',
-        users: 1064,
-        permissions: 7,
-        icon: Icons.person_outline,
-      ),
-    ];
   }
 }

@@ -1524,5 +1524,23 @@
                                                                    }
                                                      }
                                 }
+,
+  "adminHomeDashboardLoadError": "No s’han pogut carregar les mètriques del panell.",
+  "adminHomeTotalUsers": "Usuaris totals",
+  "adminHomePendingImprovements": "Millores pendents",
+  "adminHomeManagedBuildings": "Edificis gestionats",
+  "adminHomeImprovementsTab": "Millores",
+  "adminHomeImprovementValidationQueue": "Validació de millores",
+  "adminHomeImprovementLoadError": "No s’han pogut carregar les millores pendents",
+  "adminHomeNoPendingImprovements": "No hi ha millores pendents",
+  "adminHomeNoPendingImprovementsBody": "Quan un administrador de finca acrediti una millora implementada, apareixerà aquí per revisar-la.",
+  "adminHomeRefreshImprovements": "Actualitza millores",
+  "adminHomeApproveImprovement": "Validar millora",
+  "adminHomeRejectImprovement": "Rebutjar millora",
+  "adminHomeImprovementApproved": "Millora validada correctament.",
+  "adminHomeImprovementRejected": "Millora rebutjada correctament.",
+  "adminHomeUnexpectedImprovementError": "S’ha produït un error inesperat revisant la millora.",
+  "adminHomeImprovementCost": "Cost",
+  "adminHomeImprovementDate": "Data",
+  "adminHomeImprovementObservations": "Observacions"
 }
-

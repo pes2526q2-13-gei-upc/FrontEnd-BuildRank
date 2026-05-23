@@ -2740,4 +2740,64 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weatherSolarIrradianceUnavailable =>
       'Solar irradiance unavailable';
+
+  @override
+  String get adminHomeDashboardLoadError =>
+      'The dashboard metrics could not be loaded.';
+
+  @override
+  String get adminHomeTotalUsers => 'Total users';
+
+  @override
+  String get adminHomePendingImprovements => 'Pending improvements';
+
+  @override
+  String get adminHomeManagedBuildings => 'Managed buildings';
+
+  @override
+  String get adminHomeImprovementsTab => 'Improvements';
+
+  @override
+  String get adminHomeImprovementValidationQueue => 'Improvement validation';
+
+  @override
+  String get adminHomeImprovementLoadError =>
+      'Pending improvements could not be loaded';
+
+  @override
+  String get adminHomeNoPendingImprovements => 'No pending improvements';
+
+  @override
+  String get adminHomeNoPendingImprovementsBody =>
+      'When a building administrator submits evidence for an implemented improvement, it will appear here for review.';
+
+  @override
+  String get adminHomeRefreshImprovements => 'Refresh improvements';
+
+  @override
+  String get adminHomeApproveImprovement => 'Validate improvement';
+
+  @override
+  String get adminHomeRejectImprovement => 'Reject improvement';
+
+  @override
+  String get adminHomeImprovementApproved =>
+      'Improvement validated successfully.';
+
+  @override
+  String get adminHomeImprovementRejected =>
+      'Improvement rejected successfully.';
+
+  @override
+  String get adminHomeUnexpectedImprovementError =>
+      'An unexpected error occurred while reviewing the improvement.';
+
+  @override
+  String get adminHomeImprovementCost => 'Cost';
+
+  @override
+  String get adminHomeImprovementDate => 'Date';
+
+  @override
+  String get adminHomeImprovementObservations => 'Notes';
 }
