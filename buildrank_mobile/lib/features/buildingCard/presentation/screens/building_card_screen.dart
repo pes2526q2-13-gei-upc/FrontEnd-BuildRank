@@ -697,20 +697,6 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
           ),
           const SizedBox(height: 14),
           ActionTile(
-            icon: Icons.bolt,
-            title: l10n.buildingCardActionSimulationTitle,
-            subtitle: l10n.buildingCardActionSimulationSubtitle,
-            color: Color(0xFFE8F4EC),
-          ),
-          const SizedBox(height: 10),
-          ActionTile(
-            icon: Icons.how_to_vote,
-            title: l10n.buildingCardActionVoteTitle,
-            subtitle: l10n.buildingCardActionVoteSubtitle,
-            color: Color(0xFFE7ECF7),
-          ),
-          const SizedBox(height: 10),
-          ActionTile(
             icon: Icons.description,
             title: l10n.buildingCardActionReportTitle,
             subtitle: l10n.buildingCardActionReportSubtitle,

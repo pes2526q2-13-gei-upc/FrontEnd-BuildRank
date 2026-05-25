@@ -25,7 +25,6 @@ void main() {
           buildingName: 'Edifici2 - Carrer de Montjuïc del Bisbe, 6',
           currentPoints: 780,
           rankingService: service,
-          showBadges: false,
           avatarImage: MemoryImage(_transparentImage),
         ),
       ),

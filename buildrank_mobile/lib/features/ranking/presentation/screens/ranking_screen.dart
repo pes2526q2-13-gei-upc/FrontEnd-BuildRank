@@ -5,14 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/ranking/data/ranking_model.dart';
 import 'package:buildrank_mobile/features/ranking/data/ranking_service.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
-import 'package:buildrank_mobile/shared/widgets/badge_item.dart';
 
 class RankingScreen extends StatefulWidget {
   final int idEdifici;
   final String buildingName;
   final int currentPoints;
   final RankingService rankingService;
-  final bool showBadges;
   final ImageProvider<Object>? avatarImage;
 
   const RankingScreen({
@@ -21,7 +19,6 @@ class RankingScreen extends StatefulWidget {
     required this.buildingName,
     required this.currentPoints,
     this.rankingService = const RankingService(),
-    this.showBadges = true,
     this.avatarImage,
   });
 
@@ -315,12 +312,6 @@ class _RankingScreenState extends State<RankingScreen> {
                     children: [
                       _buildLeagueCard(),
                       const SizedBox(height: 16),
-
-                      if (widget.showBadges) ...[
-                        _buildBadges(),
-                        const SizedBox(height: 16),
-                      ],
-
                       _buildToggle(),
                       const SizedBox(height: 16),
                       if (_showProgress) ...[
@@ -587,59 +578,6 @@ class _RankingScreenState extends State<RankingScreen> {
             ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBadges() {
-    final l10n = AppLocalizations.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.rankingBadgesEarned,
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            Text(l10n.rankingViewAll, style: TextStyle(color: Colors.green)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 110,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              BadgeItem(
-                icon: Icons.bolt,
-                label: l10n.rankingBadgeSolarMaster,
-                date: l10n.rankingBadgeDateOct25,
-                color: Colors.yellow,
-              ),
-              BadgeItem(
-                icon: Icons.trending_up,
-                label: l10n.rankingBadgeMaxSavings,
-                date: l10n.rankingBadgeDateNov25,
-                color: Colors.green,
-              ),
-              BadgeItem(
-                icon: Icons.apartment,
-                label: l10n.rankingBadgeResilient,
-                date: l10n.rankingBadgeDateDec25,
-                color: Colors.blue,
-              ),
-              BadgeItem(
-                icon: Icons.location_city,
-                label: l10n.rankingBadgeTest,
-                date: l10n.rankingBadgeDateJan26,
-                color: Colors.purple,
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 

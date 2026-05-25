@@ -671,10 +671,16 @@ class AppLocalizationsCa extends AppLocalizations {
   String get pendingRequestsResidentChip => 'Resident';
 
   @override
-  String get pendingRequestsRequestTypeLabel => 'Tipus de sol·licitud';
+  String get pendingRequestsRequestedRoleLabel => 'Rol sol·licitat';
 
   @override
-  String get pendingRequestsResidentJoinType => 'Unió com a resident';
+  String get pendingRequestsRoleOwner => 'Propietari';
+
+  @override
+  String get pendingRequestsRoleTenant => 'Llogater';
+
+  @override
+  String get pendingRequestsRoleUnknown => 'Rol no especificat';
 
   @override
   String get pendingRequestsDateLabel => 'Data';
@@ -1187,36 +1193,6 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String get rankingBadgesEarned => 'Insígnies aconseguides';
-
-  @override
-  String get rankingViewAll => 'Veure-ho tot';
-
-  @override
-  String get rankingBadgeSolarMaster => 'Mestre solar';
-
-  @override
-  String get rankingBadgeDateOct25 => 'Oct 25';
-
-  @override
-  String get rankingBadgeMaxSavings => 'Màxim estalvi';
-
-  @override
-  String get rankingBadgeDateNov25 => 'Nov 25';
-
-  @override
-  String get rankingBadgeResilient => 'Resilient';
-
-  @override
-  String get rankingBadgeDateDec25 => 'Dec 25';
-
-  @override
-  String get rankingBadgeTest => 'Prova';
-
-  @override
-  String get rankingBadgeDateJan26 => 'Gen 26';
-
-  @override
   String get rankingSearchHint => 'Cerca per carrer...';
 
   @override
@@ -1336,20 +1312,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get buildingCardRecommendedActions => 'ACCIONS RECOMANADES';
-
-  @override
-  String get buildingCardActionSimulationTitle => 'Executa simulació';
-
-  @override
-  String get buildingCardActionSimulationSubtitle =>
-      'Prova escenaris de millora per aquest edifici';
-
-  @override
-  String get buildingCardActionVoteTitle => 'Votació de la comunitat';
-
-  @override
-  String get buildingCardActionVoteSubtitle =>
-      'Funcionalitat preparada per futures propostes';
 
   @override
   String get buildingCardActionReportTitle => 'Informe de junta (properament)';

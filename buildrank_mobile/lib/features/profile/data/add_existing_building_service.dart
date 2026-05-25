@@ -94,12 +94,14 @@ class AddExistingBuildingService {
 
     await _createResidentJoinRequest(
       building: building,
+      userRole: userRole,
       habitatgePayload: habitatgePayload,
     );
   }
 
   Future<void> _createResidentJoinRequest({
     required ExistingBuildingItem building,
+    required String userRole,
     required Map<String, dynamic> habitatgePayload,
   }) async {
     final referencia =
@@ -109,15 +111,45 @@ class AddExistingBuildingService {
         ) ??
         '';
 
-    final planta = _readString(habitatgePayload['planta']) ?? '';
-    final porta = _readString(habitatgePayload['porta']) ?? '';
-    final superficie = _readDouble(habitatgePayload['superficie']);
-
     if (referencia.isEmpty) {
       throw const AddExistingBuildingApiException(
         'La referència cadastral és obligatòria.',
       );
     }
+
+    final normalizedRole = userRole.toLowerCase().trim();
+    final isTenant =
+        normalizedRole == 'tenant' ||
+        normalizedRole == 'llogater' ||
+        normalizedRole == 'resident';
+    final isOwner = normalizedRole == 'owner' || normalizedRole == 'propietari';
+
+    if (isTenant) {
+      try {
+        await _postJson(
+          Uri.parse(ApiConfig.habitatgeSolicitarAcces(referencia)),
+          const {},
+        );
+        return;
+      } on AddExistingBuildingApiException catch (e) {
+        if (e.statusCode == 404) {
+          throw const AddExistingBuildingApiException(
+            'No s’ha trobat cap habitatge amb aquesta referència cadastral. Revisa-la o demana al propietari que registri primer l’habitatge.',
+          );
+        }
+        rethrow;
+      }
+    }
+
+    if (!isOwner) {
+      throw const AddExistingBuildingApiException(
+        'Aquest rol no pot sol·licitar la vinculació a un habitatge.',
+      );
+    }
+
+    final planta = _readString(habitatgePayload['planta']) ?? '';
+    final porta = _readString(habitatgePayload['porta']) ?? '';
+    final superficie = _readDouble(habitatgePayload['superficie']);
 
     if (planta.isEmpty || porta.isEmpty) {
       throw const AddExistingBuildingApiException(
@@ -142,7 +174,6 @@ class AddExistingBuildingService {
     try {
       await _postJson(Uri.parse(ApiConfig.habitatges), payload);
     } on AddExistingBuildingApiException catch (e) {
-      // Si l’habitatge ja existeix al backend, provem el flux de sol·licitar accés.
       if (e.statusCode == 400 && _looksLikeDuplicateReference(e.details)) {
         await _postJson(
           Uri.parse(ApiConfig.habitatgeSolicitarAcces(referencia)),

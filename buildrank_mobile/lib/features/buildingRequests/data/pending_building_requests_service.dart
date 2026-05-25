@@ -142,6 +142,7 @@ class PendingBuildingRequestItem {
   final String? porta;
   final double? superficie;
   final DateTime submittedAt;
+  final String? requestedRole;
 
   const PendingBuildingRequestItem({
     required this.id,
@@ -151,6 +152,7 @@ class PendingBuildingRequestItem {
     required this.planta,
     required this.porta,
     required this.superficie,
+    this.requestedRole,
     required this.submittedAt,
   });
 
@@ -210,6 +212,11 @@ class PendingBuildingRequestItem {
                 '',
           ) ??
           DateTime.now(),
+      requestedRole:
+          _readString(json['rolSolicitat']) ??
+          _readString(json['rol_solicitat']) ??
+          _readString(json['requestedRole']) ??
+          _readString(json['requested_role']),
     );
   }
   static String? _readString(dynamic value) {

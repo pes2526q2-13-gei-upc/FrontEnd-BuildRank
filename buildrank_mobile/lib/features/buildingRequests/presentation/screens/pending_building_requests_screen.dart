@@ -328,6 +328,7 @@ class _PendingRequestCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final isAccepting = isProcessing && processingAction == 'accept';
     final isRejecting = isProcessing && processingAction == 'reject';
+    final requestedRoleLabel = _requestedRoleLabel(l10n, item.requestedRole);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -362,13 +363,13 @@ class _PendingRequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              _RequestTypeChip(label: l10n.pendingRequestsResidentChip),
+              _RequestTypeChip(label: requestedRoleLabel),
             ],
           ),
           const SizedBox(height: 14),
           _InfoRow(
-            label: l10n.pendingRequestsRequestTypeLabel,
-            value: l10n.pendingRequestsResidentJoinType,
+            label: l10n.pendingRequestsRequestedRoleLabel,
+            value: requestedRoleLabel,
           ),
           _InfoRow(
             label: l10n.pendingRequestsDateLabel,
@@ -540,4 +541,18 @@ String _formatDate(DateTime date) {
   final minute = twoDigits(date.minute);
 
   return '$day/$month/$year · $hour:$minute';
+}
+
+String _requestedRoleLabel(AppLocalizations l10n, String? role) {
+  switch (role?.toLowerCase().trim()) {
+    case 'owner':
+    case 'propietari':
+      return l10n.pendingRequestsRoleOwner;
+    case 'tenant':
+    case 'llogater':
+    case 'resident':
+      return l10n.pendingRequestsRoleTenant;
+    default:
+      return l10n.pendingRequestsRoleUnknown;
+  }
 }

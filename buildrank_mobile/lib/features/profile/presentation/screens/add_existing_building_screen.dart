@@ -37,7 +37,17 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
   ExistingBuildingItem? _selectedBuilding;
   List<AdminVerificationDocumentInput> _verificationDocuments = [];
 
-  bool get _isAdminRole => widget.userRole == 'admin';
+  String get _normalizedUserRole => widget.userRole.toLowerCase().trim();
+
+  bool get _isAdminRole => _normalizedUserRole == 'admin';
+
+  bool get _isOwnerRole =>
+      _normalizedUserRole == 'owner' || _normalizedUserRole == 'propietari';
+
+  bool get _isTenantRole =>
+      _normalizedUserRole == 'tenant' ||
+      _normalizedUserRole == 'llogater' ||
+      _normalizedUserRole == 'resident';
 
   String get _membershipRole => _isAdminRole ? 'administrator' : 'resident';
 
@@ -63,6 +73,15 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
     if (_selectedBuilding == null) return false;
 
     final hasRef = _refCadastralController.text.trim().isNotEmpty;
+
+    if (_isTenantRole) {
+      return hasRef;
+    }
+
+    if (!_isOwnerRole) {
+      return false;
+    }
+
     final hasSurface = _superficieController.text.trim().isNotEmpty;
 
     if (!_requiresBlockFields) {
@@ -165,6 +184,8 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
 
     final habitatgePayload = _isAdminRole
         ? <String, dynamic>{}
+        : _isTenantRole
+        ? {'referencia_cadastral': _refCadastralController.text.trim()}
         : {
             'building_id': building.id,
             'referencia_cadastral': _refCadastralController.text.trim(),
@@ -436,52 +457,55 @@ class _AddExistingBuildingScreenState extends State<AddExistingBuildingScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    if (_requiresBlockFields) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _plantaController,
-                              onChanged: (_) => setState(() {}),
-                              decoration: InputDecoration(
-                                labelText: l10n.habitatgeFloor,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: TextField(
-                              controller: _portaController,
-                              onChanged: (_) => setState(() {}),
-                              decoration: InputDecoration(
-                                labelText: l10n.habitatgeDoor,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+
+                    if (_isOwnerRole) ...[
                       const SizedBox(height: 12),
-                    ],
-                    TextField(
-                      controller: _superficieController,
-                      onChanged: (_) => setState(() {}),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      decoration: InputDecoration(
-                        labelText: l10n.habitatgeSurface,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      if (_requiresBlockFields) ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _plantaController,
+                                onChanged: (_) => setState(() {}),
+                                decoration: InputDecoration(
+                                  labelText: l10n.habitatgeFloor,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: _portaController,
+                                onChanged: (_) => setState(() {}),
+                                decoration: InputDecoration(
+                                  labelText: l10n.habitatgeDoor,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextField(
+                        controller: _superficieController,
+                        onChanged: (_) => setState(() {}),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: l10n.habitatgeSurface,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
