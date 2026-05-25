@@ -9,11 +9,13 @@ import '../../../vots/presentation/screens/votacio_detall_screen.dart';
 class NotificationsScreen extends StatefulWidget {
   final String userRole;
   final VoidCallback? onBadgeUpdate;
+  final NotificacionsService? notificacionsService;
 
   const NotificationsScreen({
     super.key,
     required this.userRole,
     this.onBadgeUpdate,
+    this.notificacionsService,
   });
 
   @override
@@ -21,7 +23,7 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  final _service = NotificacionsService();
+  late final NotificacionsService _service;
   final _votacionsService = VotacionsService();
 
   List<NotificacioModel> _notificacions = [];
@@ -32,6 +34,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
+    _service = widget.notificacionsService ?? NotificacionsService();
     _load();
   }
 
