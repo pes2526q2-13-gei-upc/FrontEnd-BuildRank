@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:buildrank_mobile/features/formBuilding/data/building_service.dart';
 import '../../../../shared/widgets/metric_card.dart';
 import '../../../../shared/widgets/action_tile.dart';
-import '../../../../shared/widgets/league_info_card.dart';
-import '../../../../shared/widgets/revision_card.dart';
 import 'package:buildrank_mobile/features/buildingRequests/presentation/screens/pending_building_requests_screen.dart';
 import 'package:buildrank_mobile/features/habitatge/presentation/screens/edit_habitatge_screen.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
@@ -16,6 +14,8 @@ class BuildingDetailScreen extends StatefulWidget {
   final String title;
   final String address;
   final int score;
+  final BuildingService? buildingService;
+  final ImageProvider? avatarImage;
 
   const BuildingDetailScreen({
     super.key,
@@ -25,6 +25,8 @@ class BuildingDetailScreen extends StatefulWidget {
     required this.title,
     required this.address,
     required this.score,
+    this.buildingService,
+    this.avatarImage,
   });
 
   @override
@@ -32,7 +34,7 @@ class BuildingDetailScreen extends StatefulWidget {
 }
 
 class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
-  final BuildingService _buildingService = BuildingService();
+  late final BuildingService _buildingService;
 
   int _tabIndex = 0;
   bool _isLoading = true;
@@ -46,6 +48,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _buildingService = widget.buildingService ?? BuildingService();
     _buildingDetail = widget.building;
     _loadBuildingDetail();
     _loadBuildingBadges();
@@ -351,10 +354,12 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                         )
                       : const Icon(Icons.refresh),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 16),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
+                    backgroundImage:
+                        widget.avatarImage ??
+                        const NetworkImage("https://i.pravatar.cc/100"),
                   ),
                 ),
               ],
@@ -380,10 +385,6 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                     _buildTabs(),
                     const SizedBox(height: 16),
                     _buildTabContent(),
-                    const SizedBox(height: 20),
-                    const LeagueInfoCard(),
-                    const SizedBox(height: 20),
-                    const RevisionCard(),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -695,15 +696,8 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
             l10n.buildingCardRecommendedActions,
             style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
           ),
-          const SizedBox(height: 14),
-          ActionTile(
-            icon: Icons.description,
-            title: l10n.buildingCardActionReportTitle,
-            subtitle: l10n.buildingCardActionReportSubtitle,
-            color: Color(0xFFF1F1F1),
-          ),
           if (isAdmin) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
             ActionTile(
               icon: Icons.verified_user_outlined,
               title: l10n.buildingCardActionManageRequestsTitle,
@@ -723,7 +717,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
               },
             ),
           ] else if (widget.userRole == 'owner') ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
             ActionTile(
               icon: Icons.home_outlined,
               title: l10n.buildingCardActionEditHabitatgeTitle,

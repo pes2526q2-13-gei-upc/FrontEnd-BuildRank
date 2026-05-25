@@ -890,15 +890,18 @@ class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
           validator: _requiredEnergyTextIfNeeded,
         ),
         const SizedBox(height: 10),
-        SwitchListTile(
-          value: _rehabilitacioEnergetica,
-          contentPadding: EdgeInsets.zero,
-          title: Text(l10n.editHabitatgeEnergyRenovation),
-          onChanged: (value) {
-            setState(() {
-              _rehabilitacioEnergetica = value;
-            });
-          },
+        Material(
+          color: Colors.transparent,
+          child: SwitchListTile(
+            value: _rehabilitacioEnergetica,
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.editHabitatgeEnergyRenovation),
+            onChanged: (value) {
+              setState(() {
+                _rehabilitacioEnergetica = value;
+              });
+            },
+          ),
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(

@@ -1045,14 +1045,8 @@ abstract class AppLocalizations {
   /// No description provided for @editProfilePersonalDataSubtitle.
   ///
   /// In ca, this message translates to:
-  /// **'Actualitza la informació bàsica del teu compte. El rol no es pot modificar des d\'aquesta pantalla.'**
+  /// **'Actualitza la informació bàsica del teu compte.'**
   String get editProfilePersonalDataSubtitle;
-
-  /// No description provided for @editProfileRoleLabel.
-  ///
-  /// In ca, this message translates to:
-  /// **'Rol'**
-  String get editProfileRoleLabel;
 
   /// No description provided for @editProfileSaving.
   ///
@@ -1750,23 +1744,11 @@ abstract class AppLocalizations {
   /// **'Tancar sessió'**
   String get profileLogoutTooltip;
 
-  /// No description provided for @profileReportsSoon.
-  ///
-  /// In ca, this message translates to:
-  /// **'Els informes per a juntes encara no estan disponibles en aquest MVP.'**
-  String get profileReportsSoon;
-
   /// No description provided for @profileCreateBuilding.
   ///
   /// In ca, this message translates to:
   /// **'Crear edifici'**
   String get profileCreateBuilding;
-
-  /// No description provided for @profileReports.
-  ///
-  /// In ca, this message translates to:
-  /// **'Informes'**
-  String get profileReports;
 
   /// No description provided for @profileNonAdminInfo.
   ///
@@ -1815,18 +1797,6 @@ abstract class AppLocalizations {
   /// In ca, this message translates to:
   /// **'PROGRÉS'**
   String get profileMetricProgress;
-
-  /// No description provided for @profileSeasonRestart.
-  ///
-  /// In ca, this message translates to:
-  /// **'Proper reinici de temporada'**
-  String get profileSeasonRestart;
-
-  /// No description provided for @profileSeasonDaysLeft.
-  ///
-  /// In ca, this message translates to:
-  /// **'Queden {days} dies'**
-  String profileSeasonDaysLeft(int days);
 
   /// No description provided for @profileBadgesTitle.
   ///
@@ -2379,18 +2349,6 @@ abstract class AppLocalizations {
   /// In ca, this message translates to:
   /// **'ACCIONS RECOMANADES'**
   String get buildingCardRecommendedActions;
-
-  /// No description provided for @buildingCardActionReportTitle.
-  ///
-  /// In ca, this message translates to:
-  /// **'Informe de junta (properament)'**
-  String get buildingCardActionReportTitle;
-
-  /// No description provided for @buildingCardActionReportSubtitle.
-  ///
-  /// In ca, this message translates to:
-  /// **'La generació d’informes encara no està disponible en aquest MVP'**
-  String get buildingCardActionReportSubtitle;
 
   /// No description provided for @buildingCardActionManageRequestsTitle.
   ///
@@ -4257,18 +4215,6 @@ abstract class AppLocalizations {
   /// **'S\'ha produït un error inesperat revisant la verificació.'**
   String get adminHomeUnexpectedVerificationError;
 
-  /// No description provided for @revisionCardNextReview.
-  ///
-  /// In ca, this message translates to:
-  /// **'Propera revisió: 15 des. 2026'**
-  String get revisionCardNextReview;
-
-  /// No description provided for @revisionCardDataComplete.
-  ///
-  /// In ca, this message translates to:
-  /// **'Les dades de verificació estan completes al 75%.'**
-  String get revisionCardDataComplete;
-
   /// No description provided for @buildingListScoreLabel.
   ///
   /// In ca, this message translates to:
@@ -4778,12 +4724,6 @@ abstract class AppLocalizations {
   /// In ca, this message translates to:
   /// **'Dades meteorològiques actualitzades pel servei XEMA.'**
   String get weatherUpdatedByXema;
-
-  /// No description provided for @leagueInfoBody.
-  ///
-  /// In ca, this message translates to:
-  /// **'Aquest edifici és actualment a la {currentLeague}. Millora la qualificació energètica per passar a la {nextLeague}.'**
-  String leagueInfoBody(String currentLeague, String nextLeague);
 
   /// No description provided for @rankingComingSoonButton.
   ///

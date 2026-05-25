@@ -12,12 +12,16 @@ class VotacionsScreen extends StatefulWidget {
   final int idEdifici;
   final String userRole;
   final String buildingName;
+  final VotationService? service;
+  final VotacionsService? legacyService;
 
   const VotacionsScreen({
     super.key,
     required this.idEdifici,
     required this.userRole,
     required this.buildingName,
+    this.service,
+    this.legacyService,
   });
 
   @override
@@ -25,8 +29,8 @@ class VotacionsScreen extends StatefulWidget {
 }
 
 class _VotacionsScreenState extends State<VotacionsScreen> {
-  final _service = VotationService();
-  final _legacyService = VotacionsService();
+  late final VotationService _service;
+  late final VotacionsService _legacyService;
 
   bool _loading = true;
   bool _voting = false;
@@ -56,6 +60,8 @@ class _VotacionsScreenState extends State<VotacionsScreen> {
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? VotationService();
+    _legacyService = widget.legacyService ?? VotacionsService();
     _load();
   }
 

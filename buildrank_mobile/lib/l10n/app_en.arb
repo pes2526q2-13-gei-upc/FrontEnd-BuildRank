@@ -244,8 +244,7 @@
     "twinOpenChat":  "Open chat",
     "editProfileTitle":  "Edit profile",
     "editProfilePersonalDataTitle":  "Personal details",
-    "editProfilePersonalDataSubtitle":  "Update your account\u0027s basic information. The role cannot be changed from this screen.",
-    "editProfileRoleLabel":  "Role",
+    "editProfilePersonalDataSubtitle":  "Update your account\u0027s basic information.",
     "editProfileSaving":  "Saving...",
     "editProfileSaveChanges":  "Save changes",
     "editProfileFirstNameRequired":  "First name is required.",
@@ -452,9 +451,7 @@
     "profileEmptyAccessibleBuildings":  "There are no buildings available for this account yet.",
     "profileBuildingCreated":  "Building created successfully.",
     "profileLogoutTooltip":  "Sign out",
-    "profileReportsSoon":  "Board meeting reports are not available yet in this MVP.",
     "profileCreateBuilding":  "Create building",
-    "profileReports":  "Reports",
     "profileNonAdminInfo":  "This account can view buildings linked to its homes. Building creation and administration are reserved for property administrators.",
     "profileMapSubtitle":  "View registered buildings and check their main statistics.",
     "profileLinkNewBuilding":  "Link new building",
@@ -463,15 +460,6 @@
     "profileMetricLinks":  "LINKS",
     "profileMetricAvgRanking":  "AVG RANKING",
     "profileMetricProgress":  "PROGRESS",
-    "profileSeasonRestart":  "Next season restart",
-    "profileSeasonDaysLeft":  "{days} days left",
-    "@profileSeasonDaysLeft":  {
-                                   "placeholders":  {
-                                                        "days":  {
-                                                                     "type":  "int"
-                                                                 }
-                                                    }
-                               },
     "profileBadgesTitle":  "Building badges",
     "profileBadgesBody":  "Real badges are shown inside each building profile. When a building meets score, data quality, or improvement criteria, they will appear in its details.",
     "profileBuildingNumber":  "Building #{id}",
@@ -685,8 +673,6 @@
     "buildingCardRecalculate":  "Recalculate",
     "buildingCardNoBadges":  "This building does not have any badges yet. They will appear when it reaches a milestone.",
     "buildingCardRecommendedActions":  "RECOMMENDED ACTIONS",
-    "buildingCardActionReportTitle":  "Board report (coming soon)",
-    "buildingCardActionReportSubtitle":  "Report generation is not available in this MVP yet",
     "buildingCardActionManageRequestsTitle":  "Manage pending requests",
     "buildingCardActionManageRequestsSubtitle":  "Review and validate new building join requests",
     "buildingCardActionEditHabitatgeTitle":  "Edit my home",
@@ -1071,8 +1057,6 @@
     "adminHomeOpenUsers":  "Open user management",
     "adminHomeAnomalyBody":  "5 buildings in the \"Commercial\" category submitted data more than 20% above historical benchmarks. A manual audit is required.",
     "adminHomeUnexpectedVerificationError":  "An unexpected error occurred while reviewing the verification.",
-    "revisionCardNextReview":  "Next review: 15 Dec 2026",
-    "revisionCardDataComplete":  "Verification data is 75% complete.",
     "buildingListScoreLabel":  "BUILDRANK SCORE",
     "adminHomeChatsModerationTitle":  "Chat moderation",
     "adminHomeAuditButton":  "Audit",
@@ -1382,7 +1366,6 @@
     "weatherLoadingBarcelona":  "Loading weather data for Barcelona...",
     "weatherCurrentInCity":  "Current weather in {city}",
     "weatherUpdatedByXema":  "Weather data updated by the XEMA service.",
-    "leagueInfoBody":  "This building is currently in the {currentLeague}. Improve its energy rating to move into the {nextLeague}.",
     "rankingComingSoonButton":  "Coming soon: view ranking",
     "@adminUsersBlockedSnack":  {
                                     "placeholders":  {
@@ -1468,16 +1451,6 @@
                                                                 }
                                                    }
                               },
-    "@leagueInfoBody":  {
-                            "placeholders":  {
-                                                 "currentLeague":  {
-                                                                       "type":  "String"
-                                                                   },
-                                                 "nextLeague":  {
-                                                                    "type":  "String"
-                                                                }
-                                             }
-                        },
     "@adminUsersUntilDate":  {
                                  "placeholders":  {
                                                       "date":  {

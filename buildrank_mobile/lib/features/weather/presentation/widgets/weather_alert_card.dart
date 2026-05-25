@@ -6,15 +6,16 @@ import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class WeatherAlertCard extends StatefulWidget {
   final VoidCallback onDismiss;
+  final WeatherService? service;
 
-  const WeatherAlertCard({super.key, required this.onDismiss});
+  const WeatherAlertCard({super.key, required this.onDismiss, this.service});
 
   @override
   State<WeatherAlertCard> createState() => _WeatherAlertCardState();
 }
 
 class _WeatherAlertCardState extends State<WeatherAlertCard> {
-  final WeatherService _weatherService = WeatherService();
+  late final WeatherService _weatherService;
 
   bool _isLoading = true;
   String? _errorText;
@@ -23,6 +24,7 @@ class _WeatherAlertCardState extends State<WeatherAlertCard> {
   @override
   void initState() {
     super.initState();
+    _weatherService = widget.service ?? WeatherService();
     _loadWeather();
   }
 

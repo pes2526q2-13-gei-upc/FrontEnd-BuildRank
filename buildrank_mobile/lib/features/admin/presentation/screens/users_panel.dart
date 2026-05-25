@@ -4,14 +4,16 @@ import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class UsersPanel extends StatefulWidget {
-  const UsersPanel({super.key});
+  final UserManagementService? service;
+
+  const UsersPanel({super.key, this.service});
 
   @override
   State<UsersPanel> createState() => _UsersPanelState();
 }
 
 class _UsersPanelState extends State<UsersPanel> {
-  final _service = UserManagementService();
+  late final UserManagementService _service;
 
   List<AdminUser>? _users;
   bool _loading = true;
@@ -20,6 +22,7 @@ class _UsersPanelState extends State<UsersPanel> {
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? UserManagementService();
     _loadUsers();
   }
 

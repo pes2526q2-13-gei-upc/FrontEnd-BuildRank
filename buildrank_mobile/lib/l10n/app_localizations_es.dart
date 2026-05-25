@@ -550,10 +550,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get editProfilePersonalDataSubtitle =>
-      'Actualiza la información básica de tu cuenta. El rol no se puede modificar desde esta pantalla.';
-
-  @override
-  String get editProfileRoleLabel => 'Rol';
+      'Actualiza la información básica de tu cuenta.';
 
   @override
   String get editProfileSaving => 'Guardando...';
@@ -945,14 +942,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileLogoutTooltip => 'Cerrar sesión';
 
   @override
-  String get profileReportsSoon =>
-      'Los informes para juntas aún no están disponibles en este MVP.';
-
-  @override
   String get profileCreateBuilding => 'Crear edificio';
-
-  @override
-  String get profileReports => 'Informes';
 
   @override
   String get profileNonAdminInfo =>
@@ -979,14 +969,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileMetricProgress => 'PROGRESO';
-
-  @override
-  String get profileSeasonRestart => 'Próximo reinicio de temporada';
-
-  @override
-  String profileSeasonDaysLeft(int days) {
-    return 'Quedan $days días';
-  }
 
   @override
   String get profileBadgesTitle => 'Insignias de edificios';
@@ -1315,13 +1297,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get buildingCardRecommendedActions => 'ACCIONES RECOMENDADAS';
-
-  @override
-  String get buildingCardActionReportTitle => 'Informe de junta (próximamente)';
-
-  @override
-  String get buildingCardActionReportSubtitle =>
-      'La generación de informes todavía no está disponible en este MVP';
 
   @override
   String get buildingCardActionManageRequestsTitle =>
@@ -2397,13 +2372,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Se ha producido un error inesperado al revisar la verificación.';
 
   @override
-  String get revisionCardNextReview => 'Próxima revisión: 15 dic. 2026';
-
-  @override
-  String get revisionCardDataComplete =>
-      'Los datos de verificación están completos al 75%.';
-
-  @override
   String get buildingListScoreLabel => 'PUNTUACIÓN BUILDRANK';
 
   @override
@@ -2708,11 +2676,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get weatherUpdatedByXema =>
       'Datos meteorológicos actualizados por el servicio XEMA.';
-
-  @override
-  String leagueInfoBody(String currentLeague, String nextLeague) {
-    return 'Este edificio está actualmente en la $currentLeague. Mejora la calificación energética para pasar a la $nextLeague.';
-  }
 
   @override
   String get rankingComingSoonButton => 'Próximamente: ver el ranking';

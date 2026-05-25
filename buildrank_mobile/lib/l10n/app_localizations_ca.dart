@@ -550,10 +550,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get editProfilePersonalDataSubtitle =>
-      'Actualitza la informació bàsica del teu compte. El rol no es pot modificar des d\'aquesta pantalla.';
-
-  @override
-  String get editProfileRoleLabel => 'Rol';
+      'Actualitza la informació bàsica del teu compte.';
 
   @override
   String get editProfileSaving => 'Desant...';
@@ -944,14 +941,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get profileLogoutTooltip => 'Tancar sessió';
 
   @override
-  String get profileReportsSoon =>
-      'Els informes per a juntes encara no estan disponibles en aquest MVP.';
-
-  @override
   String get profileCreateBuilding => 'Crear edifici';
-
-  @override
-  String get profileReports => 'Informes';
 
   @override
   String get profileNonAdminInfo =>
@@ -978,14 +968,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get profileMetricProgress => 'PROGRÉS';
-
-  @override
-  String get profileSeasonRestart => 'Proper reinici de temporada';
-
-  @override
-  String profileSeasonDaysLeft(int days) {
-    return 'Queden $days dies';
-  }
 
   @override
   String get profileBadgesTitle => 'Insígnies d\'edificis';
@@ -1312,13 +1294,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get buildingCardRecommendedActions => 'ACCIONS RECOMANADES';
-
-  @override
-  String get buildingCardActionReportTitle => 'Informe de junta (properament)';
-
-  @override
-  String get buildingCardActionReportSubtitle =>
-      'La generació d’informes encara no està disponible en aquest MVP';
 
   @override
   String get buildingCardActionManageRequestsTitle =>
@@ -2387,13 +2362,6 @@ class AppLocalizationsCa extends AppLocalizations {
       'S\'ha produït un error inesperat revisant la verificació.';
 
   @override
-  String get revisionCardNextReview => 'Propera revisió: 15 des. 2026';
-
-  @override
-  String get revisionCardDataComplete =>
-      'Les dades de verificació estan completes al 75%.';
-
-  @override
   String get buildingListScoreLabel => 'PUNTUACIÓ BUILDRANK';
 
   @override
@@ -2695,11 +2663,6 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get weatherUpdatedByXema =>
       'Dades meteorològiques actualitzades pel servei XEMA.';
-
-  @override
-  String leagueInfoBody(String currentLeague, String nextLeague) {
-    return 'Aquest edifici és actualment a la $currentLeague. Millora la qualificació energètica per passar a la $nextLeague.';
-  }
 
   @override
   String get rankingComingSoonButton => 'Pròximament: veure el rànquing';

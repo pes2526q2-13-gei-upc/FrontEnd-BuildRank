@@ -13,6 +13,9 @@ class SimulationScreen extends StatefulWidget {
   final String userRole;
   final String buildingName;
   final int currentPoints;
+  final SimulationService? simulationService;
+  final VotationService? votationService;
+  final ImageProvider? avatarImage;
 
   const SimulationScreen({
     super.key,
@@ -20,6 +23,9 @@ class SimulationScreen extends StatefulWidget {
     required this.userRole,
     required this.buildingName,
     required this.currentPoints,
+    this.simulationService,
+    this.votationService,
+    this.avatarImage,
   });
 
   @override
@@ -27,8 +33,8 @@ class SimulationScreen extends StatefulWidget {
 }
 
 class _SimulationScreenState extends State<SimulationScreen> {
-  final _simulationService = SimulationService();
-  final _votationService = VotationService();
+  late final SimulationService _simulationService;
+  late final VotationService _votationService;
   DateTime? _lastHistoryAutoRefresh;
   bool _historyAutoRefreshing = false;
 
@@ -57,6 +63,8 @@ class _SimulationScreenState extends State<SimulationScreen> {
   @override
   void initState() {
     super.initState();
+    _simulationService = widget.simulationService ?? SimulationService();
+    _votationService = widget.votationService ?? VotationService();
     _loadCatalog();
     _loadHistory();
   }
@@ -540,10 +548,12 @@ class _SimulationScreenState extends State<SimulationScreen> {
                         )
                       : const Icon(Icons.refresh),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 16),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
+                    backgroundImage:
+                        widget.avatarImage ??
+                        const NetworkImage("https://i.pravatar.cc/100"),
                   ),
                 ),
               ],

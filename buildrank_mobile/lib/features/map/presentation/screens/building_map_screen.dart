@@ -6,7 +6,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class BuildingMapScreen extends StatefulWidget {
-  const BuildingMapScreen({super.key});
+  final BuildingMapService service;
+
+  const BuildingMapScreen({
+    super.key,
+    this.service = const BuildingMapService(),
+  });
 
   @override
   State<BuildingMapScreen> createState() => _BuildingMapScreenState();
@@ -15,7 +20,6 @@ class BuildingMapScreen extends StatefulWidget {
 class _BuildingMapScreenState extends State<BuildingMapScreen> {
   static const LatLng _barcelonaCenter = LatLng(41.3851, 2.1734);
 
-  final _service = const BuildingMapService();
   final _mapController = MapController();
   final _searchController = TextEditingController();
 
@@ -46,7 +50,7 @@ class _BuildingMapScreenState extends State<BuildingMapScreen> {
     });
 
     try {
-      final response = await _service.getBuildingsForMap(
+      final response = await widget.service.getBuildingsForMap(
         search: _searchController.text,
         scoreMin: _scoreMin,
         limit: 500,

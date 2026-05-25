@@ -244,8 +244,7 @@
     "twinOpenChat":  "Abrir chat",
     "editProfileTitle":  "Editar perfil",
     "editProfilePersonalDataTitle":  "Datos personales",
-    "editProfilePersonalDataSubtitle":  "Actualiza la información básica de tu cuenta. El rol no se puede modificar desde esta pantalla.",
-    "editProfileRoleLabel":  "Rol",
+    "editProfilePersonalDataSubtitle":  "Actualiza la información básica de tu cuenta.",
     "editProfileSaving":  "Guardando...",
     "editProfileSaveChanges":  "Guardar cambios",
     "editProfileFirstNameRequired":  "El nombre es obligatorio.",
@@ -452,9 +451,7 @@
     "profileEmptyAccessibleBuildings":  "Aún no hay edificios disponibles para esta cuenta.",
     "profileBuildingCreated":  "Edificio creado correctamente.",
     "profileLogoutTooltip":  "Cerrar sesión",
-    "profileReportsSoon":  "Los informes para juntas aún no están disponibles en este MVP.",
     "profileCreateBuilding":  "Crear edificio",
-    "profileReports":  "Informes",
     "profileNonAdminInfo":  "Esta cuenta puede consultar los edificios vinculados a sus viviendas. La creación y administración de edificios queda reservada a los administradores de finca.",
     "profileMapSubtitle":  "Visualiza los edificios registrados y consulta sus estadísticas principales.",
     "profileLinkNewBuilding":  "Vincular nuevo edificio",
@@ -463,15 +460,6 @@
     "profileMetricLinks":  "VÍNCULOS",
     "profileMetricAvgRanking":  "RANKING MEDIO",
     "profileMetricProgress":  "PROGRESO",
-    "profileSeasonRestart":  "Próximo reinicio de temporada",
-    "profileSeasonDaysLeft":  "Quedan {days} días",
-    "@profileSeasonDaysLeft":  {
-                                   "placeholders":  {
-                                                        "days":  {
-                                                                     "type":  "int"
-                                                                 }
-                                                    }
-                               },
     "profileBadgesTitle":  "Insignias de edificios",
     "profileBadgesBody":  "Las insignias reales se muestran dentro de la ficha de cada edificio. Cuando un edificio cumpla criterios de puntuación, calidad de datos o mejora, aparecerán en su detalle.",
     "profileBuildingNumber":  "Edificio #{id}",
@@ -685,8 +673,6 @@
     "buildingCardRecalculate":  "Recalcular",
     "buildingCardNoBadges":  "Este edificio todavía no tiene insignias asignadas. Se mostrarán cuando cumpla algún hito.",
     "buildingCardRecommendedActions":  "ACCIONES RECOMENDADAS",
-    "buildingCardActionReportTitle":  "Informe de junta (próximamente)",
-    "buildingCardActionReportSubtitle":  "La generación de informes todavía no está disponible en este MVP",
     "buildingCardActionManageRequestsTitle":  "Gestionar solicitudes pendientes",
     "buildingCardActionManageRequestsSubtitle":  "Revisa y valida nuevas peticiones de unión al edificio",
     "buildingCardActionEditHabitatgeTitle":  "Editar mi vivienda",
@@ -1071,8 +1057,6 @@
     "adminHomeOpenUsers":  "Acceder a la gestión de usuarios",
     "adminHomeAnomalyBody":  "5 edificios de la categoría \"Comercial\" han presentado datos que superan los puntos de referencia históricos en más de un 20%. Hace falta una auditoría manual.",
     "adminHomeUnexpectedVerificationError":  "Se ha producido un error inesperado al revisar la verificación.",
-    "revisionCardNextReview":  "Próxima revisión: 15 dic. 2026",
-    "revisionCardDataComplete":  "Los datos de verificación están completos al 75%.",
     "buildingListScoreLabel":  "PUNTUACIÓN BUILDRANK",
     "adminHomeChatsModerationTitle":  "Moderación de chats",
     "adminHomeAuditButton":  "Auditoría",
@@ -1382,7 +1366,6 @@
     "weatherLoadingBarcelona":  "Cargando datos meteorológicos de Barcelona...",
     "weatherCurrentInCity":  "Tiempo actual en {city}",
     "weatherUpdatedByXema":  "Datos meteorológicos actualizados por el servicio XEMA.",
-    "leagueInfoBody":  "Este edificio está actualmente en la {currentLeague}. Mejora la calificación energética para pasar a la {nextLeague}.",
     "rankingComingSoonButton":  "Próximamente: ver el ranking",
     "@adminUsersBlockedSnack":  {
                                     "placeholders":  {
@@ -1468,16 +1451,6 @@
                                                                 }
                                                    }
                               },
-    "@leagueInfoBody":  {
-                            "placeholders":  {
-                                                 "currentLeague":  {
-                                                                       "type":  "String"
-                                                                   },
-                                                 "nextLeague":  {
-                                                                    "type":  "String"
-                                                                }
-                                             }
-                        },
     "@adminUsersUntilDate":  {
                                  "placeholders":  {
                                                       "date":  {

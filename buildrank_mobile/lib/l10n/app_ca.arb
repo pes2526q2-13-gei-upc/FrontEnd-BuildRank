@@ -244,8 +244,7 @@
     "twinOpenChat":  "Obrir xat",
     "editProfileTitle":  "Editar perfil",
     "editProfilePersonalDataTitle":  "Dades personals",
-    "editProfilePersonalDataSubtitle":  "Actualitza la informació bàsica del teu compte. El rol no es pot modificar des d\u0027aquesta pantalla.",
-    "editProfileRoleLabel":  "Rol",
+    "editProfilePersonalDataSubtitle":  "Actualitza la informació bàsica del teu compte.",
     "editProfileSaving":  "Desant...",
     "editProfileSaveChanges":  "Guardar canvis",
     "editProfileFirstNameRequired":  "El nom és obligatori.",
@@ -452,9 +451,7 @@
     "profileEmptyAccessibleBuildings":  "Encara no hi ha edificis disponibles per a aquest compte.",
     "profileBuildingCreated":  "Edifici creat correctament.",
     "profileLogoutTooltip":  "Tancar sessió",
-    "profileReportsSoon":  "Els informes per a juntes encara no estan disponibles en aquest MVP.",
     "profileCreateBuilding":  "Crear edifici",
-    "profileReports":  "Informes",
     "profileNonAdminInfo":  "Aquest compte pot consultar els edificis vinculats als seus habitatges. La creació i administració d\u0027edificis queda reservada als administradors de finca.",
     "profileMapSubtitle":  "Visualitza els edificis registrats i consulta\u0027n les estadístiques principals.",
     "profileLinkNewBuilding":  "Vincular nou edifici",
@@ -463,15 +460,6 @@
     "profileMetricLinks":  "VINCLES",
     "profileMetricAvgRanking":  "RÀNQUING MITJÀ",
     "profileMetricProgress":  "PROGRÉS",
-    "profileSeasonRestart":  "Proper reinici de temporada",
-    "profileSeasonDaysLeft":  "Queden {days} dies",
-    "@profileSeasonDaysLeft":  {
-                                   "placeholders":  {
-                                                        "days":  {
-                                                                     "type":  "int"
-                                                                 }
-                                                    }
-                               },
     "profileBadgesTitle":  "Insígnies d\u0027edificis",
     "profileBadgesBody":  "Les insígnies reals es mostren dins de la fitxa de cada edifici. Quan un edifici compleixi criteris de puntuació, qualitat de dades o millora, apareixeran en el seu detall.",
     "profileBuildingNumber":  "Edifici #{id}",
@@ -685,8 +673,6 @@
     "buildingCardRecalculate":  "Recalcular",
     "buildingCardNoBadges":  "Aquest edifici encara no té insígnies assignades. Es mostraran quan compleixi alguna fita.",
     "buildingCardRecommendedActions":  "ACCIONS RECOMANADES",
-    "buildingCardActionReportTitle":  "Informe de junta (properament)",
-    "buildingCardActionReportSubtitle":  "La generació d’informes encara no està disponible en aquest MVP",
     "buildingCardActionManageRequestsTitle":  "Gestionar sol·licituds pendents",
     "buildingCardActionManageRequestsSubtitle":  "Revisa i valida noves peticions d’unió a l’edifici",
     "buildingCardActionEditHabitatgeTitle":  "Editar el meu habitatge",
@@ -1071,8 +1057,6 @@
     "adminHomeOpenUsers":  "Accedir a la gestió d\u0027usuaris",
     "adminHomeAnomalyBody":  "5 edificis de la categoria \"Comercial\" han presentat dades que superen els punts de referència històrics en més d\u0027un 20%. Cal una auditoria manual.",
     "adminHomeUnexpectedVerificationError":  "S\u0027ha produït un error inesperat revisant la verificació.",
-    "revisionCardNextReview":  "Propera revisió: 15 des. 2026",
-    "revisionCardDataComplete":  "Les dades de verificació estan completes al 75%.",
     "buildingListScoreLabel":  "PUNTUACIÓ BUILDRANK",
     "adminHomeChatsModerationTitle":  "Moderació de xats",
     "adminHomeAuditButton":  "Auditoria",
@@ -1382,7 +1366,6 @@
     "weatherLoadingBarcelona":  "Carregant dades meteorològiques de Barcelona...",
     "weatherCurrentInCity":  "Temps actual a {city}",
     "weatherUpdatedByXema":  "Dades meteorològiques actualitzades pel servei XEMA.",
-    "leagueInfoBody":  "Aquest edifici és actualment a la {currentLeague}. Millora la qualificació energètica per passar a la {nextLeague}.",
     "rankingComingSoonButton":  "Pròximament: veure el rànquing",
     "@adminUsersBlockedSnack":  {
                                     "placeholders":  {
@@ -1468,16 +1451,6 @@
                                                                 }
                                                    }
                               },
-    "@leagueInfoBody":  {
-                            "placeholders":  {
-                                                 "currentLeague":  {
-                                                                       "type":  "String"
-                                                                   },
-                                                 "nextLeague":  {
-                                                                    "type":  "String"
-                                                                }
-                                             }
-                        },
     "@adminUsersUntilDate":  {
                                  "placeholders":  {
                                                       "date":  {

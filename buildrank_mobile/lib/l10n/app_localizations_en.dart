@@ -545,10 +545,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editProfilePersonalDataSubtitle =>
-      'Update your account\'s basic information. The role cannot be changed from this screen.';
-
-  @override
-  String get editProfileRoleLabel => 'Role';
+      'Update your account\'s basic information.';
 
   @override
   String get editProfileSaving => 'Saving...';
@@ -934,14 +931,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLogoutTooltip => 'Sign out';
 
   @override
-  String get profileReportsSoon =>
-      'Board meeting reports are not available yet in this MVP.';
-
-  @override
   String get profileCreateBuilding => 'Create building';
-
-  @override
-  String get profileReports => 'Reports';
 
   @override
   String get profileNonAdminInfo =>
@@ -968,14 +958,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileMetricProgress => 'PROGRESS';
-
-  @override
-  String get profileSeasonRestart => 'Next season restart';
-
-  @override
-  String profileSeasonDaysLeft(int days) {
-    return '$days days left';
-  }
 
   @override
   String get profileBadgesTitle => 'Building badges';
@@ -1300,13 +1282,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buildingCardRecommendedActions => 'RECOMMENDED ACTIONS';
-
-  @override
-  String get buildingCardActionReportTitle => 'Board report (coming soon)';
-
-  @override
-  String get buildingCardActionReportSubtitle =>
-      'Report generation is not available in this MVP yet';
 
   @override
   String get buildingCardActionManageRequestsTitle => 'Manage pending requests';
@@ -2368,12 +2343,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'An unexpected error occurred while reviewing the verification.';
 
   @override
-  String get revisionCardNextReview => 'Next review: 15 Dec 2026';
-
-  @override
-  String get revisionCardDataComplete => 'Verification data is 75% complete.';
-
-  @override
   String get buildingListScoreLabel => 'BUILDRANK SCORE';
 
   @override
@@ -2669,11 +2638,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weatherUpdatedByXema =>
       'Weather data updated by the XEMA service.';
-
-  @override
-  String leagueInfoBody(String currentLeague, String nextLeague) {
-    return 'This building is currently in the $currentLeague. Improve its energy rating to move into the $nextLeague.';
-  }
 
   @override
   String get rankingComingSoonButton => 'Coming soon: view ranking';

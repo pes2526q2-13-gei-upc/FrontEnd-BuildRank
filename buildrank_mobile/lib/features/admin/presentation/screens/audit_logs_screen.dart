@@ -28,14 +28,16 @@ String _formatDisplayDateTime(DateTime dt) {
 }
 
 class AuditLogsScreen extends StatefulWidget {
-  const AuditLogsScreen({super.key});
+  final AuditLogService? service;
+
+  const AuditLogsScreen({super.key, this.service});
 
   @override
   State<AuditLogsScreen> createState() => _AuditLogsScreenState();
 }
 
 class _AuditLogsScreenState extends State<AuditLogsScreen> {
-  final _service = AuditLogService();
+  late final AuditLogService _service;
   final _userController = TextEditingController();
 
   AuditLogPage? _page;
@@ -56,6 +58,7 @@ class _AuditLogsScreenState extends State<AuditLogsScreen> {
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? AuditLogService();
     _load();
   }
 

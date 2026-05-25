@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 class EditProfileScreen extends StatefulWidget {
   final String initialFullName;
   final String initialEmail;
-  final String initialRoleLabel;
+  final AuthService? authService;
 
   const EditProfileScreen({
     super.key,
     required this.initialFullName,
     required this.initialEmail,
-    required this.initialRoleLabel,
+    this.authService,
   });
 
   @override
@@ -19,7 +19,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _authService = AuthService();
+  late final AuthService _authService;
 
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
@@ -30,6 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _authService = widget.authService ?? AuthService();
 
     final parts = widget.initialFullName.trim().split(RegExp(r'\s+'));
     final firstName = parts.isNotEmpty ? parts.first : '';
@@ -188,18 +189,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     labelText: l10n.emailLabel,
                     border: const OutlineInputBorder(),
                     prefixIcon: const Icon(Icons.email_outlined),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: l10n.editProfileRoleLabel,
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.badge_outlined),
-                  ),
-                  child: Text(
-                    widget.initialRoleLabel,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(height: 24),

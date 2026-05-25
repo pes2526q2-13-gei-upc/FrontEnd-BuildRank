@@ -9,13 +9,25 @@ import 'package:buildrank_mobile/features/notifications/data/notifications_servi
 import 'package:buildrank_mobile/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:buildrank_mobile/shared/widgets/building_list_item.dart';
+import 'package:buildrank_mobile/features/weather/data/weather_service.dart';
 import 'package:buildrank_mobile/features/weather/presentation/widgets/weather_alert_card.dart';
 import 'package:buildrank_mobile/features/profile/presentation/screens/add_existing_building_screen.dart';
 import 'package:buildrank_mobile/features/map/presentation/screens/building_map_screen.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final AuthService? authService;
+  final BuildingService? buildingService;
+  final NotificacionsService? notificacionsService;
+  final WeatherService? weatherService;
+
+  const ProfileScreen({
+    super.key,
+    this.authService,
+    this.buildingService,
+    this.notificacionsService,
+    this.weatherService,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -23,9 +35,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with WidgetsBindingObserver {
-  final _authService = AuthService();
-  final _buildingService = BuildingService();
-  final _notificacionsService = NotificacionsService();
+  late final AuthService _authService;
+  late final BuildingService _buildingService;
+  late final NotificacionsService _notificacionsService;
 
   bool _showWeatherAlert = true;
 
@@ -40,6 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void initState() {
     super.initState();
+    _authService = widget.authService ?? AuthService();
+    _buildingService = widget.buildingService ?? BuildingService();
+    _notificacionsService =
+        widget.notificacionsService ?? NotificacionsService();
     WidgetsBinding.instance.addObserver(this);
     _loadProfile();
     _loadNoLlegides();
@@ -198,7 +214,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         builder: (_) => EditProfileScreen(
           initialFullName: _buildFullName(),
           initialEmail: (_userData?['email'] ?? '').toString(),
-          initialRoleLabel: _buildRoleLabel(),
         ),
       ),
     );
@@ -291,6 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   if (_showWeatherAlert) ...[
                     const SizedBox(height: 16),
                     WeatherAlertCard(
+                      service: widget.weatherService,
                       onDismiss: () {
                         setState(() {
                           _showWeatherAlert = false;
@@ -307,10 +323,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
                   _buildMapAccessCard(),
 
-                  const SizedBox(height: 16),
-
-                  _buildSeasonCard(),
-
                   const SizedBox(height: 20),
 
                   _buildBuildingsHeader(),
@@ -326,14 +338,6 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
             ),
     );
-  }
-
-  void _showReportsSoon() {
-    final l10n = AppLocalizations.of(context);
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.profileReportsSoon)));
   }
 
   Widget _buildRoleActions() {
@@ -354,26 +358,17 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: _showReportsSoon,
-                  icon: const Icon(Icons.description_outlined),
-                  label: Text(AppLocalizations.of(context).profileReports),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MyChatsScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: Text(AppLocalizations.of(context).myChatsTitle),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MyChatsScreen()),
-                );
-              },
-              icon: const Icon(Icons.chat_bubble_outline),
-              label: Text(AppLocalizations.of(context).myChatsTitle),
-            ),
           ),
         ],
       );
@@ -622,32 +617,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 subtitle: AppLocalizations.of(context).profileMetricProgress,
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSeasonCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppLocalizations.of(context).profileSeasonRestart,
-            style: const TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 8),
-          const LinearProgressIndicator(value: 0.7),
-          const SizedBox(height: 8),
-          Text(
-            AppLocalizations.of(context).profileSeasonDaysLeft(12),
-            style: const TextStyle(color: Colors.white),
           ),
         ],
       ),
