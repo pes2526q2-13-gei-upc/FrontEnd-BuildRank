@@ -214,6 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         builder: (_) => EditProfileScreen(
           initialFullName: _buildFullName(),
           initialEmail: (_userData?['email'] ?? '').toString(),
+          initialAvatarUrl: (_userData?['avatar_url'] ?? '').toString(),
         ),
       ),
     );
@@ -552,6 +553,46 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  String? _currentAvatarUrl() {
+    final value = _userData?['avatar_url']?.toString().trim();
+    if (value == null || value.isEmpty || value == 'null') return null;
+    return value;
+  }
+
+  String _avatarInitial() {
+    final fullName = _buildFullName().trim();
+    if (fullName.isNotEmpty) {
+      return fullName.characters.first.toUpperCase();
+    }
+
+    final email = (_userData?['email'] ?? '').toString().trim();
+    if (email.isNotEmpty) {
+      return email.characters.first.toUpperCase();
+    }
+
+    return '?';
+  }
+
+  Widget _buildUserAvatar() {
+    final avatarUrl = _currentAvatarUrl();
+
+    return CircleAvatar(
+      radius: 25,
+      backgroundColor: Colors.green.shade100,
+      backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+      child: avatarUrl == null
+          ? Text(
+              _avatarInitial(),
+              style: TextStyle(
+                color: Colors.green.shade900,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+              ),
+            )
+          : null,
+    );
+  }
+
   Widget _buildUserCard() {
     final email = (_userData?['email'] ?? '').toString();
 
@@ -566,7 +607,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CircleAvatar(radius: 25),
+              _buildUserAvatar(),
               const SizedBox(width: 12),
               Expanded(
                 child: Padding(

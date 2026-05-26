@@ -153,6 +153,30 @@ class ApiClient {
     );
   }
 
+  static Future<http.Response> multipartPatch(
+    Uri uri, {
+    Map<String, String> fields = const {},
+    List<http.MultipartFile> Function()? filesBuilder,
+    Duration timeout = const Duration(seconds: 30),
+  }) {
+    return _execute((h) async {
+      final request = http.MultipartRequest('PATCH', uri);
+
+      final headers = Map<String, String>.from(h);
+      headers.remove('Content-Type');
+      request.headers.addAll(headers);
+
+      request.fields.addAll(fields);
+
+      if (filesBuilder != null) {
+        request.files.addAll(filesBuilder());
+      }
+
+      final streamedResponse = await request.send().timeout(timeout);
+      return http.Response.fromStream(streamedResponse);
+    });
+  }
+
   static Future<http.Response> delete(
     Uri uri, {
     Duration timeout = const Duration(seconds: 10),

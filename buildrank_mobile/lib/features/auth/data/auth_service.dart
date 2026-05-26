@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:buildrank_mobile/core/config/api_config.dart';
 import 'package:buildrank_mobile/core/services/api_client.dart';
 import 'package:buildrank_mobile/core/services/stream_service.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 // Servicio central para hablar con el backend de auth.
@@ -260,6 +262,64 @@ class AuthService {
     }
 
     return firstEntry.value.toString();
+  }
+
+  Future<Map<String, dynamic>> updateAvatar({
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    final response = await ApiClient.multipartPatch(
+      Uri.parse(ApiConfig.me),
+      filesBuilder: () => [
+        http.MultipartFile.fromBytes(
+          'avatar',
+          bytes,
+          filename: filename,
+          contentType: _mediaTypeFromFilename(filename),
+        ),
+      ],
+    );
+
+    final data = _decodeBody(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(_extractErrorMessage(data));
+  }
+
+  Future<Map<String, dynamic>> clearAvatar() async {
+    final response = await ApiClient.multipartPatch(
+      Uri.parse(ApiConfig.me),
+      fields: {'avatar_clear': 'true'},
+    );
+
+    final data = _decodeBody(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(_extractErrorMessage(data));
+  }
+
+  MediaType _mediaTypeFromFilename(String filename) {
+    final extension = filename.split('.').last.toLowerCase();
+
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'png':
+        return MediaType('image', 'png');
+      case 'webp':
+        return MediaType('image', 'webp');
+      case 'gif':
+        return MediaType('image', 'gif');
+      default:
+        return MediaType('application', 'octet-stream');
+    }
   }
 
   Future<Map<String, dynamic>> updateProfile({

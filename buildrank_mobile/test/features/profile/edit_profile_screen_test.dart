@@ -42,7 +42,13 @@ void main() {
     await tester.enterText(find.byType(TextField).at(1), 'Serra');
     await tester.enterText(find.byType(TextField).at(2), 'mar@example.com');
 
-    await tester.tap(find.text('Guardar canvis'));
+    final saveButton = find.widgetWithText(ElevatedButton, 'Guardar canvis');
+
+    await tester.ensureVisible(saveButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(saveButton);
+    await tester.pumpAndSettle();
     await tester.pump();
     await tester.pumpAndSettle();
 

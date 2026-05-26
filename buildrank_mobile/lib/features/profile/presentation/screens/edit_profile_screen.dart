@@ -1,16 +1,21 @@
+import 'dart:typed_data';
+
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final String initialFullName;
   final String initialEmail;
+  final String? initialAvatarUrl;
   final AuthService? authService;
 
   const EditProfileScreen({
     super.key,
     required this.initialFullName,
     required this.initialEmail,
+    this.initialAvatarUrl,
     this.authService,
   });
 
@@ -19,6 +24,15 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  static const int _maxAvatarBytes = 2 * 1024 * 1024;
+  static const Set<String> _allowedAvatarExtensions = {
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'gif',
+  };
+
   late final AuthService _authService;
 
   late final TextEditingController _firstNameController;
@@ -26,11 +40,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _emailController;
 
   bool _isSaving = false;
+  bool _clearAvatar = false;
+
+  Uint8List? _selectedAvatarBytes;
+  String? _selectedAvatarName;
+  String? _avatarUrl;
 
   @override
   void initState() {
     super.initState();
     _authService = widget.authService ?? AuthService();
+    _avatarUrl = _normalizeAvatarUrl(widget.initialAvatarUrl);
 
     final parts = widget.initialFullName.trim().split(RegExp(r'\s+'));
     final firstName = parts.isNotEmpty ? parts.first : '';
@@ -47,6 +67,70 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _lastNameController.dispose();
     _emailController.dispose();
     super.dispose();
+  }
+
+  String? _normalizeAvatarUrl(String? value) {
+    final clean = value?.trim();
+    if (clean == null || clean.isEmpty || clean == 'null') return null;
+    return clean;
+  }
+
+  String _avatarInitial() {
+    final firstName = _firstNameController.text.trim();
+    if (firstName.isNotEmpty) return firstName.characters.first.toUpperCase();
+
+    final email = _emailController.text.trim();
+    if (email.isNotEmpty) return email.characters.first.toUpperCase();
+
+    return '?';
+  }
+
+  Future<void> _pickAvatar() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: _allowedAvatarExtensions.toList(),
+      allowMultiple: false,
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+
+    final file = result.files.single;
+    final bytes = file.bytes;
+
+    if (bytes == null) {
+      _showMessage('No s ha pogut llegir el fitxer seleccionat.');
+      return;
+    }
+
+    final extension = (file.extension ?? file.name.split('.').last)
+        .toLowerCase()
+        .trim();
+
+    if (!_allowedAvatarExtensions.contains(extension)) {
+      _showMessage('Format no valid. Usa JPG, PNG, WEBP o GIF.');
+      return;
+    }
+
+    if (bytes.length > _maxAvatarBytes) {
+      _showMessage('La imatge no pot superar els 2 MB.');
+      return;
+    }
+
+    setState(() {
+      _selectedAvatarBytes = bytes;
+      _selectedAvatarName = file.name;
+      _clearAvatar = false;
+    });
+  }
+
+  void _markAvatarForRemoval() {
+    setState(() {
+      _selectedAvatarBytes = null;
+      _selectedAvatarName = null;
+      _avatarUrl = null;
+      _clearAvatar = true;
+    });
   }
 
   Future<void> _saveProfile() async {
@@ -86,6 +170,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         email: email,
       );
 
+      if (_selectedAvatarBytes != null && _selectedAvatarName != null) {
+        await _authService.updateAvatar(
+          bytes: _selectedAvatarBytes!,
+          filename: _selectedAvatarName!,
+        );
+      } else if (_clearAvatar) {
+        await _authService.clearAvatar();
+      }
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(
@@ -109,6 +202,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Widget _buildAvatarPreview() {
+    ImageProvider? imageProvider;
+
+    if (_selectedAvatarBytes != null) {
+      imageProvider = MemoryImage(_selectedAvatarBytes!);
+    } else if (!_clearAvatar && _avatarUrl != null) {
+      imageProvider = NetworkImage(_avatarUrl!);
+    }
+
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 44,
+          backgroundColor: Colors.green.shade100,
+          backgroundImage: imageProvider,
+          child: imageProvider == null
+              ? Text(
+                  _avatarInitial(),
+                  style: TextStyle(
+                    color: Colors.green.shade900,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 28,
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 10,
+          runSpacing: 8,
+          children: [
+            OutlinedButton.icon(
+              onPressed: _isSaving ? null : _pickAvatar,
+              icon: const Icon(Icons.photo_camera_outlined),
+              label: const Text('Canviar avatar'),
+            ),
+            if (_selectedAvatarBytes != null || _avatarUrl != null)
+              TextButton.icon(
+                onPressed: _isSaving ? null : _markAvatarForRemoval,
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Eliminar avatar'),
+              ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Formats acceptats: JPG, PNG, WEBP o GIF. Mida maxima: 2 MB.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 12, color: Colors.black54, height: 1.3),
+        ),
+      ],
+    );
   }
 
   @override
@@ -141,6 +289,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _buildAvatarPreview(),
+                const SizedBox(height: 24),
                 Text(
                   l10n.editProfilePersonalDataTitle,
                   style: const TextStyle(
