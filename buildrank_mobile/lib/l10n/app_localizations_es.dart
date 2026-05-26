@@ -1725,13 +1725,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get editHabitatgePrimaryEnergyConsumption =>
-      'Consumo de energía primaria';
+      'Consumo de energía primaria (kWh/(m²·año))';
 
   @override
-  String get editHabitatgeFinalEnergyConsumption => 'Consumo de energía final';
+  String get editHabitatgeFinalEnergyConsumption =>
+      'Consumo de energía final (kWh/(m²·año))';
 
   @override
-  String get editHabitatgeCo2Emissions => 'Emisiones CO₂';
+  String get editHabitatgeCo2Emissions => 'Emisiones CO₂ (kg CO₂/(m²·año))';
 
   @override
   String get editHabitatgeAnnualEnergyCost => 'Coste anual de energía (€)';
@@ -1740,40 +1741,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String get editHabitatgeConsumptionByUse => 'Consumos por uso';
 
   @override
-  String get editHabitatgeHeatingEnergy => 'Energía de calefacción';
+  String get editHabitatgeHeatingEnergy =>
+      'Energía de calefacción (kWh/(m²·año))';
 
   @override
-  String get editHabitatgeCoolingEnergy => 'Energía de refrigeración';
+  String get editHabitatgeCoolingEnergy =>
+      'Energía de refrigeración (kWh/(m²·año))';
 
   @override
-  String get editHabitatgeAcsEnergy => 'Energía ACS';
+  String get editHabitatgeAcsEnergy => 'Energía ACS (kWh/(m²·año))';
 
   @override
-  String get editHabitatgeLightingEnergy => 'Energía de iluminación';
+  String get editHabitatgeLightingEnergy =>
+      'Energía de iluminación (kWh/(m²·año))';
 
   @override
   String get editHabitatgeEmissionsByUse => 'Emisiones por uso';
 
   @override
-  String get editHabitatgeHeatingEmissions => 'Emisiones de calefacción';
+  String get editHabitatgeHeatingEmissions =>
+      'Emisiones de calefacción (kg CO₂/(m²·año))';
 
   @override
-  String get editHabitatgeCoolingEmissions => 'Emisiones de refrigeración';
+  String get editHabitatgeCoolingEmissions =>
+      'Emisiones de refrigeración (kg CO₂/(m²·año))';
 
   @override
-  String get editHabitatgeAcsEmissions => 'Emisiones ACS';
+  String get editHabitatgeAcsEmissions => 'Emisiones ACS (kg CO₂/(m²·año))';
 
   @override
-  String get editHabitatgeLightingEmissions => 'Emisiones de iluminación';
+  String get editHabitatgeLightingEmissions =>
+      'Emisiones de iluminación (kg CO₂/(m²·año))';
 
   @override
   String get editHabitatgeCertificationEnvelope => 'Certificación y envolvente';
 
   @override
-  String get editHabitatgeThermalInsulation => 'Aislamiento térmico';
+  String get editHabitatgeThermalInsulation => 'Aislamiento térmico (W/(m²·K))';
 
   @override
-  String get editHabitatgeWindowValue => 'Valor de ventanas';
+  String get editHabitatgeWindowValue => 'Valor de ventanas (W/(m²·K))';
 
   @override
   String get editHabitatgeCertificationTool => 'Herramienta de certificación';

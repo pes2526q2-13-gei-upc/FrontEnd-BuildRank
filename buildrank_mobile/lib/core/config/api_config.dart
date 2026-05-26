@@ -218,30 +218,6 @@ class ApiConfig {
     );
   }
 
-  /// Legacy: millor no usar-lo a la pantalla de ranking perquè no retorna
-  /// el mateix payload que el ranking per temporada i no suporta search.
-  static Uri leagueRanking({
-    required int leagueId,
-    int? groupId,
-    int page = 1,
-    int pageSize = 10,
-    String? search,
-  }) {
-    final cleanSearch = search?.trim();
-
-    return uri(
-      '$leagues$leagueId/ranking/',
-      queryParameters: {
-        'page': page.toString(),
-        'page_size': pageSize.toString(),
-        ...?groupId != null ? {'group': groupId.toString()} : null,
-        ...?cleanSearch != null && cleanSearch.isNotEmpty
-            ? {'search': cleanSearch}
-            : null,
-      },
-    );
-  }
-
   /// Endpoint principal per a tots els rankings de la pantalla:
   ///
   /// - La meva lliga:
@@ -273,19 +249,6 @@ class ApiConfig {
             ? {'search': cleanSearch}
             : null,
       },
-    );
-  }
-
-  /// Legacy: millor no usar-lo a la pantalla de ranking.
-  static Uri buildingPosition({
-    required int leagueId,
-    required int buildingId,
-    int top = 3,
-    required bool segment,
-  }) {
-    return uri(
-      '$leagues$leagueId/posicio_edifici/',
-      queryParameters: {'edifici': buildingId, 'top': top, 'segment': segment},
     );
   }
 

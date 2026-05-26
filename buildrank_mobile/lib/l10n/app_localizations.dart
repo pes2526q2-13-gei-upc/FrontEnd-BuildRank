@@ -3084,19 +3084,19 @@ abstract class AppLocalizations {
   /// No description provided for @editHabitatgePrimaryEnergyConsumption.
   ///
   /// In ca, this message translates to:
-  /// **'Consum energia primària'**
+  /// **'Consum energia primària (kWh/(m²·any))'**
   String get editHabitatgePrimaryEnergyConsumption;
 
   /// No description provided for @editHabitatgeFinalEnergyConsumption.
   ///
   /// In ca, this message translates to:
-  /// **'Consum energia final'**
+  /// **'Consum energia final (kWh/(m²·any))'**
   String get editHabitatgeFinalEnergyConsumption;
 
   /// No description provided for @editHabitatgeCo2Emissions.
   ///
   /// In ca, this message translates to:
-  /// **'Emissions CO₂'**
+  /// **'Emissions CO₂ (kg CO₂/(m²·any))'**
   String get editHabitatgeCo2Emissions;
 
   /// No description provided for @editHabitatgeAnnualEnergyCost.
@@ -3114,25 +3114,25 @@ abstract class AppLocalizations {
   /// No description provided for @editHabitatgeHeatingEnergy.
   ///
   /// In ca, this message translates to:
-  /// **'Energia calefacció'**
+  /// **'Energia calefacció (kWh/(m²·any))'**
   String get editHabitatgeHeatingEnergy;
 
   /// No description provided for @editHabitatgeCoolingEnergy.
   ///
   /// In ca, this message translates to:
-  /// **'Energia refrigeració'**
+  /// **'Energia refrigeració (kWh/(m²·any))'**
   String get editHabitatgeCoolingEnergy;
 
   /// No description provided for @editHabitatgeAcsEnergy.
   ///
   /// In ca, this message translates to:
-  /// **'Energia ACS'**
+  /// **'Energia ACS (kWh/(m²·any))'**
   String get editHabitatgeAcsEnergy;
 
   /// No description provided for @editHabitatgeLightingEnergy.
   ///
   /// In ca, this message translates to:
-  /// **'Energia enllumenament'**
+  /// **'Energia enllumenament (kWh/(m²·any))'**
   String get editHabitatgeLightingEnergy;
 
   /// No description provided for @editHabitatgeEmissionsByUse.
@@ -3144,25 +3144,25 @@ abstract class AppLocalizations {
   /// No description provided for @editHabitatgeHeatingEmissions.
   ///
   /// In ca, this message translates to:
-  /// **'Emissions calefacció'**
+  /// **'Emissions calefacció (kg CO₂/(m²·any))'**
   String get editHabitatgeHeatingEmissions;
 
   /// No description provided for @editHabitatgeCoolingEmissions.
   ///
   /// In ca, this message translates to:
-  /// **'Emissions refrigeració'**
+  /// **'Emissions refrigeració (kg CO₂/(m²·any))'**
   String get editHabitatgeCoolingEmissions;
 
   /// No description provided for @editHabitatgeAcsEmissions.
   ///
   /// In ca, this message translates to:
-  /// **'Emissions ACS'**
+  /// **'Emissions ACS (kg CO₂/(m²·any))'**
   String get editHabitatgeAcsEmissions;
 
   /// No description provided for @editHabitatgeLightingEmissions.
   ///
   /// In ca, this message translates to:
-  /// **'Emissions enllumenament'**
+  /// **'Emissions enllumenament (kg CO₂/(m²·any))'**
   String get editHabitatgeLightingEmissions;
 
   /// No description provided for @editHabitatgeCertificationEnvelope.
@@ -3174,13 +3174,13 @@ abstract class AppLocalizations {
   /// No description provided for @editHabitatgeThermalInsulation.
   ///
   /// In ca, this message translates to:
-  /// **'Aïllament tèrmic'**
+  /// **'Aïllament tèrmic (W/(m²·K))'**
   String get editHabitatgeThermalInsulation;
 
   /// No description provided for @editHabitatgeWindowValue.
   ///
   /// In ca, this message translates to:
-  /// **'Valor finestres'**
+  /// **'Valor finestres (W/(m²·K))'**
   String get editHabitatgeWindowValue;
 
   /// No description provided for @editHabitatgeCertificationTool.
