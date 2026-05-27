@@ -1,3 +1,4 @@
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -8,18 +9,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           _selectedIndex == 0
               ? 'BuildRank'
               : _selectedIndex == 1
-                  ? 'Rànquing'
-                  : 'Perfil',
+              ? l10n.homeRankingTitle
+              : l10n.homeProfileTitle,
         ),
         centerTitle: true,
         actions: _selectedIndex == 0
@@ -31,80 +34,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ]
             : null,
       ),
-      body: _buildBody(),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Inici',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.emoji_events_outlined),
-            selectedIcon: Icon(Icons.emoji_events),
-            label: 'Rànquing',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
-      ),
+      body: _buildDashboard(),
     );
   }
 
-  Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 1:
-        return const _PlaceholderScreen(
-          icon: Icons.emoji_events,
-          title: 'Pantalla de rànquing',
-          subtitle:
-              'Aquí hi anirà la classificació de la lliga energètica.',
-        );
-      case 2:
-        return const _PlaceholderScreen(
-          icon: Icons.person,
-          title: 'Pantalla de perfil',
-          subtitle:
-              'Aquí hi anirà el perfil de l’usuari i la configuració.',
-        );
-      default:
-        return _buildDashboard();
-    }
-  }
-
   Widget _buildDashboard() {
+    final l10n = AppLocalizations.of(context);
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         const SizedBox(height: 4),
-        const Text(
-          'Bon dia',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-          ),
+        Text(
+          l10n.homeGreeting,
+          style: const TextStyle(fontSize: 14, color: Colors.black54),
         ),
         const SizedBox(height: 4),
-        const Text(
-          'Resum del teu edifici',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
+        Text(
+          l10n.homeSummaryTitle,
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
-        const Text(
-          'Consulta l’estat energètic actual, la teva posició a la lliga i les properes accions recomanades.',
-          style: TextStyle(
+        Text(
+          l10n.homeSummarySubtitle,
+          style: const TextStyle(
             fontSize: 16,
             height: 1.4,
             color: Colors.black54,
@@ -116,51 +69,45 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
-              colors: [
-                Color(0xFF3FA66B),
-                Color(0xFF6BCB8B),
-              ],
+              colors: [Color(0xFF3FA66B), Color(0xFF6BCB8B)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Biblioteca Central',
-                style: TextStyle(
+                l10n.homeDemoBuildingName,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Text(
-                'Edifici monitoritzat aquesta setmana',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
+                l10n.homeDemoBuildingSubtitle,
+                style: const TextStyle(fontSize: 14, color: Colors.white70),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: _MetricItem(
-                      label: 'Consum',
+                      label: l10n.homeMetricConsumption,
                       value: '124 kWh',
                     ),
                   ),
                   Expanded(
                     child: _MetricItem(
-                      label: 'Posició',
+                      label: l10n.homeMetricPosition,
                       value: '#3',
                     ),
                   ),
                   Expanded(
                     child: _MetricItem(
-                      label: 'Millora',
+                      label: l10n.homeMetricImprovement,
                       value: '+12%',
                     ),
                   ),
@@ -170,38 +117,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Indicadors clau',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+        Text(
+          l10n.homeKeyIndicatorsTitle,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
-        const _InfoTile(
+        _InfoTile(
           icon: Icons.bolt,
-          title: 'Consum estimat d’avui',
-          subtitle: '18 kWh · un 6% menys que ahir',
+          title: l10n.homeTodayConsumptionTitle,
+          subtitle: l10n.homeTodayConsumptionSubtitle,
         ),
         const SizedBox(height: 12),
-        const _InfoTile(
+        _InfoTile(
           icon: Icons.emoji_events,
-          title: 'Posició a la lliga',
-          subtitle: '3a posició de 12 edificis',
+          title: l10n.homeLeaguePositionTitle,
+          subtitle: l10n.homeLeaguePositionSubtitle,
         ),
         const SizedBox(height: 12),
-        const _InfoTile(
+        _InfoTile(
           icon: Icons.trending_up,
-          title: 'Recomanació principal',
-          subtitle: 'Reduir la climatització a la tarda',
+          title: l10n.homeRecommendationTitle,
+          subtitle: l10n.homeRecommendationSubtitle,
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Accions ràpides',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+        Text(
+          l10n.homeQuickActionsTitle,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
         Row(
@@ -209,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.bar_chart,
-                title: 'Rànquing',
+                title: l10n.homeRankingTitle,
                 onTap: () {},
               ),
             ),
@@ -217,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.home_work_outlined,
-                title: 'Edifici',
+                title: l10n.homeBuildingTitle,
                 onTap: () {},
               ),
             ),
@@ -229,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.lightbulb_outline,
-                title: 'Millores',
+                title: l10n.homeImprovementsTitle,
                 onTap: () {},
               ),
             ),
@@ -237,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.groups_outlined,
-                title: 'Comunitat',
+                title: l10n.homeCommunityTitle,
                 onTap: () {},
               ),
             ),
@@ -250,20 +191,20 @@ class _HomeScreenState extends State<HomeScreen> {
             color: const Color(0xFFF3F6F2),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Objectiu setmanal',
-                style: TextStyle(
+                l10n.homeWeeklyGoalTitle,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
-                'Manteniu el consum per sota de 130 kWh per consolidar-vos dins del top 3.',
-                style: TextStyle(
+                l10n.homeWeeklyGoalBody,
+                style: const TextStyle(
                   fontSize: 15,
                   height: 1.4,
                   color: Colors.black87,
@@ -281,10 +222,7 @@ class _MetricItem extends StatelessWidget {
   final String label;
   final String value;
 
-  const _MetricItem({
-    required this.label,
-    required this.value,
-  });
+  const _MetricItem({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -293,10 +231,7 @@ class _MetricItem extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-          ),
+          style: const TextStyle(color: Colors.white70, fontSize: 13),
         ),
         const SizedBox(height: 4),
         Text(
@@ -328,9 +263,7 @@ class _InfoTile extends StatelessWidget {
     return Card(
       elevation: 0,
       color: const Color(0xFFF7F8F5),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: ListTile(
         leading: Icon(icon),
         title: Text(title),
@@ -367,58 +300,7 @@ class _QuickActionCard extends StatelessWidget {
           children: [
             Icon(icon, size: 28),
             const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  const _PlaceholderScreen({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56),
-            const SizedBox(height: 18),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-                height: 1.4,
-              ),
-            ),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
       ),

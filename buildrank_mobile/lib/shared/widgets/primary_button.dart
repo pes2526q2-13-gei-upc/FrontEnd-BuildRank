@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({super.key});
@@ -7,9 +8,9 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: null,
-      child: const Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
-        child: Text('Pròximament: veure el rànquing'),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Text(AppLocalizations.of(context).rankingComingSoonButton),
       ),
     );
   }

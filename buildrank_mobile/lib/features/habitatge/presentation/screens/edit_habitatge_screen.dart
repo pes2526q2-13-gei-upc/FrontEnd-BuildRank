@@ -1,0 +1,1026 @@
+import 'package:flutter/material.dart';
+
+import 'package:buildrank_mobile/features/habitatge/data/habitatge_form_data.dart';
+import 'package:buildrank_mobile/features/habitatge/data/habitatge_service.dart';
+import 'package:buildrank_mobile/l10n/app_localizations.dart';
+
+class EditHabitatgeScreen extends StatefulWidget {
+  final int idEdifici;
+  final String buildingTitle;
+  final Map<String, dynamic>? initialHabitatge;
+
+  const EditHabitatgeScreen({
+    super.key,
+    required this.idEdifici,
+    required this.buildingTitle,
+    this.initialHabitatge,
+  });
+
+  @override
+  State<EditHabitatgeScreen> createState() => _EditHabitatgeScreenState();
+}
+
+class _EditHabitatgeScreenState extends State<EditHabitatgeScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final HabitatgeService _habitatgeService = HabitatgeService();
+
+  final _referenciaCadastralController = TextEditingController();
+  final _plantaController = TextEditingController();
+  final _portaController = TextEditingController();
+  final _superficieController = TextEditingController();
+  final _anyReformaController = TextEditingController();
+
+  final _consumEnergiaPrimariaController = TextEditingController();
+  final _consumEnergiaFinalController = TextEditingController();
+  final _emissionsCO2Controller = TextEditingController();
+  final _costAnualEnergiaController = TextEditingController();
+
+  final _energiaCalefaccioController = TextEditingController();
+  final _energiaRefrigeracioController = TextEditingController();
+  final _energiaACSController = TextEditingController();
+  final _energiaEnllumenamentController = TextEditingController();
+
+  final _emissionsCalefaccioController = TextEditingController();
+  final _emissionsRefrigeracioController = TextEditingController();
+  final _emissionsACSController = TextEditingController();
+  final _emissionsEnllumenamentController = TextEditingController();
+
+  final _aillamentTermicController = TextEditingController();
+  final _valorFinestresController = TextEditingController();
+  final _normativaController = TextEditingController();
+  final _einaCertificacioController = TextEditingController();
+  final _motiuCertificacioController = TextEditingController();
+
+  String? _qualificacioGlobal;
+  bool _rehabilitacioEnergetica = false;
+  DateTime? _dataEntrada;
+
+  bool _isSaving = false;
+  bool _isLoading = true;
+  String? _loadError;
+
+  static const _grades = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHabitatge();
+  }
+
+  Future<void> _loadHabitatge() async {
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
+
+    try {
+      Map<String, dynamic>? habitatge = widget.initialHabitatge;
+
+      if (habitatge == null) {
+        final habitatges = await _habitatgeService.getMyHabitatgesForBuilding(
+          widget.idEdifici,
+        );
+
+        if (!mounted) return;
+
+        if (habitatges.isEmpty) {
+          setState(() {
+            _loadError = AppLocalizations.of(context).editHabitatgeNoLinkedHome;
+            _isLoading = false;
+          });
+          return;
+        }
+
+        final selectedHabitatge = habitatges.length == 1
+            ? habitatges.first
+            : await _showHabitatgeSelector(habitatges);
+
+        if (!mounted) return;
+
+        if (selectedHabitatge == null) {
+          setState(() {
+            _loadError = AppLocalizations.of(context).editHabitatgeNoneSelected;
+            _isLoading = false;
+          });
+          return;
+        }
+
+        final referenciaCadastral =
+            selectedHabitatge['referenciaCadastral']?.toString().trim() ?? '';
+
+        if (referenciaCadastral.isEmpty) {
+          setState(() {
+            _loadError = AppLocalizations.of(
+              context,
+            ).editHabitatgeMissingCadastralReference;
+            _isLoading = false;
+          });
+          return;
+        }
+
+        habitatge = await _habitatgeService.getHabitatgeDetail(
+          idEdifici: widget.idEdifici,
+          referenciaCadastral: referenciaCadastral,
+        );
+      }
+
+      if (!mounted) return;
+
+      _fillControllersFromHabitatge(habitatge);
+
+      setState(() {
+        _isLoading = false;
+      });
+    } on HabitatgeApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _loadError = e.message;
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _loadError = AppLocalizations.of(context).editHabitatgeLoadError;
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>?> _showHabitatgeSelector(
+    List<Map<String, dynamic>> habitatges,
+  ) {
+    return showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 12),
+                  child: Text(
+                    l10n.editHabitatgeSelectorTitle,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ),
+                for (final habitatge in habitatges)
+                  ListTile(
+                    leading: const Icon(Icons.home_outlined),
+                    title: Text(
+                      l10n.editHabitatgeSelectorFloorDoor(
+                        (habitatge['planta'] ?? '-').toString(),
+                        (habitatge['porta'] ?? '-').toString(),
+                      ),
+                    ),
+                    subtitle: Text(
+                      [
+                        habitatge['referenciaCadastral']?.toString(),
+                        if (habitatge['superficie'] != null)
+                          '${habitatge['superficie']} m²',
+                      ].whereType<String>().join(' · '),
+                    ),
+                    onTap: () => Navigator.pop(context, habitatge),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _fillControllersFromHabitatge(Map<String, dynamic> data) {
+    _referenciaCadastralController.text = (data['referenciaCadastral'] ?? '')
+        .toString();
+    _plantaController.text = (data['planta'] ?? '').toString();
+    _portaController.text = (data['porta'] ?? '').toString();
+    _superficieController.text = (data['superficie'] ?? '').toString();
+    _anyReformaController.text = (data['anyReforma'] ?? '').toString();
+
+    final energetiques = data['dadesEnergetiques'];
+    if (energetiques is Map) {
+      final energy = Map<String, dynamic>.from(energetiques);
+
+      _qualificacioGlobal = energy['qualificacioGlobal']?.toString();
+
+      _consumEnergiaPrimariaController.text =
+          (energy['consumEnergiaPrimaria'] ?? '').toString();
+      _consumEnergiaFinalController.text = (energy['consumEnergiaFinal'] ?? '')
+          .toString();
+      _emissionsCO2Controller.text = (energy['emissionsCO2'] ?? '').toString();
+      _costAnualEnergiaController.text = (energy['costAnualEnergia'] ?? '')
+          .toString();
+
+      _energiaCalefaccioController.text = (energy['energiaCalefaccio'] ?? '')
+          .toString();
+      _energiaRefrigeracioController.text =
+          (energy['energiaRefrigeracio'] ?? '').toString();
+      _energiaACSController.text = (energy['energiaACS'] ?? '').toString();
+      _energiaEnllumenamentController.text =
+          (energy['energiaEnllumenament'] ?? '').toString();
+
+      _emissionsCalefaccioController.text =
+          (energy['emissionsCalefaccio'] ?? '').toString();
+      _emissionsRefrigeracioController.text =
+          (energy['emissionsRefrigeracio'] ?? '').toString();
+      _emissionsACSController.text = (energy['emissionsACS'] ?? '').toString();
+      _emissionsEnllumenamentController.text =
+          (energy['emissionsEnllumenament'] ?? '').toString();
+
+      _aillamentTermicController.text = (energy['aillamentTermic'] ?? '')
+          .toString();
+      _valorFinestresController.text = (energy['valorFinestres'] ?? '')
+          .toString();
+      _normativaController.text = (energy['normativa'] ?? '').toString();
+      _einaCertificacioController.text = (energy['einaCertificacio'] ?? '')
+          .toString();
+      _motiuCertificacioController.text = (energy['motiuCertificacio'] ?? '')
+          .toString();
+
+      _rehabilitacioEnergetica = energy['rehabilitacioEnergetica'] == true;
+
+      final rawDate = energy['dataEntrada']?.toString();
+      if (rawDate != null && rawDate.isNotEmpty) {
+        _dataEntrada = DateTime.tryParse(rawDate);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _referenciaCadastralController.dispose();
+    _plantaController.dispose();
+    _portaController.dispose();
+    _superficieController.dispose();
+    _anyReformaController.dispose();
+
+    _consumEnergiaPrimariaController.dispose();
+    _consumEnergiaFinalController.dispose();
+    _emissionsCO2Controller.dispose();
+    _costAnualEnergiaController.dispose();
+
+    _energiaCalefaccioController.dispose();
+    _energiaRefrigeracioController.dispose();
+    _energiaACSController.dispose();
+    _energiaEnllumenamentController.dispose();
+
+    _emissionsCalefaccioController.dispose();
+    _emissionsRefrigeracioController.dispose();
+    _emissionsACSController.dispose();
+    _emissionsEnllumenamentController.dispose();
+
+    _aillamentTermicController.dispose();
+    _valorFinestresController.dispose();
+    _normativaController.dispose();
+    _einaCertificacioController.dispose();
+    _motiuCertificacioController.dispose();
+
+    super.dispose();
+  }
+
+  Future<void> _pickDataEntrada() async {
+    final now = DateTime.now();
+
+    final selected = await showDatePicker(
+      context: context,
+      initialDate: _dataEntrada ?? now,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(now.year + 1),
+    );
+
+    if (selected == null) return;
+
+    setState(() {
+      _dataEntrada = selected;
+    });
+  }
+
+  bool get _hasAnyEnergyData {
+    return _qualificacioGlobal != null ||
+        _consumEnergiaPrimariaController.text.trim().isNotEmpty ||
+        _consumEnergiaFinalController.text.trim().isNotEmpty ||
+        _emissionsCO2Controller.text.trim().isNotEmpty ||
+        _costAnualEnergiaController.text.trim().isNotEmpty ||
+        _energiaCalefaccioController.text.trim().isNotEmpty ||
+        _energiaRefrigeracioController.text.trim().isNotEmpty ||
+        _energiaACSController.text.trim().isNotEmpty ||
+        _energiaEnllumenamentController.text.trim().isNotEmpty ||
+        _emissionsCalefaccioController.text.trim().isNotEmpty ||
+        _emissionsRefrigeracioController.text.trim().isNotEmpty ||
+        _emissionsACSController.text.trim().isNotEmpty ||
+        _emissionsEnllumenamentController.text.trim().isNotEmpty ||
+        _aillamentTermicController.text.trim().isNotEmpty ||
+        _valorFinestresController.text.trim().isNotEmpty ||
+        _normativaController.text.trim().isNotEmpty ||
+        _einaCertificacioController.text.trim().isNotEmpty ||
+        _motiuCertificacioController.text.trim().isNotEmpty ||
+        _dataEntrada != null;
+  }
+
+  String? _requiredEnergyNumberIfNeeded(String? value) {
+    if (!_hasAnyEnergyData) return null;
+
+    final normalized = value?.trim().replaceAll(',', '.') ?? '';
+    if (normalized.isEmpty) {
+      return AppLocalizations.of(context).editHabitatgeEnergyRequired;
+    }
+
+    final parsed = double.tryParse(normalized);
+    if (parsed == null) return AppLocalizations.of(context).commonInvalidNumber;
+
+    return null;
+  }
+
+  String? _requiredEnergyTextIfNeeded(String? value) {
+    if (!_hasAnyEnergyData) return null;
+
+    if (value == null || value.trim().isEmpty) {
+      return AppLocalizations.of(context).editHabitatgeEnergyRequired;
+    }
+
+    return null;
+  }
+
+  String? _validateEnergyDateIfNeeded() {
+    if (!_hasAnyEnergyData) return null;
+
+    if (_dataEntrada == null) {
+      return AppLocalizations.of(context).editHabitatgeEnergyDateRequired;
+    }
+
+    return null;
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final dateError = _validateEnergyDateIfNeeded();
+    if (dateError != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final formData = _buildFormData();
+
+      final updated = await _habitatgeService.updateMyHabitatge(
+        formData: formData,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _hasAnyEnergyData
+                ? AppLocalizations.of(
+                    context,
+                  ).editHabitatgeSaveWithEnergySuccess
+                : AppLocalizations.of(context).editHabitatgeSaveSuccess,
+          ),
+        ),
+      );
+
+      Navigator.pop(context, updated);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+  HabitatgeFormData _buildFormData() {
+    return HabitatgeFormData(
+      idEdifici: widget.idEdifici,
+      referenciaCadastral: _referenciaCadastralController.text.trim(),
+      planta: _plantaController.text.trim(),
+      porta: _portaController.text.trim(),
+      superficie: _parseDouble(_superficieController.text) ?? 0,
+      anyReforma: _parseIntOrNull(_anyReformaController.text),
+      dadesEnergetiques: _hasAnyEnergyData
+          ? DadesEnergetiquesFormData(
+              qualificacioGlobal: _qualificacioGlobal,
+              consumEnergiaPrimaria:
+                  _parseDouble(_consumEnergiaPrimariaController.text) ?? 0,
+              consumEnergiaFinal:
+                  _parseDouble(_consumEnergiaFinalController.text) ?? 0,
+              emissionsCO2: _parseDouble(_emissionsCO2Controller.text) ?? 0,
+              costAnualEnergia:
+                  _parseDouble(_costAnualEnergiaController.text) ?? 0,
+              energiaCalefaccio:
+                  _parseDouble(_energiaCalefaccioController.text) ?? 0,
+              energiaRefrigeracio:
+                  _parseDouble(_energiaRefrigeracioController.text) ?? 0,
+              energiaACS: _parseDouble(_energiaACSController.text) ?? 0,
+              energiaEnllumenament:
+                  _parseDouble(_energiaEnllumenamentController.text) ?? 0,
+              emissionsCalefaccio:
+                  _parseDouble(_emissionsCalefaccioController.text) ?? 0,
+              emissionsRefrigeracio:
+                  _parseDouble(_emissionsRefrigeracioController.text) ?? 0,
+              emissionsACS: _parseDouble(_emissionsACSController.text) ?? 0,
+              emissionsEnllumenament:
+                  _parseDouble(_emissionsEnllumenamentController.text) ?? 0,
+              aillamentTermic:
+                  _parseDouble(_aillamentTermicController.text) ?? 0,
+              valorFinestres: _parseDouble(_valorFinestresController.text) ?? 0,
+              normativa: _normativaController.text.trim(),
+              einaCertificacio: _einaCertificacioController.text.trim(),
+              motiuCertificacio: _motiuCertificacioController.text.trim(),
+              rehabilitacioEnergetica: _rehabilitacioEnergetica,
+              dataEntrada: _dataEntrada!,
+            )
+          : null,
+    );
+  }
+
+  int? _parseIntOrNull(String value) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) return null;
+    return int.tryParse(normalized);
+  }
+
+  double? _parseDouble(String value) {
+    final normalized = value.trim().replaceAll(',', '.');
+    if (normalized.isEmpty) return null;
+    return double.tryParse(normalized);
+  }
+
+  String? _requiredText(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return AppLocalizations.of(context).commonRequiredField;
+    }
+    return null;
+  }
+
+  String? _requiredPositiveNumber(String? value) {
+    final normalized = value?.trim().replaceAll(',', '.') ?? '';
+    if (normalized.isEmpty) {
+      return AppLocalizations.of(context).commonRequiredField;
+    }
+
+    final parsed = double.tryParse(normalized);
+    if (parsed == null) return AppLocalizations.of(context).commonInvalidNumber;
+    if (parsed <= 0) return AppLocalizations.of(context).commonGreaterThanZero;
+
+    return null;
+  }
+
+  String _formatDate(DateTime date) {
+    String twoDigits(int value) => value.toString().padLeft(2, '0');
+    return '${twoDigits(date.day)}/${twoDigits(date.month)}/${date.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF6F7F2),
+      appBar: AppBar(
+        title: Text(l10n.editHabitatgeAppBarTitle),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: l10n.commonRefresh,
+            onPressed: _isLoading ? null : _loadHabitatge,
+            icon: _isLoading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _loadError != null
+            ? _buildLoadError()
+            : _buildForm(),
+      ),
+    );
+  }
+
+  Widget _buildLoadError() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.home_work_outlined,
+              size: 46,
+              color: Colors.black45,
+            ),
+            const SizedBox(height: 14),
+            Text(
+              AppLocalizations.of(context).editHabitatgeCannotEditTitle,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _loadError ?? AppLocalizations.of(context).editHabitatgeLoadError,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.black54, height: 1.35),
+            ),
+            const SizedBox(height: 18),
+            ElevatedButton.icon(
+              onPressed: _loadHabitatge,
+              icon: const Icon(Icons.refresh),
+              label: Text(AppLocalizations.of(context).commonRetry),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForm() {
+    return Form(
+      key: _formKey,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _buildIntroCard(),
+          const SizedBox(height: 16),
+          _buildHabitatgeSection(),
+          const SizedBox(height: 16),
+          _buildEnergySection(),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 54,
+            child: ElevatedButton(
+              onPressed: _isSaving ? null : _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF22C55E),
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: const Color(0xFFBFC7C2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      AppLocalizations.of(context).editHabitatgeSaveButton,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIntroCard() {
+    final l10n = AppLocalizations.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAF8EE),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.editHabitatgeIntroTitle,
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            widget.buildingTitle,
+            style: const TextStyle(
+              color: Color(0xFF166534),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.editHabitatgeIntroBody,
+            style: TextStyle(color: Colors.black54, height: 1.4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHabitatgeSection() {
+    final l10n = AppLocalizations.of(context);
+
+    return _SectionCard(
+      title: l10n.editHabitatgeHomeDataTitle,
+      subtitle: l10n.editHabitatgeHomeDataSubtitle,
+      children: [
+        _BuildTextField(
+          controller: _referenciaCadastralController,
+          label: l10n.habitatgeCadastralReference,
+          required: true,
+          enabled: false,
+          validator: _requiredText,
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _BuildTextField(
+                controller: _plantaController,
+                label: l10n.habitatgeFloor,
+                required: true,
+                validator: _requiredText,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _BuildTextField(
+                controller: _portaController,
+                label: l10n.habitatgeDoor,
+                required: true,
+                validator: _requiredText,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _superficieController,
+          label: l10n.habitatgeSurface,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredPositiveNumber,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _anyReformaController,
+          label: l10n.editHabitatgeRenovationYear,
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            final normalized = value?.trim() ?? '';
+            if (normalized.isEmpty) return null;
+
+            final parsed = int.tryParse(normalized);
+            if (parsed == null) return l10n.editHabitatgeInvalidYear;
+
+            final currentYear = DateTime.now().year;
+            if (parsed < 1800 || parsed > currentYear) {
+              return l10n.editHabitatgeYearOutOfRange;
+            }
+
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEnergySection() {
+    final l10n = AppLocalizations.of(context);
+
+    return _SectionCard(
+      title: l10n.editHabitatgeEnergyDataTitle,
+      subtitle: l10n.editHabitatgeEnergyDataSubtitle,
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF7ED),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFFCD34D)),
+          ),
+          child: Text(
+            l10n.editHabitatgeEnergyOptionalNotice,
+            style: TextStyle(
+              color: Color(0xFF92400E),
+              height: 1.35,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        DropdownButtonFormField<String>(
+          initialValue: _qualificacioGlobal,
+          decoration: _inputDecoration(l10n.editHabitatgeGlobalRating),
+          items: _grades
+              .map(
+                (grade) => DropdownMenuItem(value: grade, child: Text(grade)),
+              )
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              _qualificacioGlobal = value;
+            });
+          },
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _consumEnergiaPrimariaController,
+          label: l10n.editHabitatgePrimaryEnergyConsumption,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _consumEnergiaFinalController,
+          label: l10n.editHabitatgeFinalEnergyConsumption,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _emissionsCO2Controller,
+          label: l10n.editHabitatgeCo2Emissions,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _costAnualEnergiaController,
+          label: l10n.editHabitatgeAnnualEnergyCost,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 18),
+        _SubsectionTitle(l10n.editHabitatgeConsumptionByUse),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _energiaCalefaccioController,
+          label: l10n.editHabitatgeHeatingEnergy,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _energiaRefrigeracioController,
+          label: l10n.editHabitatgeCoolingEnergy,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _energiaACSController,
+          label: l10n.editHabitatgeAcsEnergy,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _energiaEnllumenamentController,
+          label: l10n.editHabitatgeLightingEnergy,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 18),
+        _SubsectionTitle(l10n.editHabitatgeEmissionsByUse),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _emissionsCalefaccioController,
+          label: l10n.editHabitatgeHeatingEmissions,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _emissionsRefrigeracioController,
+          label: l10n.editHabitatgeCoolingEmissions,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _emissionsACSController,
+          label: l10n.editHabitatgeAcsEmissions,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _emissionsEnllumenamentController,
+          label: l10n.editHabitatgeLightingEmissions,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 18),
+        _SubsectionTitle(l10n.editHabitatgeCertificationEnvelope),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _aillamentTermicController,
+          label: l10n.editHabitatgeThermalInsulation,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _valorFinestresController,
+          label: l10n.editHabitatgeWindowValue,
+          required: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          validator: _requiredEnergyNumberIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _normativaController,
+          label: l10n.buildingFormRegulationSummaryLabel,
+          required: true,
+          validator: _requiredEnergyTextIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _einaCertificacioController,
+          label: l10n.editHabitatgeCertificationTool,
+          required: true,
+          validator: _requiredEnergyTextIfNeeded,
+        ),
+        const SizedBox(height: 12),
+        _BuildTextField(
+          controller: _motiuCertificacioController,
+          label: l10n.editHabitatgeCertificationReason,
+          required: true,
+          maxLines: 2,
+          validator: _requiredEnergyTextIfNeeded,
+        ),
+        const SizedBox(height: 10),
+        Material(
+          color: Colors.transparent,
+          child: SwitchListTile(
+            value: _rehabilitacioEnergetica,
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.editHabitatgeEnergyRenovation),
+            onChanged: (value) {
+              setState(() {
+                _rehabilitacioEnergetica = value;
+              });
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _pickDataEntrada,
+          icon: const Icon(Icons.calendar_month_outlined),
+          label: Text(
+            _dataEntrada == null
+                ? l10n.editHabitatgeSelectEntryDate
+                : l10n.editHabitatgeEntryDate(_formatDate(_dataEntrada!)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final List<Widget> children;
+
+  const _SectionCard({
+    required this.title,
+    required this.subtitle,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            subtitle,
+            style: const TextStyle(color: Colors.black54, height: 1.35),
+          ),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _SubsectionTitle extends StatelessWidget {
+  final String text;
+
+  const _SubsectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text.toUpperCase(),
+      style: const TextStyle(
+        color: Colors.black54,
+        fontWeight: FontWeight.w800,
+        fontSize: 12,
+        letterSpacing: 0.6,
+      ),
+    );
+  }
+}
+
+class _BuildTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final bool required;
+  final bool enabled;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+  final int maxLines;
+
+  const _BuildTextField({
+    required this.controller,
+    required this.label,
+    this.required = false,
+    this.enabled = true,
+    this.keyboardType,
+    this.validator,
+    this.maxLines = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      enabled: enabled,
+      keyboardType: keyboardType,
+      validator: validator,
+      maxLines: maxLines,
+      decoration: _inputDecoration(required ? '$label *' : label),
+    );
+  }
+}
+
+InputDecoration _inputDecoration(String label) {
+  return InputDecoration(
+    labelText: label,
+    filled: true,
+    fillColor: const Color(0xFFF9FAFB),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+    ),
+  );
+}

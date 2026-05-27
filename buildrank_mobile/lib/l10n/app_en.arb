@@ -1,0 +1,1504 @@
+﻿{
+    "@@locale":  "en",
+    "authLanguageLabel":  "Language",
+    "authLanguageCatalan":  "Català",
+    "authLanguageSpanish":  "Español",
+    "authLanguageEnglish":  "English",
+    "authLoginTab":  "Log in",
+    "authRegisterTab":  "Sign up",
+    "authRegisterSuccessWithEmail":  "Account created successfully. You can now log in with {email}.",
+    "@authRegisterSuccessWithEmail":  {
+                                          "placeholders":  {
+                                                               "email":  {
+                                                                             "type":  "String"
+                                                                         }
+                                                           }
+                                      },
+    "loginWelcomeTitle":  "Welcome to BuildRank",
+    "loginWelcomeSubtitle":  "Manage your building, check the energy ranking, and track your progress from one place.",
+    "loginCardTitle":  "Log in",
+    "loginCardSubtitle":  "Access your account to view your building information.",
+    "emailLabel":  "Email",
+    "emailHint":  "name@example.com",
+    "passwordLabel":  "Password",
+    "loginForgotPassword":  "Forgot your password?",
+    "loginButton":  "Log in",
+    "loginGoogleButton":  "Continue with Google",
+    "loginMissingFieldsError":  "You must fill in both email and password.",
+    "registerTitle":  "Create an account",
+    "registerSubtitle":  "Start tracking your building today",
+    "registerCardTitle":  "Sign up",
+    "registerCardSubtitle":  "Create your account to start managing buildings.",
+    "registerRoleHeader":  "SELECT YOUR ROLE",
+    "registerRoleAdmin":  "Property\nadmin",
+    "registerRoleOwner":  "Owner",
+    "registerRoleTenant":  "Tenant",
+    "firstNameLabel":  "First name",
+    "lastNameLabel":  "Last name",
+    "confirmPasswordLabel":  "Confirm password",
+    "registerAcceptTermsPrefix":  "I accept the ",
+    "registerTermsOfService":  "Terms of Service",
+    "registerAcceptTermsMiddle":  " and the ",
+    "registerPrivacyPolicy":  "Privacy Policy",
+    "registerCreateAccountButton":  "Create BuildRank account",
+    "registerGoogleButton":  "Create account with Google",
+    "registerMissingFieldsError":  "You must fill in all fields.",
+    "registerPasswordsMismatchError":  "Passwords do not match.",
+    "registerAcceptTermsError":  "You must accept the terms and conditions.",
+    "registerSuccessInline":  "Account created successfully. You can now log in.",
+    "registerSuccessSnackBar":  "Registration completed successfully.",
+    "passwordResetAppBarTitle":  "Reset password",
+    "passwordResetRequestTitle":  "Recover your password",
+    "passwordResetConfirmTitle":  "Create a new password",
+    "passwordResetRequestSubtitle":  "Enter the email linked to your account and paste the link received by email.",
+    "passwordResetConfirmSubtitle":  "Enter a new password for your account.",
+    "passwordResetSendInstructions":  "Send instructions",
+    "passwordResetHaveLinkTitle":  "Already have the link?",
+    "passwordResetHaveLinkBody":  "Paste the link received by email here. BuildRank will automatically extract the uid and token.",
+    "passwordResetLinkLabel":  "Recovery link",
+    "passwordResetLinkHint":  "https://.../reset-password?uid=...\u0026token=...",
+    "passwordResetContinueWithLink":  "Continue with link",
+    "newPasswordLabel":  "New password",
+    "confirmNewPasswordLabel":  "Confirm new password",
+    "passwordResetSubmit":  "Reset password",
+    "passwordResetPasteAnotherLink":  "Paste another link",
+    "passwordResetEmailRequiredError":  "Enter your email address.",
+    "passwordResetRequestSuccess":  "If the email exists, you will receive a link to reset your password. Paste it here when you have it.",
+    "passwordResetLinkRequiredError":  "Paste the recovery link received by email.",
+    "passwordResetInvalidLinkError":  "Could not find the uid and token parameters inside the link.",
+    "passwordResetLinkValidatedSuccess":  "Link validated. Enter the new password.",
+    "passwordResetPasswordRequiredError":  "Enter and confirm the new password.",
+    "passwordResetSuccessSnackBar":  "Password reset successfully.",
+    "legalTermsTitle":  "Terms of Service",
+    "legalPrivacyTitle":  "Privacy Policy",
+    "legalTermsSubtitle":  "Basic terms for using BuildRank",
+    "legalPrivacySubtitle":  "How BuildRank handles data within the MVP",
+    "legalInfoNotice":  "BuildRank is an academic project in MVP stage. This text summarizes the terms and privacy criteria that apply to the demo and use of the prototype.",
+    "legalTermsSection1Title":  "1. Purpose of the service",
+    "legalTermsSection1Body":  "BuildRank is an application designed to promote more responsible and sustainable energy use in residential buildings. It lets users consult building information, view indicators, compare results, simulate improvements, and participate in community features according to the user\u0027s role.",
+    "legalTermsSection2Title":  "2. Informational nature of the information",
+    "legalTermsSection2Body":  "Scores, rankings, estimated energy ratings, simulations, Heat Risk Index, and badges are informational and indicative. They do not constitute official energy certifications, professional technical reports, or conclusive engineering recommendations.",
+    "legalTermsSection3Title":  "3. Responsible use of the application",
+    "legalTermsSection3Body":  "The user agrees to use BuildRank responsibly, not to enter false data or third-party data without authorization, and to respect community rules in votes, chats, and shared spaces.",
+    "legalTermsSection4Title":  "4. Roles and permissions",
+    "legalTermsSection4Body":  "Available actions may vary depending on the user\u0027s role and relationship with a building. Some actions, such as managing buildings, validating requests, recalculating badges, or administering votes, may be limited to authorized administrators.",
+    "legalTermsSection5Title":  "5. Open data, manual data, and estimates",
+    "legalTermsSection5Body":  "BuildRank may combine open data, manually entered data, and estimated results. When data is incomplete, estimated, or pending verification, the application will try to indicate this clearly so the user can interpret it correctly.",
+    "legalTermsSection6Title":  "6. Human review and official sources",
+    "legalTermsSection6Body":  "In case of discrepancy regarding energy data, documentation, ownership, or permissions, human review and official sources prevail over any automatic or estimated result shown by the system.",
+    "legalPrivacySection1Title":  "1. Data processed",
+    "legalPrivacySection1Body":  "BuildRank may process account data, user role, associated buildings, linked homes, requests, votes, simulations, notifications, and validation or administration actions.",
+    "legalPrivacySection2Title":  "2. Purpose of processing",
+    "legalPrivacySection2Body":  "Data is used to authenticate users, manage buildings, apply permissions, show indicators, enable community participation, record sensitive actions, and improve the quality of system data.",
+    "legalPrivacySection3Title":  "3. Data minimization",
+    "legalPrivacySection3Body":  "BuildRank tries to show only the information needed for each feature. For example, general views such as the map should not expose emails, documents, homes, or unnecessary personal data.",
+    "legalPrivacySection4Title":  "4. Documents and verifications",
+    "legalPrivacySection4Body":  "In verification processes, uploaded documents may contain sensitive information. These files should be used only to review the necessary evidence and not for purposes unrelated to the validation process.",
+    "legalPrivacySection5Title":  "5. Traceability and audit",
+    "legalPrivacySection5Body":  "Sensitive actions may be recorded for security, audit, and system integrity purposes. This traceability helps explain relevant changes to permissions, validations, buildings, votes, or scores.",
+    "legalPrivacySection6Title":  "6. Use of AI and automatic decisions",
+    "legalPrivacySection6Body":  "Any automated or AI-based support, if present, should be understood as an aid for detecting inconsistencies or review points. It does not replace human review and should not approve documents, assign roles, or modify scores autonomously.",
+    "legalPrivacySection7Title":  "7. User responsibility",
+    "legalPrivacySection7Body":  "The user should avoid uploading unnecessary information or third-party documents without authorization. Keys, tokens, and credentials must not be shared or entered outside the forms provided by the application.",
+    "commonRetry":  "Try again",
+    "commonCancel":  "Cancel",
+    "commonConfirm":  "Confirm",
+    "commonBack":  "Back",
+    "commonRefresh":  "Refresh",
+    "commonHideForSession":  "Hide for this session",
+    "commonErrorWithValue":  "Error: {error}",
+    "@commonErrorWithValue":  {
+                                  "placeholders":  {
+                                                       "error":  {
+                                                                     "type":  "String"
+                                                                 }
+                                                   }
+                              },
+    "adminUserManagementTitle":  "User management",
+    "adminUsersRefreshList":  "Refresh list",
+    "notificationsTitle":  "Notifications",
+    "notificationsMarkAll":  "Mark all",
+    "notificationsLoadError":  "Could not load notifications.",
+    "notificationsEmpty":  "You have no notifications",
+    "notificationsNow":  "Just now",
+    "notificationsMinutesAgo":  "{count} min ago",
+    "@notificationsMinutesAgo":  {
+                                     "placeholders":  {
+                                                          "count":  {
+                                                                        "type":  "int"
+                                                                    }
+                                                      }
+                                 },
+    "notificationsHoursAgo":  "{count} h ago",
+    "@notificationsHoursAgo":  {
+                                   "placeholders":  {
+                                                        "count":  {
+                                                                      "type":  "int"
+                                                                  }
+                                                    }
+                               },
+    "notificationsDaysAgo":  "{count} days ago",
+    "@notificationsDaysAgo":  {
+                                  "placeholders":  {
+                                                       "count":  {
+                                                                     "type":  "int"
+                                                                 }
+                                                   }
+                              },
+    "myChatsTitle":  "My chats",
+    "myChatsConnectionError":  "Could not connect to chat.",
+    "myChatsReconnect":  "Reconnect",
+    "myChatsNoMessages":  "No messages",
+    "myChatsEmpty":  "You have no active chats.",
+    "myChatsDirectDescription":  "Direct conversation or shared channel between administrators.",
+    "chatFallbackName":  "Chat",
+    "chatDirectDescription":  "Direct conversation between property administrators.",
+    "chatUserNotConnectedError":  "User not connected. Sign out and sign back in.",
+    "chatConnectionError":  "Error connecting chat:\n{error}",
+    "@chatConnectionError":  {
+                                 "placeholders":  {
+                                                      "error":  {
+                                                                    "type":  "String"
+                                                                }
+                                                  }
+                             },
+    "homeRankingTitle":  "Ranking",
+    "homeProfileTitle":  "Profile",
+    "homeGreeting":  "Good morning",
+    "homeSummaryTitle":  "Your building summary",
+    "homeSummarySubtitle":  "Check the current energy status, your league position, and the next recommended actions.",
+    "homeDemoBuildingName":  "Central Library",
+    "homeDemoBuildingSubtitle":  "Building monitored this week",
+    "homeMetricConsumption":  "Consumption",
+    "homeMetricPosition":  "Position",
+    "homeMetricImprovement":  "Improvement",
+    "homeKeyIndicatorsTitle":  "Key indicators",
+    "homeTodayConsumptionTitle":  "Estimated consumption today",
+    "homeTodayConsumptionSubtitle":  "18 kWh · 6% less than yesterday",
+    "homeLeaguePositionTitle":  "League position",
+    "homeLeaguePositionSubtitle":  "3rd position out of 12 buildings",
+    "homeRecommendationTitle":  "Main recommendation",
+    "homeRecommendationSubtitle":  "Reduce air conditioning in the afternoon",
+    "homeQuickActionsTitle":  "Quick actions",
+    "homeBuildingTitle":  "Building",
+    "homeImprovementsTitle":  "Improvements",
+    "homeCommunityTitle":  "Community",
+    "homeWeeklyGoalTitle":  "Weekly goal",
+    "homeWeeklyGoalBody":  "Keep consumption below 130 kWh to consolidate your place in the top 3.",
+    "twinTitle":  "Twin Building",
+    "twinIntroTitle":  "Administrators of comparable buildings",
+    "twinIntroBody":  "Contact property administrators of buildings similar to {buildingName} to share experiences about energy improvements, votes, and community management.",
+    "@twinIntroBody":  {
+                           "placeholders":  {
+                                                "buildingName":  {
+                                                                     "type":  "String"
+                                                                 }
+                                            }
+                       },
+    "twinEmptyTitle":  "No comparable administrators are available.",
+    "twinEmptyBody":  "The building may not have a comparable group yet, or there may be no other administered buildings in the same group.",
+    "twinChannelName":  "Twin Building with {address}",
+    "@twinChannelName":  {
+                             "placeholders":  {
+                                                  "address":  {
+                                                                  "type":  "String"
+                                                              }
+                                              }
+                         },
+    "twinChannelDescription":  "Conversation with {adminName}, administrator of {address}.",
+    "@twinChannelDescription":  {
+                                    "placeholders":  {
+                                                         "adminName":  {
+                                                                           "type":  "String"
+                                                                       },
+                                                         "address":  {
+                                                                         "type":  "String"
+                                                                     }
+                                                     }
+                                },
+    "twinPoints":  "{points} pts",
+    "@twinPoints":  {
+                        "placeholders":  {
+                                             "points":  {
+                                                            "type":  "String"
+                                                        }
+                                         }
+                    },
+    "twinTypologyFallback":  "Typology",
+    "twinClimateZone":  "Zone {zone}",
+    "@twinClimateZone":  {
+                             "placeholders":  {
+                                                  "zone":  {
+                                                               "type":  "String"
+                                                           }
+                                              }
+                         },
+    "twinAdminLine":  "Admin: {adminName}",
+    "@twinAdminLine":  {
+                           "placeholders":  {
+                                                "adminName":  {
+                                                                  "type":  "String"
+                                                              }
+                                            }
+                       },
+    "twinOpenChat":  "Open chat",
+    "editProfileTitle":  "Edit profile",
+    "editProfilePersonalDataTitle":  "Personal details",
+    "editProfilePersonalDataSubtitle":  "Update your account\u0027s basic information.",
+    "editProfileSaving":  "Saving...",
+    "editProfileSaveChanges":  "Save changes",
+    "editProfileFirstNameRequired":  "First name is required.",
+    "editProfileLastNameRequired":  "Last name is required.",
+    "editProfileEmailRequired":  "Email is required.",
+    "editProfileEmailInvalid":  "Enter a valid email address.",
+    "editProfileSuccess":  "Profile updated successfully.",
+    "votesCreateTitle":  "New vote",
+    "votesCreateAction":  "Create",
+    "votesTitleLabel":  "Title",
+    "votesTitleHint":  "Voting title",
+    "votesTitleRequiredError":  "The title is required.",
+    "votesTitleMinLengthError":  "The title must be at least 4 characters long.",
+    "votesDescriptionOptionalLabel":  "Description (optional)",
+    "votesDescriptionHint":  "Voting context...",
+    "votesDeadlineOptionalLabel":  "Deadline (optional)",
+    "votesNoDeadline":  "No deadline",
+    "votesOptionsLabel":  "Options",
+    "votesOptionsLimitHint":  "Minimum 2 · Maximum 8",
+    "votesAddOption":  "Add option",
+    "votesOptionHint":  "Option {number}",
+    "@votesOptionHint":  {
+                             "placeholders":  {
+                                                  "number":  {
+                                                                 "type":  "int"
+                                                             }
+                                              }
+                         },
+    "votesOptionRequiredError":  "This option cannot be empty.",
+    "votesDuplicateOptionsError":  "There are duplicate options. Review them.",
+    "pendingRequestsTitle":  "Pending requests",
+    "pendingRequestsIntro":  "Here you can review and validate resident join requests for {buildingTitle}.",
+    "@pendingRequestsIntro":  {
+                                  "placeholders":  {
+                                                       "buildingTitle":  {
+                                                                             "type":  "String"
+                                                                         }
+                                                   }
+                              },
+    "pendingRequestsCount":  "{count} pending",
+    "@pendingRequestsCount":  {
+                                  "placeholders":  {
+                                                       "count":  {
+                                                                     "type":  "int"
+                                                                 }
+                                                   }
+                              },
+    "pendingRequestsEmptyTitle":  "No pending requests",
+    "pendingRequestsEmptyBody":  "When other users ask to join this building, they will appear here.",
+    "pendingRequestsUnexpectedError":  "An unexpected error occurred.",
+    "pendingRequestsForbidden":  "Only the property administrator can manage pending requests.",
+    "pendingRequestsAccepted":  "The request from {name} has been accepted.",
+    "@pendingRequestsAccepted":  {
+                                     "placeholders":  {
+                                                          "name":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                      }
+                                 },
+    "pendingRequestsRejected":  "The request from {name} has been rejected.",
+    "@pendingRequestsRejected":  {
+                                     "placeholders":  {
+                                                          "name":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                      }
+                                 },
+    "pendingRequestsResidentChip":  "Resident",
+    "pendingRequestsRequestedRoleLabel": "Requested role",
+    "pendingRequestsRoleOwner": "Owner",
+    "pendingRequestsRoleTenant": "Tenant",
+    "pendingRequestsRoleUnknown": "Unspecified role",
+    "pendingRequestsDateLabel":  "Date",
+    "pendingRequestsCadastralReferenceLabel":  "Cadastral reference",
+    "pendingRequestsHomeLabel":  "Home",
+    "pendingRequestsSurfaceLabel":  "Surface",
+    "pendingRequestsReject":  "Reject",
+    "pendingRequestsAccept":  "Accept",
+    "pendingRequestsNotSpecified":  "Not specified",
+    "pendingRequestsFloorDoor":  "Floor {floor} · Door {door}",
+    "@pendingRequestsFloorDoor":  {
+                                      "placeholders":  {
+                                                           "floor":  {
+                                                                         "type":  "String"
+                                                                     },
+                                                           "door":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                       }
+                                  },
+    "pendingRequestsFloor":  "Floor {floor}",
+    "@pendingRequestsFloor":  {
+                                  "placeholders":  {
+                                                       "floor":  {
+                                                                     "type":  "String"
+                                                                 }
+                                                   }
+                              },
+    "pendingRequestsDoor":  "Door {door}",
+    "@pendingRequestsDoor":  {
+                                 "placeholders":  {
+                                                      "door":  {
+                                                                   "type":  "String"
+                                                               }
+                                                  }
+                             },
+    "chatReasonOptionalHint":  "Reason (optional)",
+    "chatConfirmActionTitle":  "Confirm action",
+    "chatDurationLabel":  "Duration",
+    "chatDurationIndefinite":  "Indefinite",
+    "chatDuration30Minutes":  "30 minutes",
+    "chatDuration1Hour":  "1 hour",
+    "chatDuration6Hours":  "6 hours",
+    "chatDuration24Hours":  "24 hours",
+    "chatReportMessage":  "Report message",
+    "chatHideMessage":  "Hide message",
+    "chatDeleteMyMessage":  "Delete my message",
+    "chatDeleteMessage":  "Delete message",
+    "chatRestoreMessage":  "Restore message",
+    "chatDismissReport":  "Dismiss report",
+    "chatDeleteOwnMessageConfirm":  "Are you sure you want to delete your message?",
+    "chatDeleteOtherMessageConfirm":  "Delete this user\u0027s message?",
+    "chatMessageReported":  "Message reported.",
+    "chatMessageHidden":  "Message hidden.",
+    "chatMessageDeleted":  "Message deleted.",
+    "chatMessageRestored":  "Message restored.",
+    "chatReportDismissed":  "Report dismissed.",
+    "chatWarnUser":  "Warn user",
+    "chatMuteUser":  "Mute user",
+    "chatBanFromChannel":  "Ban from channel",
+    "chatGlobalBan":  "Global ban",
+    "chatShadowBan":  "Shadow ban",
+    "chatWarn":  "Warn",
+    "chatMute":  "Mute",
+    "chatUnmute":  "Unmute",
+    "chatReadmitToChannel":  "Readmit to channel",
+    "chatLiftGlobalBan":  "Lift global ban",
+    "chatLiftShadowBan":  "Lift shadow ban",
+    "chatWarningSent":  "Warning sent.",
+    "chatUserMuted":  "User muted.",
+    "chatUserUnmuted":  "User unmuted.",
+    "chatUserBannedFromChannel":  "User banned from channel.",
+    "chatUserUnbannedFromChannel":  "User readmitted to channel.",
+    "chatUserGloballyBanned":  "User globally banned.",
+    "chatGlobalUnbanConfirm":  "Lift this user\u0027s global ban?",
+    "chatGlobalBanLifted":  "Global ban lifted.",
+    "chatShadowBanApplied":  "Shadow ban applied.",
+    "chatShadowUnbanConfirm":  "Lift this user\u0027s shadow ban?",
+    "chatShadowBanLifted":  "Shadow ban lifted.",
+    "chatCommunityTitle":  "{buildingName} community",
+    "@chatCommunityTitle":  {
+                                "placeholders":  {
+                                                     "buildingName":  {
+                                                                          "type":  "String"
+                                                                      }
+                                                 }
+                            },
+    "chatCommunitySubtitle":  "Talk with this building\u0027s members about improvements, incidents, and proposals.",
+    "chatContactSimilarAdmins":  "Contact similar admins",
+    "mapTitle":  "Building map",
+    "mapSearchHint":  "Search by street, neighborhood, or postal code",
+    "mapSearchTooltip":  "Search",
+    "mapFilterAll":  "All",
+    "mapFilterMinScore":  "≥ {score}",
+    "@mapFilterMinScore":  {
+                               "placeholders":  {
+                                                    "score":  {
+                                                                  "type":  "int"
+                                                              }
+                                                }
+                           },
+    "mapNoValidCoordinates":  "There are no buildings with valid coordinates to show.",
+    "mapShownOfCount":  "{shown} of {count} buildings shown",
+    "@mapShownOfCount":  {
+                             "placeholders":  {
+                                                  "shown":  {
+                                                                "type":  "int"
+                                                            },
+                                                  "count":  {
+                                                                "type":  "int"
+                                                            }
+                                              }
+                         },
+    "mapShownCount":  "{shown} buildings on the map",
+    "@mapShownCount":  {
+                           "placeholders":  {
+                                                "shown":  {
+                                                              "type":  "int"
+                                                          }
+                                            }
+                       },
+    "mapLoadError":  "Could not load the map.",
+    "profileUserFallback":  "User",
+    "profileRoleAdmin":  "Property administrator",
+    "profileRoleOwner":  "Owner",
+    "profileRoleTenant":  "Tenant",
+    "profileAdminBuildingsTitle":  "Managed buildings",
+    "profileOwnerBuildingsTitle":  "Buildings for my homes",
+    "profileTenantBuildingsTitle":  "Linked buildings",
+    "profileAccessibleBuildingsTitle":  "Accessible buildings",
+    "profileEmptyAdminBuildings":  "You do not have any buildings assigned as a property administrator yet. You can create one with the registration form.",
+    "profileEmptyOwnerBuildings":  "You do not have any homes linked to your account yet. When an administrator assigns you a home, you will see the corresponding building here.",
+    "profileEmptyTenantBuildings":  "You do not have any home linked to your account yet. When you are assigned to a home, you will see the corresponding building here.",
+    "profileEmptyAccessibleBuildings":  "There are no buildings available for this account yet.",
+    "profileBuildingCreated":  "Building created successfully.",
+    "profileLogoutTooltip":  "Sign out",
+    "profileCreateBuilding":  "Create building",
+    "profileNonAdminInfo":  "This account can view buildings linked to its homes. Building creation and administration are reserved for property administrators.",
+    "profileMapSubtitle":  "View registered buildings and check their main statistics.",
+    "profileLinkNewBuilding":  "Link new building",
+    "profileLoadError":  "Could not load the profile.",
+    "profileMetricBuildings":  "BUILDINGS",
+    "profileMetricLinks":  "LINKS",
+    "profileBadgesTitle":  "Building badges",
+    "profileBadgesBody":  "Real badges are shown inside each building profile. When a building meets score, data quality, or improvement criteria, they will appear in its details.",
+    "profileBuildingNumber":  "Building #{id}",
+    "@profileBuildingNumber":  {
+                                   "placeholders":  {
+                                                        "id":  {
+                                                                   "type":  "int"
+                                                               }
+                                                    }
+                               },
+    "profileLocationUnavailable":  "Location unavailable",
+    "profileInactive":  "Inactive",
+    "profileActive":  "Active",
+    "accountBlockedTitle":  "Account blocked",
+    "accountBlockedBody":  "Your account has been permanently blocked. Contact the administrator for more information.",
+    "accountSuspendedTitle":  "Account suspended",
+    "accountSuspendedBody":  "Your account is temporarily suspended. Contact the administrator for more information.",
+    "accountBackToLogin":  "Back to login",
+    "appName":  "BuildRank",
+    "commonUnavailable":  "Unavailable",
+    "commonUnknownError":  "Unknown error.",
+    "commonRequiredField":  "Required field",
+    "commonInvalidNumber":  "Enter a valid number",
+    "commonGreaterThanZero":  "Must be greater than 0",
+    "commonContinue":  "Continue →",
+    "mainNavHome":  "Home",
+    "mainNavLeagues":  "Leagues",
+    "mainNavSimulate":  "Simulate",
+    "mainNavChat":  "Chat",
+    "mainNavVotes":  "Votes",
+    "habitatgeCadastralReference":  "Cadastral reference",
+    "habitatgeFloor":  "Floor",
+    "habitatgeDoor":  "Door",
+    "habitatgeSurface":  "Area (m²)",
+    "addExistingAppBarTitle":  "Link building",
+    "addExistingTitle":  "Link yourself to an existing building",
+    "addExistingAdminSubtitle":  "When you select a building, a request will be sent to link you as the property manager.",
+    "addExistingResidentSubtitle":  "When you select a building, a join request will be sent to the property manager so they can validate you as a resident.",
+    "addExistingLocationSection":  "Location",
+    "addExistingSearchHint":  "Type your building street...",
+    "addExistingMinSearch":  "Enter at least 3 characters to start searching.",
+    "addExistingResultsTitle":  "Results",
+    "addExistingNoResults":  "No building was found at that address.",
+    "addExistingSelectedBuilding":  "Selected: {buildingName} · Requested role: {role}",
+    "@addExistingSelectedBuilding":  {
+                                         "placeholders":  {
+                                                              "buildingName":  {
+                                                                                   "type":  "String"
+                                                                               },
+                                                              "role":  {
+                                                                           "type":  "String"
+                                                                       }
+                                                          }
+                                     },
+    "addExistingClosedRequests":  "This building is not accepting new join requests right now.",
+    "addExistingHabitatgeTitle":  "Home details",
+    "addExistingHabitatgeSubtitle":  "Complete your home details to send the join request.",
+    "addExistingSubmit":  "Send request",
+    "addExistingAdminRequestSent":  "The request to link you as property manager has been sent.",
+    "addExistingResidentRequestSent":  "The join request has been sent to the property manager.",
+    "rankingLoadError":  "Could not load the ranking.",
+    "rankingLoadMoreError":  "Could not load more competitors.",
+    "rankingProgressLoadError":  "Could not load the progress evolution.",
+    "rankingScopeLeague":  "My league",
+    "rankingScopeComparableLeague":  "Similar league",
+    "rankingScopeComparableSeason":  "Similar season",
+    "rankingUnavailableTitle":  "Ranking unavailable",
+    "rankingLoadErrorTitle":  "Could not load the ranking",
+    "rankingActiveSeason":  "Active season: {seasonName}",
+    "@rankingActiveSeason":  {
+                                 "placeholders":  {
+                                                      "seasonName":  {
+                                                                         "type":  "String"
+                                                                     }
+                                                  }
+                             },
+    "rankingProgressToTop":  "Progress toward Top {target}",
+    "@rankingProgressToTop":  {
+                                  "placeholders":  {
+                                                       "target":  {
+                                                                      "type":  "int"
+                                                                  }
+                                                   }
+                              },
+    "rankingPointsProgress":  "{currentPoints} / {targetPoints} points",
+    "@rankingPointsProgress":  {
+                                   "placeholders":  {
+                                                        "currentPoints":  {
+                                                                              "type":  "String"
+                                                                          },
+                                                        "targetPoints":  {
+                                                                             "type":  "String"
+                                                                         }
+                                                    }
+                               },
+    "rankingSeasonPendingCalendar":  "Season pending calendar.",
+    "rankingCurrentPosition":  "Current position: #{position}",
+    "@rankingCurrentPosition":  {
+                                    "placeholders":  {
+                                                         "position":  {
+                                                                          "type":  "int"
+                                                                      }
+                                                     }
+                                },
+    "rankingComparisonPeriod":  "Comparison period",
+    "rankingLastSeasons":  "Last {count}",
+    "@rankingLastSeasons":  {
+                                "placeholders":  {
+                                                     "count":  {
+                                                                   "type":  "int"
+                                                               }
+                                                 }
+                            },
+    "rankingTopTarget":  "Top {target}",
+    "@rankingTopTarget":  {
+                              "placeholders":  {
+                                                   "target":  {
+                                                                  "type":  "int"
+                                                              }
+                                               }
+                          },
+    "rankingSearchHint":  "Search by street...",
+    "rankingNoCompetitors":  "No competitor was found with these filters.",
+    "rankingLoadMore":  "Load more competitors",
+    "rankingNoProgressHistory":  "There is no progress history for this building yet.",
+    "rankingSeasonProgressTitle":  "Season progress",
+    "rankingSeasonProgressSubtitle":  "Real evolution during the last {count} available seasons.",
+    "@rankingSeasonProgressSubtitle":  {
+                                           "placeholders":  {
+                                                                "count":  {
+                                                                              "type":  "int"
+                                                                          }
+                                                            }
+                                       },
+    "rankingProgressForBuilding":  "Progress for {buildingName}",
+    "@rankingProgressForBuilding":  {
+                                        "placeholders":  {
+                                                             "buildingName":  {
+                                                                                  "type":  "String"
+                                                                              }
+                                                         }
+                                    },
+    "rankingProgressModalSubtitle":  "Score evolution during the last {count} seasons.",
+    "@rankingProgressModalSubtitle":  {
+                                          "placeholders":  {
+                                                               "count":  {
+                                                                             "type":  "int"
+                                                                         }
+                                                           }
+                                      },
+    "rankingAccumulatedImprovement":  "Accumulated improvement: +{delta} points",
+    "@rankingAccumulatedImprovement":  {
+                                           "placeholders":  {
+                                                                "delta":  {
+                                                                              "type":  "int"
+                                                                          }
+                                                            }
+                                       },
+    "rankingPointsRange":  "{startPoints} → {currentPoints} points",
+    "@rankingPointsRange":  {
+                                "placeholders":  {
+                                                     "startPoints":  {
+                                                                         "type":  "int"
+                                                                     },
+                                                     "currentPoints":  {
+                                                                           "type":  "int"
+                                                                       }
+                                                 }
+                            },
+    "rankingDeltaPoints":  "{deltaText} pts",
+    "@rankingDeltaPoints":  {
+                                "placeholders":  {
+                                                     "deltaText":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                 }
+                            },
+    "rankingViewDetail":  "View details",
+    "buildingCardDetailLoadError":  "Could not load the building details.",
+    "buildingCardBadgesRecalculated":  "Badges recalculated successfully.",
+    "buildingCardBadgesLoadError":  "Could not load the badges.",
+    "buildingCardLoadError":  "Could not load the building.",
+    "buildingCardClimateZone":  "Climate zone {zone}",
+    "@buildingCardClimateZone":  {
+                                     "placeholders":  {
+                                                          "zone":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                      }
+                                 },
+    "buildingCardScoreExcellent":  "EXCELLENT",
+    "buildingCardScoreGood":  "GOOD",
+    "buildingCardScoreImprove":  "NEEDS IMPROVEMENT",
+    "buildingCardScorePriority":  "PRIORITY",
+    "buildingCardEstimatedRating":  "ESTIMATED RATING",
+    "buildingCardPendingData":  "Pending data: {items}",
+    "@buildingCardPendingData":  {
+                                     "placeholders":  {
+                                                          "items":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                      }
+                                 },
+    "buildingCardBaseScore":  "BuildRank base score",
+    "buildingCardPerformance":  "PERFORMANCE",
+    "buildingCardInitialData":  "Initial data",
+    "buildingCardSurface":  "AREA",
+    "buildingCardFloors":  "FLOORS",
+    "buildingCardOrientation":  "ORIENTATION",
+    "buildingCardBadgesTitle":  "BUILDING BADGES",
+    "buildingCardRecalculate":  "Recalculate",
+    "buildingCardNoBadges":  "This building does not have any badges yet. They will appear when it reaches a milestone.",
+    "buildingCardRecommendedActions":  "RECOMMENDED ACTIONS",
+    "buildingCardActionManageRequestsTitle":  "Manage pending requests",
+    "buildingCardActionManageRequestsSubtitle":  "Review and validate new building join requests",
+    "buildingCardActionEditHabitatgeTitle":  "Edit my home",
+    "buildingCardActionEditHabitatgeSubtitle":  "Complete area, renovation and energy details",
+    "buildingCardTabDetails":  "Details",
+    "buildingCardTabHistory":  "History",
+    "buildingCardTabDocuments":  "Documents",
+    "buildingCardHistoryUnavailableTitle":  "History not available yet",
+    "buildingCardHistoryUnavailableBody":  "This section will show score changes, validations and saved simulations.",
+    "buildingCardDocumentsSoonTitle":  "Documents and reports (coming soon)",
+    "buildingCardDocumentsSoonBody":  "This section is prepared for a future document integration. This MVP does not show generated documents or reports.",
+    "buildingCardConstructionYear":  "CONSTRUCTION YEAR",
+    "buildingCardFloorsCount":  "{count} floors",
+    "@buildingCardFloorsCount":  {
+                                     "placeholders":  {
+                                                          "count":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                      }
+                                 },
+    "buildingCardTypology":  "TYPOLOGY",
+    "buildingCardRegulation":  "REGULATION",
+    "buildingCardNoLocation":  "This building does not have an associated location yet.",
+    "buildingCardLocationSummary":  "Location: {street}, {number} · {neighborhood} · {postalCode}",
+    "@buildingCardLocationSummary":  {
+                                         "placeholders":  {
+                                                              "street":  {
+                                                                             "type":  "String"
+                                                                         },
+                                                              "number":  {
+                                                                             "type":  "String"
+                                                                         },
+                                                              "neighborhood":  {
+                                                                                   "type":  "String"
+                                                                               },
+                                                              "postalCode":  {
+                                                                                 "type":  "String"
+                                                                             }
+                                                          }
+                                     },
+    "buildingFormStreetMinChars":  "Type at least 2 characters to search for the street.",
+    "buildingFormNoStreetFound":  "No street was found for \"{query}\".",
+    "@buildingFormNoStreetFound":  {
+                                       "placeholders":  {
+                                                            "query":  {
+                                                                          "type":  "String"
+                                                                      }
+                                                        }
+                                   },
+    "buildingFormStreetSuggestionsError":  "Could not load street suggestions.",
+    "buildingFormPostalCodeRequired":  "Postal code is required.",
+    "buildingFormPostalCodeInvalid":  "Postal code must have 5 digits.",
+    "buildingFormNeighborhoodRequired":  "Neighborhood is required.",
+    "buildingFormStreetRequired":  "Street name is required.",
+    "buildingFormStreetSelectionRequired":  "Select a street from the suggestions list.",
+    "buildingFormNumberRequired":  "Street number is required.",
+    "buildingFormNumberPositive":  "Street number must be a positive integer.",
+    "buildingFormNumberOutOfRange":  "The number is outside the allowed range for this street ({minNumber}-{maxNumber}).",
+    "@buildingFormNumberOutOfRange":  {
+                                          "placeholders":  {
+                                                               "minNumber":  {
+                                                                                 "type":  "int"
+                                                                             },
+                                                               "maxNumber":  {
+                                                                                 "type":  "int"
+                                                                             }
+                                                           }
+                                      },
+    "buildingFormTypeRequired":  "You must select a typology.",
+    "buildingFormConstructionYearRequired":  "Construction year is required.",
+    "buildingFormConstructionYearInteger":  "Construction year must be an integer.",
+    "buildingFormConstructionYearRange":  "Construction year must be between 1800 and {currentYear}.",
+    "@buildingFormConstructionYearRange":  {
+                                               "placeholders":  {
+                                                                    "currentYear":  {
+                                                                                        "type":  "int"
+                                                                                    }
+                                                                }
+                                           },
+    "buildingFormRegulationRequired":  "Current regulation is required.",
+    "buildingFormFloorsRequired":  "Number of floors is required.",
+    "buildingFormFloorsPositive":  "The number of floors must be a positive integer.",
+    "buildingFormSurfaceRequired":  "Total area is required.",
+    "buildingFormSurfacePositive":  "Total area must be a positive number.",
+    "buildingFormOrientationRequired":  "Select a main orientation.",
+    "buildingFormDocumentsRequired":  "Attach at least one verification document.",
+    "buildingFormCreatedMissingId":  "The building was created, but the response did not include a recognizable identifier.",
+    "buildingFormSubmitSuccess":  "Building created and documentation sent. It is pending review.",
+    "buildingFormUnexpectedSaveError":  "An unexpected error occurred while saving the building.",
+    "buildingFormTypeResidential":  "Residential",
+    "buildingFormTypeCommercial":  "Commercial",
+    "buildingFormTypeEducational":  "Educational",
+    "buildingFormTypeHealthcare":  "Healthcare",
+    "buildingFormTypeMixed":  "Mixed",
+    "buildingFormTypeResidentialSubtitle":  "Single-family or apartments",
+    "buildingFormTypeCommercialSubtitle":  "Offices, shops...",
+    "buildingFormTypeEducationalSubtitle":  "Schools",
+    "buildingFormTypeHealthcareSubtitle":  "Hospitals",
+    "buildingFormTypeMixedSubtitle":  "Combined uses",
+    "orientationNorth":  "North",
+    "orientationSouth":  "South",
+    "orientationEast":  "East",
+    "orientationWest":  "West",
+    "buildingFormNewBuildingChip":  "New building",
+    "buildingFormTitle":  "Register the building",
+    "buildingFormStep1Subtitle":  "Let\u0027s start with the building location.",
+    "buildingFormStep2Subtitle":  "Now complete the general information.",
+    "buildingFormStep3Subtitle":  "Add the basic technical data.",
+    "buildingFormStep4Subtitle":  "Attach documentation to validate yourself as property manager.",
+    "buildingFormLocationSection":  "LOCATION",
+    "buildingFormPostalCodeLabel":  "Postal code",
+    "buildingFormPostalCodeHint":  "e.g., 08025",
+    "buildingFormOr":  "or",
+    "buildingFormNeighborhoodLabel":  "Neighborhood",
+    "buildingFormNeighborhoodHint":  "e.g., Sagrada Família",
+    "buildingFormStreetLabel":  "Street name",
+    "buildingFormStreetHint":  "Start typing the street",
+    "buildingFormStreetNumberRange":  "Numbers {minNumber}-{maxNumber}",
+    "@buildingFormStreetNumberRange":  {
+                                           "placeholders":  {
+                                                                "minNumber":  {
+                                                                                  "type":  "int"
+                                                                              },
+                                                                "maxNumber":  {
+                                                                                  "type":  "int"
+                                                                              }
+                                                            }
+                                       },
+    "buildingFormStreetRangeUnknown":  "Numbering range not provided",
+    "buildingFormNumberLabel":  "Number",
+    "buildingFormNumberHint":  "e.g., 123",
+    "buildingFormLocationInfo":  "Select a street from the suggestions list. When saving, BuildRank will first create the location and then the building linked to your property manager account.",
+    "buildingFormGeneralSection":  "GENERAL INFORMATION",
+    "buildingFormRegisteredLocation":  "Registered location",
+    "buildingFormAddressLabel":  "Address",
+    "buildingFormTypeLabel":  "Building typology",
+    "buildingFormConstructionYearLabel":  "Construction year",
+    "buildingFormConstructionYearHint":  "e.g., 1998",
+    "buildingFormRegulationLabel":  "Current regulation",
+    "buildingFormRegulationHint":  "e.g., CTE",
+    "buildingFormTechnicalSection":  "TECHNICAL DATA",
+    "buildingFormBuildingSummary":  "Building summary",
+    "buildingFormConstructionYearSummaryLabel":  "Construction year",
+    "buildingFormRegulationSummaryLabel":  "Regulation",
+    "buildingFormFloorsLabel":  "Number of floors",
+    "buildingFormFloorsHint":  "e.g., 6",
+    "buildingFormSurfaceLabel":  "Total area (m²)",
+    "buildingFormSurfaceHint":  "e.g., 850",
+    "buildingFormOrientationLabel":  "Main orientation",
+    "buildingFormOrientationHint":  "Select an orientation",
+    "buildingFormDocumentationSection":  "DOCUMENTATION",
+    "buildingFormBuildingToVerify":  "Building to verify",
+    "buildingFormSubmittingDocuments":  "Sending documentation...",
+    "buildingFormSubmit":  "Create building and send verification",
+    "editHabitatgeNoLinkedHome":  "No home linked to your user was found in this building.",
+    "editHabitatgeNoneSelected":  "No home was selected to edit.",
+    "editHabitatgeMissingCadastralReference":  "The selected home has no cadastral reference.",
+    "editHabitatgeLoadError":  "Could not load the home.",
+    "editHabitatgeSelectorTitle":  "Which home do you want to edit?",
+    "editHabitatgeSelectorFloorDoor":  "Floor {floor} · Door {door}",
+    "@editHabitatgeSelectorFloorDoor":  {
+                                            "placeholders":  {
+                                                                 "floor":  {
+                                                                               "type":  "String"
+                                                                           },
+                                                                 "door":  {
+                                                                              "type":  "String"
+                                                                          }
+                                                             }
+                                        },
+    "editHabitatgeEnergyRequired":  "Required if you provide energy data",
+    "editHabitatgeEnergyDateRequired":  "Entry date is required if you provide energy data",
+    "editHabitatgeSaveWithEnergySuccess":  "Home and energy data updated.",
+    "editHabitatgeSaveSuccess":  "Home data updated.",
+    "editHabitatgeAppBarTitle":  "Edit home",
+    "editHabitatgeCannotEditTitle":  "This home cannot be edited",
+    "editHabitatgeSaveButton":  "Save data",
+    "editHabitatgeIntroTitle":  "Complete your home details",
+    "editHabitatgeIntroBody":  "This data will help calculate the estimated rating and BuildRank score for the building more accurately.",
+    "editHabitatgeHomeDataTitle":  "Home data",
+    "editHabitatgeHomeDataSubtitle":  "Basic information about the home linked to your account.",
+    "editHabitatgeRenovationYear":  "Renovation year",
+    "editHabitatgeInvalidYear":  "Enter a valid year",
+    "editHabitatgeYearOutOfRange":  "The year is not valid",
+    "editHabitatgeEnergyDataTitle":  "Energy data",
+    "editHabitatgeEnergyDataSubtitle":  "Add the available information from the energy certificate or estimate.",
+    "editHabitatgeEnergyOptionalNotice":  "Energy data is optional. If you fill in any field in this section, you must complete all mandatory energy certificate fields.",
+    "editHabitatgeGlobalRating":  "Overall rating",
+    "editHabitatgePrimaryEnergyConsumption": "Primary energy consumption (kWh/(m²·year))",
+    "editHabitatgeFinalEnergyConsumption": "Final energy consumption (kWh/(m²·year))",
+    "editHabitatgeCo2Emissions": "CO₂ emissions (kg CO₂/(m²·year))",
+    "editHabitatgeAnnualEnergyCost": "Annual energy cost (€)",
+    "editHabitatgeConsumptionByUse": "Consumption by use",
+    "editHabitatgeHeatingEnergy": "Heating energy (kWh/(m²·year))",
+    "editHabitatgeCoolingEnergy": "Cooling energy (kWh/(m²·year))",
+    "editHabitatgeAcsEnergy": "DHW energy (kWh/(m²·year))",
+    "editHabitatgeLightingEnergy": "Lighting energy (kWh/(m²·year))",
+    "editHabitatgeEmissionsByUse": "Emissions by use",
+    "editHabitatgeHeatingEmissions": "Heating emissions (kg CO₂/(m²·year))",
+    "editHabitatgeCoolingEmissions": "Cooling emissions (kg CO₂/(m²·year))",
+    "editHabitatgeAcsEmissions": "DHW emissions (kg CO₂/(m²·year))",
+    "editHabitatgeLightingEmissions": "Lighting emissions (kg CO₂/(m²·year))",
+    "editHabitatgeCertificationEnvelope": "Certification and envelope",
+    "editHabitatgeThermalInsulation": "Thermal insulation (W/(m²·K))",
+    "editHabitatgeWindowValue": "Window value (W/(m²·K))",
+    "editHabitatgeCertificationTool":  "Certification tool",
+    "editHabitatgeCertificationReason":  "Certification reason",
+    "editHabitatgeEnergyRenovation":  "Energy renovation",
+    "editHabitatgeSelectEntryDate":  "Select entry date *",
+    "editHabitatgeEntryDate":  "Entry date: {date}",
+    "@editHabitatgeEntryDate":  {
+                                    "placeholders":  {
+                                                         "date":  {
+                                                                      "type":  "String"
+                                                                  }
+                                                     }
+                                },
+    "adminAuditTitle":  "Audit log",
+    "adminAuditEmpty":  "No records found.",
+    "adminAuditUserId":  "User ID",
+    "adminAuditMethod":  "Method",
+    "adminAuditResourceType":  "Resource type",
+    "adminAuditHttpCode":  "HTTP code",
+    "adminAuditFromDate":  "From",
+    "adminAuditToDate":  "To",
+    "adminAuditClear":  "Clear",
+    "adminAuditApplyFilters":  "Apply filters",
+    "adminAuditAll":  "All",
+    "adminAuditPageRange":  "{firstItem}-{lastItem} of {totalCount}",
+    "adminAuditPage":  "Page {page}",
+    "adminAuditPreviousPage":  "Previous page",
+    "adminAuditNextPage":  "Next page",
+    "simulationCatalogLoadError":  "Could not load the improvement catalog.",
+    "simulationHistoryLoadError":  "Could not load the simulation history.",
+    "simulationCalculateError":  "Could not calculate the simulation.",
+    "simulationSaveError":  "Could not save the simulation.",
+    "simulationSavedSnack":  "Simulation saved successfully.",
+    "simulationTitle":  "Improvement simulator",
+    "simulationCurrent":  "Current",
+    "simulationSimulated":  "Simulated",
+    "simulationDisclaimer":  "Results are indicative estimates. They do not replace a professional energy audit.",
+    "simulationTabSimulate":  "Simulate",
+    "simulationTabSaved":  "Saved",
+    "simulationTabImplemented":  "Applied",
+    "simulationCatalogTitle":  "Improvement catalog",
+    "simulationSelectedCount":  "{count} selected",
+    "simulationSavedTitle":  "Saved simulations",
+    "simulationNoSaved":  "There are no saved simulations for this building yet. Calculate a preview and tap \"Save simulation\".",
+    "simulationImplementedTitle":  "Applied improvements",
+    "simulationNoImplemented":  "There are no applied improvements registered yet. Saved simulations are scenarios; applied improvements represent work actually completed or under validation.",
+    "simulationCalculatingPreview":  "Calculating preview...",
+    "simulationCalculatePreview":  "Calculate preview",
+    "simulationSaving":  "Saving simulation...",
+    "simulationSave":  "Save simulation",
+    "simulationReadOnlyRole":  "This role can view the preview, but formal simulation management is reserved for the property manager.",
+    "simulationResultTitle":  "Simulation result",
+    "simulationAnnualConsumption":  "Annual consumption",
+    "simulationEstimatedAnnualCost":  "Estimated annual cost",
+    "simulationSavings":  "Savings {amount}",
+    "simulationScore":  "Score",
+    "simulationPointsDelta":  "+{points} points",
+    "simulationTotalCostAndEngine":  "Estimated total cost: {cost} · Engine {engine}",
+    "simulationDateAndEngine":  "Date: {date} · Engine {engine}",
+    "simulationCost":  "Cost {cost}",
+    "simulationRealCost":  "Real cost {cost}",
+    "simulationExecutionDate":  "Execution: {date}",
+    "simulationEmptyCatalog":  "There are no active improvements in the catalog yet. Load the improvement seed in the backend.",
+    "altSimulationPreparedSnack":  "Simulation ready to submit to a vote with {count} improvement(s).",
+    "altSimulationSelectUpdates":  "Select\nupdates",
+    "altSimulationDetailedImpact":  "Detailed impact",
+    "altSimulationPresentVote":  "Submit to vote",
+    "altSimulationLive":  "LIVE SIMULATION",
+    "altSimulationExpectedPerformance":  "Expected performance",
+    "altSimulationImpact":  "IMPACT",
+    "altSimulationEstimatedCost":  "ESTIMATED\nCOST",
+    "altSimulationOperationalForecast":  "OPERATING FORECAST",
+    "altSimulationAnnualEnergyCost":  "Annual energy cost",
+    "altSimulationCarbonFootprint":  "Carbon footprint",
+    "altSimulationEnergyIntensity":  "Energy intensity",
+    "altSimulationTotalInvestment":  "TOTAL INVESTMENT",
+    "altSimulationAnnualSavings":  "ANNUAL SAVINGS",
+    "altSimulationPaybackPeriod":  "PAYBACK PERIOD",
+    "altSimulationYears":  "{years} years",
+    "altSimulationSolarTitle":  "Photovoltaic solar panel",
+    "altSimulationSolarSubtitle":  "10 kW roof",
+    "altSimulationGlazingTitle":  "Triple glazing",
+    "altSimulationGlazingSubtitle":  "High performance",
+    "altSimulationInsulationTitle":  "Wall insulation",
+    "altSimulationInsulationSubtitle":  "External mineral insulation",
+    "altSimulationHeatPumpTitle":  "Heat pump",
+    "altSimulationHeatPumpSubtitle":  "Efficient air-to-water system",
+    "votesStatusOpen":  "Open",
+    "votesStatusClosed":  "Closed",
+    "votesStatusArchived":  "Archived",
+    "votesStatusCancelled":  "Cancelled",
+    "votesRetry":  "Try again",
+    "votesCount":  "{count} votes",
+    "votesCountSingular":  "{count} vote",
+    "votesSelectOptionSnack":  "Select an option to vote.",
+    "votesRegisteredSnack":  "Vote registered successfully.",
+    "votesDeleteTitle":  "Delete vote",
+    "votesDeleteBody":  "Are you sure you want to delete this vote? All options and submitted votes will be deleted. This action cannot be undone.",
+    "votesCancel":  "Cancel",
+    "votesDelete":  "Delete",
+    "votesFallbackTitle":  "Vote",
+    "votesEdit":  "Edit",
+    "votesUntilDate":  "Until {date}",
+    "votesSelectOption":  "Select an option",
+    "votesOptions":  "Options",
+    "votesPermissionOnlyOwners":  "Only owners and property managers linked to this building can vote.",
+    "votesVote":  "Vote",
+    "votesViewResults":  "View results",
+    "votesResults":  "Results",
+    "votesTotal":  "Total: {count} votes",
+    "votesTotalSingular":  "Total: {count} vote",
+    "votesEditTitle":  "Edit vote",
+    "votesSave":  "Save",
+    "votesSaveChanges":  "Save changes",
+    "votesMinimumOptionsSnack":  "At least 2 options are required.",
+    "votesDuplicateOptionsSnack":  "There are duplicate options. Review them.",
+    "votesTitleRequired":  "The title is required.",
+    "votesTitleMinLength":  "The title must be at least 4 characters long.",
+    "votesDescriptionOptional":  "Description (optional)",
+    "votesDeadline":  "Deadline",
+    "votesOptionsRange":  "Minimum 2 · Maximum 8",
+    "votesOptionsWarning":  "Warning: changing the options may affect existing votes.",
+    "votesState":  "State",
+    "votesCancelledLocked":  "A cancelled vote cannot be reopened.",
+    "votesOptionRequired":  "This option cannot be empty.",
+    "votesListTitle":  "Internal vote",
+    "votesListSubtitle":  "Decision-making for {buildingName}",
+    "votesGeneralSection":  "GENERAL VOTES",
+    "votesSimulationSection":  "SIMULATION VOTES",
+    "votesTabActive":  "Active ({count})",
+    "votesTabCompleted":  "Completed ({count})",
+    "votesTabMyProposals":  "My proposals",
+    "votesTabMyVotes":  "My votes",
+    "votesEmptyActive":  "There are no active votes right now.",
+    "votesEmptySection":  "There are no votes in this section.",
+    "votesEmptyBody":  "When the administrator submits a simulation to a vote, it will appear here.",
+    "votesInfoCanVote":  "You can participate in community votes linked to this building.",
+    "votesInfoCannotVote":  "Only owners and property managers linked to the building can vote.",
+    "votesRegisteredFavor":  "Vote in favor registered.",
+    "votesRegisteredAgainst":  "Vote against registered.",
+    "votesActive":  "Active",
+    "votesEndsToday":  "Ends today",
+    "votesDaysRemaining":  "{days} days remaining",
+    "votesEnergyProposalFallback":  "Energy improvement proposal.",
+    "votesQuorumProgress":  "Quorum progress",
+    "votesQuorumReached":  "Quorum reached",
+    "votesNeedMoreParticipation":  "More participation needed",
+    "votesVoteSection":  "VOTE",
+    "votesFavor":  "In favor",
+    "votesAgainst":  "Against",
+    "votesEstimatedCostSaving":  "Estimated cost {cost} € +{saving} €/year",
+    "votesKeepCurrentState":  "Keep current state",
+    "votesYourVote":  "Your vote: {vote}",
+    "votesPendingVote":  "Pending vote",
+    "votesNotReported":  "not reported",
+    "adminUsersSuspendTitle":  "Suspend {email}",
+    "adminUsersReasonLabel":  "Reason (optional)",
+    "adminUsersReasonHint":  "Describe the reason for the suspension...",
+    "adminUsersEndDate":  "End date",
+    "adminUsersRemoveDate":  "Remove date",
+    "adminUsersConfirm":  "Confirm",
+    "adminUsersTitle":  "User management",
+    "adminUsersCount":  "{count} users",
+    "adminUsersEmpty":  "There are no users.",
+    "adminUsersReason":  "Reason: {reason}",
+    "adminUsersSuspend":  "Suspend",
+    "adminHomeVerificationPending":  "Pending verifications",
+    "adminHomeSearchHint":  "Search buildings or users...",
+    "adminHomeVerificationQueue":  "Document verification queue",
+    "adminHomePendingCount":  "{count} pending",
+    "adminHomeNoPendingVerifications":  "No pending verifications",
+    "adminHomeNoPendingVerificationsBody":  "When a verification finishes AI processing, it will appear here.",
+    "adminHomeCreateSeason":  "Create new season",
+    "adminHomeChatsBody":  "Access building chats and apply moderation actions.",
+    "adminHomeOpenBuildingChats":  "Open building chats",
+    "adminHomeUsersTitle":  "User management",
+    "adminHomeUsersBody":  "Block, suspend, and manage user accounts.",
+    "adminHomeOpenUsers":  "Open user management",
+    "adminHomeAnomalyBody":  "5 buildings in the \"Commercial\" category submitted data more than 20% above historical benchmarks. A manual audit is required.",
+    "adminHomeUnexpectedVerificationError":  "An unexpected error occurred while reviewing the verification.",
+    "buildingListScoreLabel":  "BUILDRANK SCORE",
+    "adminHomeChatsModerationTitle":  "Chat moderation",
+    "adminHomeAuditButton":  "Audit",
+    "adminHomeLogoutButton":  "Sign out",
+    "adminHomeLoggingOut":  "Signing out...",
+    "adminHomeNoAccessPermission":  "You do not have permission to access the system administration panel.",
+    "adminHomeIntegrityAlertTitle":  "Data integrity alert",
+    "adminHomeRunAuditNow":  "Run integrity audit now",
+    "adminHomeRejectionReason":  "Rejection reason",
+    "adminHomeRejectionHint":  "Briefly explain why it is being rejected...",
+    "adminHomeCancel":  "Cancel",
+    "adminHomeReject":  "Reject",
+    "adminHomeFiltersPending":  "Advanced filters pending integration.",
+    "adminHomeCreateSeasonPending":  "Season creation pending integration.",
+    "adminHomeRolesPending":  "Permissions matrix pending integration.",
+    "adminHomeApprove":  "Approve",
+    "adminHomeRejected":  "Rejected",
+    "adminHomeApproved":  "Approved",
+    "adminHomeSeasonStats":  "{range} · {participants} buildings",
+    "adminHomeRoleStats":  "{users} users · {permissions} permissions",
+    "@adminAuditPageRange":  {
+                                 "placeholders":  {
+                                                      "firstItem":  {
+                                                                        "type":  "int"
+                                                                    },
+                                                      "lastItem":  {
+                                                                       "type":  "int"
+                                                                   },
+                                                      "totalCount":  {
+                                                                         "type":  "int"
+                                                                     }
+                                                  }
+                             },
+    "@adminAuditPage":  {
+                            "placeholders":  {
+                                                 "page":  {
+                                                              "type":  "int"
+                                                          }
+                                             }
+                        },
+    "@simulationSelectedCount":  {
+                                     "placeholders":  {
+                                                          "count":  {
+                                                                        "type":  "int"
+                                                                    }
+                                                      }
+                                 },
+    "@simulationSavings":  {
+                               "placeholders":  {
+                                                    "amount":  {
+                                                                   "type":  "String"
+                                                               }
+                                                }
+                           },
+    "@simulationPointsDelta":  {
+                                   "placeholders":  {
+                                                        "points":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                    }
+                               },
+    "@simulationTotalCostAndEngine":  {
+                                          "placeholders":  {
+                                                               "cost":  {
+                                                                            "type":  "String"
+                                                                        },
+                                                               "engine":  {
+                                                                              "type":  "String"
+                                                                          }
+                                                           }
+                                      },
+    "@simulationDateAndEngine":  {
+                                     "placeholders":  {
+                                                          "date":  {
+                                                                       "type":  "String"
+                                                                   },
+                                                          "engine":  {
+                                                                         "type":  "String"
+                                                                     }
+                                                      }
+                                 },
+    "@simulationCost":  {
+                            "placeholders":  {
+                                                 "cost":  {
+                                                              "type":  "String"
+                                                          }
+                                             }
+                        },
+    "@simulationRealCost":  {
+                                "placeholders":  {
+                                                     "cost":  {
+                                                                  "type":  "String"
+                                                              }
+                                                 }
+                            },
+    "@simulationExecutionDate":  {
+                                     "placeholders":  {
+                                                          "date":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                      }
+                                 },
+    "@altSimulationPreparedSnack":  {
+                                        "placeholders":  {
+                                                             "count":  {
+                                                                           "type":  "int"
+                                                                       }
+                                                         }
+                                    },
+    "@altSimulationYears":  {
+                                "placeholders":  {
+                                                     "years":  {
+                                                                   "type":  "String"
+                                                               }
+                                                 }
+                            },
+    "@votesCount":  {
+                        "placeholders":  {
+                                             "count":  {
+                                                           "type":  "int"
+                                                       }
+                                         }
+                    },
+    "@votesCountSingular":  {
+                                "placeholders":  {
+                                                     "count":  {
+                                                                   "type":  "int"
+                                                               }
+                                                 }
+                            },
+    "@votesUntilDate":  {
+                            "placeholders":  {
+                                                 "date":  {
+                                                              "type":  "String"
+                                                          }
+                                             }
+                        },
+    "@votesTotal":  {
+                        "placeholders":  {
+                                             "count":  {
+                                                           "type":  "int"
+                                                       }
+                                         }
+                    },
+    "@votesTotalSingular":  {
+                                "placeholders":  {
+                                                     "count":  {
+                                                                   "type":  "int"
+                                                               }
+                                                 }
+                            },
+    "@votesListSubtitle":  {
+                               "placeholders":  {
+                                                    "buildingName":  {
+                                                                         "type":  "String"
+                                                                     }
+                                                }
+                           },
+    "@votesTabActive":  {
+                            "placeholders":  {
+                                                 "count":  {
+                                                               "type":  "int"
+                                                           }
+                                             }
+                        },
+    "@votesTabCompleted":  {
+                               "placeholders":  {
+                                                    "count":  {
+                                                                  "type":  "int"
+                                                              }
+                                                }
+                           },
+    "@votesDaysRemaining":  {
+                                "placeholders":  {
+                                                     "days":  {
+                                                                  "type":  "int"
+                                                              }
+                                                 }
+                            },
+    "@votesEstimatedCostSaving":  {
+                                      "placeholders":  {
+                                                           "cost":  {
+                                                                        "type":  "String"
+                                                                    },
+                                                           "saving":  {
+                                                                          "type":  "String"
+                                                                      }
+                                                       }
+                                  },
+    "@votesYourVote":  {
+                           "placeholders":  {
+                                                "vote":  {
+                                                             "type":  "String"
+                                                         }
+                                            }
+                       },
+    "@adminUsersSuspendTitle":  {
+                                    "placeholders":  {
+                                                         "email":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                     }
+                                },
+    "@adminUsersCount":  {
+                             "placeholders":  {
+                                                  "count":  {
+                                                                "type":  "int"
+                                                            }
+                                              }
+                         },
+    "@adminUsersReason":  {
+                              "placeholders":  {
+                                                   "reason":  {
+                                                                  "type":  "String"
+                                                              }
+                                               }
+                          },
+    "@adminHomePendingCount":  {
+                                   "placeholders":  {
+                                                        "count":  {
+                                                                      "type":  "int"
+                                                                  }
+                                                    }
+                               },
+    "@adminHomeSeasonStats":  {
+                                  "placeholders":  {
+                                                       "range":  {
+                                                                     "type":  "String"
+                                                                 },
+                                                       "participants":  {
+                                                                            "type":  "int"
+                                                                        }
+                                                   }
+                              },
+    "@adminHomeRoleStats":  {
+                                "placeholders":  {
+                                                     "users":  {
+                                                                   "type":  "int"
+                                                               },
+                                                     "permissions":  {
+                                                                         "type":  "int"
+                                                                     }
+                                                 }
+                            },
+    "adminUsersUntilDate":  "Until: {date}",
+    "adminUsersBlock":  "Block",
+    "adminUsersUnblock":  "Unblock",
+    "adminUsersUnsuspend":  "Lift suspension",
+    "adminHomePanelTitle":  "Administration panel",
+    "adminHomeSeasonManagement":  "Season management",
+    "adminUsersBlockedSnack":  "{email} has been blocked.",
+    "adminUsersUnblockedSnack":  "{email} has been unblocked.",
+    "adminUsersSuspendedSnack":  "{email} has been suspended.",
+    "adminUsersUnsuspendedSnack":  "The suspension for {email} has been lifted.",
+    "adminUsersIndefiniteSuspension":  "Indefinite suspension",
+    "adminHomeSeasonLabel":  "Season {seasonNumber}",
+    "adminHomeActiveUsers":  "Active users",
+    "adminHomeValidatedImprovements":  "Validated improvements",
+    "adminHomeIntegrityAlerts":  "Integrity alerts",
+    "adminHomeNewTrend":  "New",
+    "adminHomeTasksTab":  "Tasks",
+    "adminHomeSeasonsTab":  "Seasons",
+    "adminHomeRolesTab":  "Roles",
+    "adminHomeVerificationLoadError":  "Could not load verifications",
+    "adminHomeRefreshVerifications":  "Refresh verifications",
+    "adminHomeRecordsCount":  "{count} records",
+    "adminHomeClosedSeasonsCount":  "{count} closed",
+    "adminHomeSeasonsLoading":  "Loading",
+    "adminHomeCreateAndStartSeason":  "Create and start season",
+    "adminHomeCreatingAndStartingSeason":  "Creating and starting season...",
+    "adminHomeRefreshSeasonHistory":  "Refresh history",
+    "adminHomeRetryLoadSeasons":  "Retry loading seasons",
+    "adminHomeSeasonLoadErrorTitle":  "Could not load seasons",
+    "adminHomeSeasonUnexpectedLoadError":  "An unexpected error occurred while loading seasons.",
+    "adminHomeNoClosedSeasonsTitle":  "No closed seasons",
+    "adminHomeNoClosedSeasonsBody":  "When a season is closed, it will appear in this history.",
+    "adminHomeSeasonActivationTitle":  "Create and start season",
+    "adminHomeSeasonActivationBody":  "The backend will automatically close the current active season, if any, create the new season, and update ranking scores and snapshots.",
+    "adminHomeSeasonNameLabel":  "Season name",
+    "adminHomeSeasonStartDateLabel":  "Start date",
+    "adminHomeSeasonEndDateLabel":  "End date",
+    "adminHomeSeasonSelectStartDate":  "Select start date",
+    "adminHomeSeasonSelectEndDate":  "Select end date",
+    "adminHomeSeasonNameRequired":  "Season name is required",
+    "adminHomeSeasonStartDateRequired":  "Start date is required",
+    "adminHomeSeasonEndDateRequired":  "End date is required",
+    "adminHomeSeasonEndBeforeStart":  "End date cannot be before start date",
+    "adminHomeSeasonActivationConfirm":  "Create and start",
+    "adminHomeSeasonActivationDefaultSummary":  "Season created and started successfully.",
+    "adminHomeSeasonActivationSuccess":  "Season started: {summary}",
+    "adminHomeSeasonActivationUnexpectedError":  "An unexpected error occurred while creating the season.",
+    "adminHomeSeasonStatusActive":  "ACTIVE",
+    "adminHomeSeasonStatusClosed":  "CLOSED",
+    "adminHomeSeasonDatesUnavailable":  "Dates unavailable",
+    "adminHomeSeasonStartedOn":  "From {date}",
+    "adminHomeSeasonEndedOn":  "Until {date}",
+    "adminHomeRolesAndPermissions":  "Roles and permissions",
+    "adminHomeRolesCount":  "{count} roles",
+    "adminHomeReviewPermissionsMatrix":  "Review permissions matrix",
+    "adminVerificationDocumentsTitle":  "Administrator documentation",
+    "adminVerificationDocumentsBody":  "Attach documentation proving that you can act as property manager for this building. The verification will remain pending review.",
+    "adminVerificationAttachDocuments":  "Attach documents",
+    "adminVerificationJpgOnly":  "Attach documents in JPG format.",
+    "adminVerificationRemoveDocument":  "Delete document",
+    "adminVerificationDocumentType":  "Document type",
+    "weatherLoadError":  "Could not load weather data.",
+    "weatherLoadingBarcelona":  "Loading weather data for Barcelona...",
+    "weatherCurrentInCity":  "Current weather in {city}",
+    "weatherUpdatedByXema":  "Weather data updated by the XEMA service.",
+    "rankingComingSoonButton":  "Coming soon: view ranking",
+    "@adminUsersBlockedSnack":  {
+                                    "placeholders":  {
+                                                         "email":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                     }
+                                },
+    "@adminUsersUnblockedSnack":  {
+                                      "placeholders":  {
+                                                           "email":  {
+                                                                         "type":  "String"
+                                                                     }
+                                                       }
+                                  },
+    "@adminUsersSuspendedSnack":  {
+                                      "placeholders":  {
+                                                           "email":  {
+                                                                         "type":  "String"
+                                                                     }
+                                                       }
+                                  },
+    "@adminUsersUnsuspendedSnack":  {
+                                        "placeholders":  {
+                                                             "email":  {
+                                                                           "type":  "String"
+                                                                       }
+                                                         }
+                                    },
+    "@adminHomeSeasonLabel":  {
+                                  "placeholders":  {
+                                                       "seasonNumber":  {
+                                                                            "type":  "int"
+                                                                        }
+                                                   }
+                              },
+    "@adminHomeRecordsCount":  {
+                                   "placeholders":  {
+                                                        "count":  {
+                                                                      "type":  "int"
+                                                                  }
+                                                    }
+                               },
+    "@adminHomeClosedSeasonsCount":  {
+                                         "placeholders":  {
+                                                              "count":  {
+                                                                            "type":  "int"
+                                                                        }
+                                                          }
+                                     },
+    "@adminHomeSeasonActivationSuccess":  {
+                                              "placeholders":  {
+                                                                   "summary":  {
+                                                                                   "type":  "String"
+                                                                               }
+                                                               }
+                                          },
+    "@adminHomeSeasonStartedOn":  {
+                                      "placeholders":  {
+                                                           "date":  {
+                                                                        "type":  "String"
+                                                                    }
+                                                       }
+                                  },
+    "@adminHomeSeasonEndedOn":  {
+                                    "placeholders":  {
+                                                         "date":  {
+                                                                      "type":  "String"
+                                                                  }
+                                                     }
+                                },
+    "@adminHomeRolesCount":  {
+                                 "placeholders":  {
+                                                      "count":  {
+                                                                    "type":  "int"
+                                                                }
+                                                  }
+                             },
+    "@weatherCurrentInCity":  {
+                                  "placeholders":  {
+                                                       "city":  {
+                                                                    "type":  "String"
+                                                                }
+                                                   }
+                              },
+    "@adminUsersUntilDate":  {
+                                 "placeholders":  {
+                                                      "date":  {
+                                                                   "type":  "String"
+                                                               }
+                                                  }
+                             },
+    "weatherSolarIrradiance":  "Solar irradiance: {value} W/m²",
+    "weatherPrecipitationUnavailable":  "Precipitation unavailable",
+    "weatherSolarIrradianceUnavailable":  "Solar irradiance unavailable",
+    "weatherCurrentTemperature":  "Current temperature: {value}°C",
+    "weatherPrecipitation":  "Precipitation: {value} mm",
+    "weatherTemperatureUnavailable":  "Temperature unavailable",
+    "@weatherCurrentTemperature":  {
+                                       "placeholders":  {
+                                                            "value":  {
+                                                                          "type":  "String"
+                                                                      }
+                                                        }
+                                   },
+    "@weatherPrecipitation":  {
+                                  "placeholders":  {
+                                                       "value":  {
+                                                                     "type":  "String"
+                                                                 }
+                                                   }
+                              },
+    "@weatherSolarIrradiance":  {
+                                    "placeholders":  {
+                                                         "value":  {
+                                                                       "type":  "String"
+                                                                   }
+                                                     }
+                                },
+    "adminHomeDashboardLoadError":  "The dashboard metrics could not be loaded.",
+    "adminHomeTotalUsers":  "Total users",
+    "adminHomePendingImprovements":  "Pending improvements",
+    "adminHomeManagedBuildings":  "Managed buildings",
+    "adminHomeImprovementsTab":  "Improvements",
+    "adminHomeImprovementValidationQueue":  "Improvement validation",
+    "adminHomeImprovementLoadError":  "Pending improvements could not be loaded",
+    "adminHomeNoPendingImprovements":  "No pending improvements",
+    "adminHomeNoPendingImprovementsBody":  "When a building administrator submits evidence for an implemented improvement, it will appear here for review.",
+    "adminHomeRefreshImprovements":  "Refresh improvements",
+    "adminHomeApproveImprovement":  "Validate improvement",
+    "adminHomeRejectImprovement":  "Reject improvement",
+    "adminHomeImprovementApproved":  "Improvement validated successfully.",
+    "adminHomeImprovementRejected":  "Improvement rejected successfully.",
+    "adminHomeUnexpectedImprovementError":  "An unexpected error occurred while reviewing the improvement.",
+    "adminHomeImprovementCost":  "Cost",
+    "adminHomeImprovementDate":  "Date",
+    "adminHomeImprovementObservations":  "Notes"
+}
