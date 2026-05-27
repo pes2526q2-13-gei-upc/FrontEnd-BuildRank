@@ -1,8 +1,8 @@
 # BuildRank Frontend
 
-Frontend mòbil de **BuildRank**, desenvolupat amb **Flutter** i **Dart**.
+Frontend de **BuildRank**, desenvolupat amb **Flutter** i **Dart**.
 
-Aquest repositori conté la part client de l’aplicació. És la capa amb què interactua l’usuari final. El frontend mostra la informació, recull accions de l’usuari, es comunica amb el backend i ofereix una experiència clara, moderna i usable dins del sistema BuildRank.
+Aquest repositori conté la part client de BuildRank. És la capa amb què interactua l’usuari final: mostra la informació, recull accions, es comunica amb el backend i ofereix una experiència usable per consultar edificis, puntuacions energètiques, simulacions, rànquings, comunitat i perfil d’usuari.
 
 ---
 
@@ -10,31 +10,29 @@ Aquest repositori conté la part client de l’aplicació. És la capa amb què 
 
 BuildRank és una plataforma orientada a promoure un ús més responsable i sostenible de l’energia als edificis.
 
-El sistema permet treballar amb informació d’edificis, dades energètiques, classificacions, rànquings, simulacions de millores i altres funcionalitats relacionades amb la gestió i comparació d’edificis.
+El sistema permet treballar amb informació d’edificis, dades energètiques, classificacions, rànquings, simulacions de millores, votacions internes, xat comunitari, verificació de millores i gestió de perfils.
 
-Dit d’una manera simple: si el backend valida, calcula i guarda la informació, el frontend és qui la presenta i permet que l’usuari hi treballi.
+Dit d’una manera simple: el backend valida, calcula i guarda la informació; el frontend la presenta i permet que l’usuari hi treballi de manera clara.
 
 ---
 
-## Què fa aquest frontend
+## Estat actual del projecte
 
-El frontend de BuildRank dona suport a funcionalitats com:
+La branca principal d’integració funcional és:
 
-- registre i inici de sessió
-- persistència de sessió amb tokens
-- consulta del perfil de l’usuari autenticat
-- edició i visualització d’informació d’usuari
-- consulta d’edificis associats a l’usuari
-- alta i consulta d’edificis
-- navegació per fitxa d’edifici
-- visualització de dades energètiques i mètriques
-- rànquing i posicionament dins la lliga
-- catàleg de millores
-- simulacions de millores
-- visualització de resultats abans/després
-- base visual per a funcionalitats comunitàries
+```text
+Desenvolupament
+```
 
-Algunes funcionalitats poden estar en estat parcial o en evolució segons la branca i l’estat del sprint.
+La branca utilitzada per al desplegament web va ser:
+
+```text
+deploy/web
+```
+
+Els canvis de desplegament web ja s’han incorporat a `Desenvolupament`.
+
+La branca `main` es reserva per a una versió final o estable quan `Desenvolupament` hagi estat revisada, netejada i validada.
 
 ---
 
@@ -43,92 +41,174 @@ Algunes funcionalitats poden estar en estat parcial o en evolució segons la bra
 - **Flutter**
 - **Dart**
 - **Material Design**
-- **Android Emulator**
-- **Dispositius Android físics**
-- **Visual Studio Code**
+- **HTTP/JSON**
+- **Shared Preferences**
+- **Flutter Localizations**
+- **Intl**
+- **Flutter Map**
+- **LatLong2**
+- **Firebase Core**
+- **Firebase Messaging**
+- **Flutter Local Notifications**
+- **Stream Chat Flutter**
+- **Google Sign-In**
+- **File Picker**
+- **Flutter Launcher Icons**
 - **Android Studio**
-- **Git i GitHub**
-- **API REST amb HTTP/JSON**
+- **Visual Studio Code**
+- **GitHub Actions**
 
 ---
 
-## Estructura general
+## Dependències principals
 
-El frontend consumeix la API del backend. El flux general és:
+El projecte Flutter es troba dins de:
+
+```text
+buildrank_mobile/
+```
+
+Les dependències principals declarades a `pubspec.yaml` inclouen:
+
+```text
+http                         peticions HTTP al backend
+shared_preferences           persistència local de tokens i configuració
+flutter_map                  mapa interactiu d’edificis
+latlong2                     coordenades i suport geogràfic
+firebase_core                inicialització de Firebase
+firebase_messaging           notificacions push
+flutter_local_notifications  notificacions locals
+stream_chat_flutter          xat integrat
+google_sign_in               autenticació amb Google
+file_picker                  selecció de fitxers per pujades/documentació
+http_parser                  suport multipart/content types
+intl                         internacionalització i formats
+flutter_localizations        localització Flutter
+```
+
+---
+
+## Arquitectura general
+
+El flux principal és:
 
 ```text
 Usuari
-→ App Flutter
+→ App Flutter / Flutter Web
 → Nginx
 → Backend Django REST Framework
 → PostgreSQL
 ```
 
-En l’arquitectura actual amb Docker i Nginx, el frontend no parla directament amb Gunicorn ni amb PostgreSQL. El frontend parla amb Nginx, i Nginx redirigeix les peticions cap al backend.
+En l’arquitectura actual, el frontend no parla directament amb PostgreSQL ni amb Gunicorn. El frontend fa peticions HTTP a Nginx o a la URL base configurada, i Nginx redirigeix les rutes d’API cap al backend.
+
+---
+
+## Estructura del repositori
+
+Estructura principal:
+
+```text
+.
+├── .github/                  workflows de CI/CD
+├── buildrank_mobile/          projecte Flutter principal
+│   ├── android/               configuració Android
+│   ├── assets/                imatges i recursos
+│   ├── lib/                   codi Dart de l’aplicació
+│   ├── test/                  tests Flutter
+│   ├── pubspec.yaml           dependències i configuració Flutter
+│   └── ...
+├── .gitignore
+└── README.md
+```
+
+Dins de `lib/`, el projecte segueix una organització per capes i funcionalitats:
+
+```text
+core/             configuració, serveis comuns i clients HTTP
+features/         funcionalitats principals de l’app
+l10n/             fitxers de traducció i localització
+main.dart         punt d’entrada de l’aplicació
+```
+
+---
+
+## Funcionalitats principals
+
+El frontend dona suport a:
+
+- registre i inici de sessió
+- autenticació amb JWT
+- persistència de sessió
+- login amb Google
+- consulta i edició de perfil
+- gestió d’avatars d’usuari
+- consulta d’edificis associats
+- alta i consulta d’edificis
+- visualització de fitxa d’edifici
+- dades energètiques i indicadors
+- Building Health Score i puntuacions
+- mapes d’edificis
+- classificació i rànquings
+- lligues i temporades
+- catàleg de millores
+- simulacions de millores
+- comparació abans/després
+- votacions internes sobre simulacions
+- acreditació de millores implementades
+- validació administrativa de millores
+- badges i gamificació
+- notificacions
+- xat comunitari amb Stream
+- pujades de documents mitjançant file picker
+- suport multidioma
+
+Algunes funcionalitats poden dependre de la disponibilitat del backend, de variables d’entorn o de serveis externs com Firebase, Google Sign-In o Stream.
 
 ---
 
 ## Requisits previs
 
-Abans de començar, convé tenir instal·lat:
+Abans de començar, és recomanable tenir instal·lat:
 
-- **Flutter SDK**
-- **Dart**
-- **Android Studio**
-- **Android SDK**
-- **Android Emulator**
-- **Visual Studio Code**
-- **extensió Flutter per a VS Code**
-- **Git**
+- Git
+- Flutter SDK
+- Dart SDK
+- Android Studio
+- Android SDK
+- Android Emulator
+- Visual Studio Code
+- extensió Flutter per a VS Code
+- extensió Dart per a VS Code
+- Docker, si es vol provar contra backend local complet
 
 Android Studio s’utilitza sobretot per gestionar l’SDK i l’emulador. Visual Studio Code és l’editor habitual de treball.
-
----
-
-## Onboarding ràpid
-
-La seqüència recomanada per començar és:
-
-1. clonar el repositori
-2. situar-se a la branca `Desenvolupament`
-3. obrir el projecte a VS Code
-4. comprovar l’entorn Flutter
-5. encendre un emulador Android o connectar un dispositiu físic
-6. entrar a la carpeta de l’app Flutter
-7. instal·lar dependències
-8. comprovar la configuració de la API
-9. executar l’aplicació
-10. provar el flux principal
 
 ---
 
 ## Clonar el repositori
 
 ```bash
-git clone <URL_DEL_REPOSITORI_FRONTEND>
-cd <NOM_DEL_REPOSITORI_FRONTEND>
+git clone https://github.com/ScoreLab-Team/FrontEnd-BuildRank.git
+cd FrontEnd-BuildRank
 ```
 
 Situar-se a la branca d’integració:
 
 ```bash
-git checkout Desenvolupament
-git pull
+git switch Desenvolupament
+git pull --ff-only origin Desenvolupament
+```
+
+Entrar al projecte Flutter:
+
+```bash
+cd buildrank_mobile
 ```
 
 ---
 
-## Obrir el projecte amb VS Code
-
-Obre la carpeta del repositori amb **File > Open Folder**.
-
-Quan VS Code ho demani, marca el projecte com a **trusted workspace**.
-
-Si el projecte queda en **Restricted Mode**, algunes funcionalitats de Flutter o de les extensions poden no funcionar correctament.
-
----
-
-## Verificació inicial de l’entorn
+## Verificar l’entorn Flutter
 
 Comprovar versions:
 
@@ -143,28 +223,11 @@ Revisar l’estat general:
 flutter doctor
 ```
 
-Acceptar llicències d’Android si cal:
+Acceptar llicències Android si cal:
 
 ```bash
 flutter doctor --android-licenses
 ```
-
-Si `flutter doctor` mostra errors importants, és millor resoldre’ls abans de continuar.
-
----
-
-## Preparar Android Studio i l’emulador
-
-Per treballar amb el frontend mòbil, el més habitual és utilitzar un emulador Android.
-
-Passos recomanats:
-
-1. obrir **Android Studio**
-2. anar a **More Actions > SDK Manager**
-3. comprovar que l’Android SDK està instal·lat
-4. anar a **Device Manager**
-5. crear o seleccionar un emulador Android
-6. arrencar l’emulador abans d’executar `flutter run`
 
 Comprovar dispositius disponibles:
 
@@ -176,111 +239,183 @@ Si l’emulador no està encès, `flutter devices` no el detectarà.
 
 ---
 
-## Entrar a la carpeta de l’app
-
-Situa’t a la carpeta on hi ha el fitxer `pubspec.yaml`.
-
-```bash
-cd buildrank_mobile
-```
-
----
-
 ## Instal·lar dependències
+
+Des de `buildrank_mobile/`:
 
 ```bash
 flutter pub get
 ```
 
-Aquesta comanda descarrega els paquets definits a `pubspec.yaml`.
+Aquesta comanda descarrega les dependències definides a `pubspec.yaml`.
 
 ---
 
-## Configuració centralitzada de la API
+## Configuració de la URL del backend
 
-La configuració de la API està centralitzada al fitxer:
+El frontend centralitza la configuració de l’API al codi de configuració del projecte. La URL base es pot ajustar segons l’entorn.
 
-```text
-api_config.dart
+La forma recomanada és utilitzar:
+
+```bash
+--dart-define=API_BASE_URL=<URL>
 ```
 
-Aquest fitxer evita tenir URLs repartides per pantalles o serveis. Si canvia l’entorn del backend, només s’ha d’ajustar aquest fitxer o passar una variable amb `--dart-define`.
-
-La URL per defecte és:
-
-```dart
-static const String _defaultBaseUrl = 'http://10.0.2.2';
-```
-
-`10.0.2.2` és una adreça especial de l’emulador Android. Des de l’emulador, apunta al localhost de l’ordinador host.
+Això permet provar la mateixa app contra diferents entorns sense modificar el codi.
 
 ---
 
-## URL del backend segons l’entorn
+## URLs habituals segons entorn
 
-### Emulador Android amb Docker + Nginx
-
-Aquest és el cas recomanat actualment.
-
-```text
-http://10.0.2.2
-```
-
-Amb Docker + Nginx no fem servir `:8000` per defecte, perquè el frontend parla amb Nginx.
-
-Execució habitual:
+### Emulador Android amb backend local via Docker + Nginx
 
 ```bash
-flutter run
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2
 ```
 
-### Mòbil físic a la mateixa xarxa
+`10.0.2.2` és una adreça especial de l’emulador Android que apunta al localhost de l’ordinador host.
 
-Si proves amb un mòbil físic connectat a la mateixa Wi-Fi que l’ordinador on corre el backend, passa la IP local de l’ordinador:
+### Emulador Android amb Django runserver
 
-```bash
-flutter run --dart-define=API_BASE_URL=http://192.168.1.13
-```
-
-Canvia `192.168.1.13` per la IP real del teu ordinador.
-
-### Staging a Virtech
-
-Si vols provar contra l’entorn de staging:
-
-```bash
-flutter run --dart-define=API_BASE_URL=http://nattech.fib.upc.edu:40400
-```
-
-### Mode alternatiu amb Django runserver
-
-Si no estàs utilitzant Docker + Nginx i executes Django directament amb:
+Si el backend s’executa amb:
 
 ```bash
 python manage.py runserver
 ```
 
-llavors el backend normalment estarà a:
-
-```text
-http://127.0.0.1:8000
-```
-
-i des de l’emulador caldrà executar:
+normalment estarà a `127.0.0.1:8000`. Des de l’emulador:
 
 ```bash
 flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
 
-Aquest mode és útil per depurar, però no és el flux principal quan es vol provar l’arquitectura actual amb Nginx.
+### Mòbil físic a la mateixa xarxa
+
+Cal utilitzar la IP local de l’ordinador on corre el backend:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://192.168.1.13
+```
+
+Canvia `192.168.1.13` per la IP real.
+
+### Staging a Virtech
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://nattech.fib.upc.edu:40400
+```
+
+Important: l’entorn actual de Virtech exposa el servei per **HTTP**, no per HTTPS.
 
 ---
 
-## Endpoints centralitzats al frontend
+## Executar l’aplicació
 
-El fitxer `api_config.dart` defineix els endpoints principals.
+Amb l’emulador encès o un dispositiu connectat:
 
-### Accounts i autenticació
+```bash
+flutter run
+```
+
+Amb una URL concreta de backend:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://nattech.fib.upc.edu:40400
+```
+
+Durant l’execució:
+
+```text
+r   hot reload
+R   hot restart
+q   aturar execució
+```
+
+---
+
+## Build Android
+
+Generar APK debug:
+
+```bash
+flutter build apk --debug
+```
+
+Generar APK release:
+
+```bash
+flutter build apk --release
+```
+
+El resultat habitual queda a:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+Aquest APK es pot distribuir manualment o copiar a l’entorn de staging si es vol oferir una descàrrega directa.
+
+---
+
+## Build Web
+
+Generar build web:
+
+```bash
+flutter build web
+```
+
+La sortida queda normalment a:
+
+```text
+build/web/
+```
+
+Aquest contingut es pot desplegar com a frontend estàtic, per exemple dins de:
+
+```text
+/opt/buildrank/app/frontend_build/
+```
+
+a la VM de Virtech.
+
+---
+
+## Descàrrega APK des de Virtech
+
+En el desplegament actual, Nginx serveix el frontend web des de:
+
+```text
+/opt/buildrank/app/frontend_build/
+```
+
+Si es vol oferir una APK per descàrrega directa, es pot col·locar dins de:
+
+```text
+/opt/buildrank/app/frontend_build/downloads/
+```
+
+Per exemple:
+
+```text
+/opt/buildrank/app/frontend_build/downloads/buildrank.apk
+```
+
+La URL pública seria:
+
+```text
+http://nattech.fib.upc.edu:40400/downloads/buildrank.apk
+```
+
+Si `/downloads/` retorna `403 Forbidden`, no necessàriament és un error: simplement Nginx no mostra el llistat del directori. Cal accedir al fitxer concret.
+
+---
+
+## Endpoints principals consumits pel frontend
+
+Les rutes poden evolucionar, però el frontend consumeix endpoints com:
+
+### Accounts
 
 ```text
 POST /api/accounts/register/
@@ -288,74 +423,122 @@ POST /api/accounts/login/
 POST /api/accounts/refresh/
 POST /api/accounts/logout/
 GET  /api/accounts/me/
+PATCH /api/accounts/me/
 GET  /api/accounts/me/edificis/
 ```
 
 ### Buildings
 
 ```text
-GET  /api/buildings/carrers/autocomplete/
-GET  /api/buildings/localitzacions/
 GET  /api/buildings/edificis/
 POST /api/buildings/edificis/
 GET  /api/buildings/edificis/<idEdifici>/
+PATCH /api/buildings/edificis/<idEdifici>/
+GET  /api/buildings/edificis/mapa/
+GET  /api/buildings/carrers/autocomplete/
 ```
 
-### Millores i simulacions
+### Simulacions i millores
 
 ```text
 GET  /api/buildings/millores/
 POST /api/buildings/edificis/<idEdifici>/simulacions/preview/
 GET  /api/buildings/edificis/<idEdifici>/simulacions/
+POST /api/buildings/edificis/<idEdifici>/simulacions/
 GET  /api/buildings/edificis/<idEdifici>/millores-implementades/
+POST /api/buildings/millores-implementades/<id>/validar/
 ```
 
-Aquests endpoints permeten provar registre, login, perfil, edificis, autocompletat de carrers, catàleg de millores, simulacions i millores implementades.
+### Seasons, leagues, community i chat
+
+```text
+GET  /api/seasons/
+GET  /api/leagues/
+GET  /api/participations/
+GET  /api/community/...
+POST /api/community/...
+GET  /api/chat/...
+POST /api/chat/...
+GET  /api/notifications/
+```
 
 ---
 
-## Executar l’aplicació
+## Localització i idiomes
 
-Amb l’emulador encès i les dependències instal·lades:
+El projecte utilitza `flutter_localizations` i `intl`.
+
+Els fitxers de localització es troben a:
+
+```text
+lib/l10n/
+```
+
+Per regenerar localitzacions si cal:
 
 ```bash
-flutter run
+flutter gen-l10n
 ```
 
-La primera execució pot tardar més perquè Flutter ha de compilar i desplegar l’aplicació.
+El projecte té suport per diversos idiomes, incloent català, castellà i anglès.
 
 ---
 
-## Comandes útils durant el desenvolupament
+## Notificacions
 
-Mentre l’app està en execució:
-
-```text
-r
-```
-
-Fa **hot reload**. És útil per canvis visuals, textos, estils i petits ajustos de widgets.
+El frontend inclou dependències per:
 
 ```text
-R
+firebase_messaging
+flutter_local_notifications
 ```
 
-Fa **hot restart**. És útil quan canvia l’estat inicial, l’estructura de l’app o quan el hot reload no és suficient.
-
-```text
-q
-```
-
-Atura l’execució de `flutter run`.
+Això permet rebre notificacions push i gestionar notificacions locals, sempre que Firebase estigui configurat correctament per a l’entorn corresponent.
 
 ---
 
-## Comprovacions recomanades abans de fer commit
+## Xat
 
-Format:
+El projecte utilitza:
+
+```text
+stream_chat_flutter
+```
+
+Això dona suport a funcionalitats de xat vinculades a la part comunitària de BuildRank. La disponibilitat real del xat depèn de la configuració del backend i de les claus/variables del servei extern.
+
+---
+
+## Google Sign-In
+
+El frontend inclou:
+
+```text
+google_sign_in
+```
+
+Aquesta dependència dona suport a login amb Google. Perquè funcioni correctament cal que el backend i la configuració de Google/Firebase estiguin alineats.
+
+---
+
+## File Picker i documents
+
+El frontend inclou:
+
+```text
+file_picker
+```
+
+S’utilitza per seleccionar fitxers quan cal pujar documents o evidències al backend, per exemple en fluxos de verificació o acreditació de millores.
+
+---
+
+## Tests i qualitat
+
+Executar tests:
 
 ```bash
-dart format .
+flutter test
 ```
 
 Anàlisi estàtica:
@@ -364,67 +547,100 @@ Anàlisi estàtica:
 flutter analyze
 ```
 
-Tests:
+Format:
 
 ```bash
+dart format .
+```
+
+Comprovació recomanada abans d’obrir PR:
+
+```bash
+dart format .
+flutter analyze
 flutter test
 ```
 
-Build debug:
+Si es vol validar compilació Android:
 
 ```bash
 flutter build apk --debug
 ```
 
-Aquestes comprovacions ajuden a detectar errors abans d’obrir una Pull Request.
+---
+
+## Flutter Launcher Icons
+
+El projecte utilitza:
+
+```text
+flutter_launcher_icons
+```
+
+La configuració es troba a `pubspec.yaml`.
+
+Per regenerar icones:
+
+```bash
+dart run flutter_launcher_icons
+```
 
 ---
 
 ## Flux mínim recomanat de prova
 
-Amb backend i frontend aixecats:
+Amb backend i frontend preparats:
 
 1. executar l’app
-2. registrar un usuari
-3. iniciar sessió
-4. comprovar que la sessió queda guardada
-5. consultar el perfil
-6. consultar edificis de l’usuari
-7. crear o consultar un edifici
-8. obrir la fitxa d’edifici
-9. consultar millores
-10. executar una simulació si hi ha un edifici disponible
-11. revisar que no apareguin errors de connexió ni de permisos
+2. registrar un usuari o iniciar sessió
+3. comprovar persistència de sessió
+4. obrir perfil
+5. editar dades de perfil o avatar
+6. consultar edificis associats
+7. consultar mapa o llistat d’edificis
+8. obrir fitxa d’edifici
+9. consultar dades energètiques
+10. provar simulacions de millores
+11. comprovar votacions o xat si l’entorn ho permet
+12. revisar que no hi hagi errors de connexió ni permisos
 
 ---
 
 ## Problemes habituals
 
-### `flutter` no es reconeix
+### Flutter no es reconeix
 
 Normalment vol dir que Flutter no està ben afegit al `PATH` o que la terminal s’ha obert abans de configurar-lo.
 
-### VS Code no mostra bé comandes o extensions de Flutter
+### VS Code no mostra comandes de Flutter
 
-Comprova si el workspace està en **Restricted Mode** o si no has obert correctament la carpeta del projecte.
+Comprova si el workspace està en Restricted Mode o si no has obert correctament la carpeta del projecte.
 
-### `flutter doctor` avisa sobre Visual Studio
+### Flutter doctor avisa sobre Visual Studio
 
 Es pot ignorar si l’objectiu és Android i no desenvolupament d’apps d’escriptori per Windows.
 
-### L’emulador no surt a `flutter devices`
+### L’emulador no surt a flutter devices
 
-Assegura’t que l’emulador està encès abans d’executar la comanda.
+Assegura’t que l’emulador està encès abans d’executar:
+
+```bash
+flutter devices
+```
 
 ### El frontend no connecta amb el backend en emulador
 
-Si estàs utilitzant Docker + Nginx, revisa que la URL sigui:
+Si utilitzes Docker + Nginx:
 
 ```text
 http://10.0.2.2
 ```
 
-No utilitzis `:8000` en aquest cas.
+Si utilitzes Django runserver:
+
+```text
+http://10.0.2.2:8000
+```
 
 ### El frontend no connecta amb mòbil físic
 
@@ -435,46 +651,64 @@ Comprova que:
 - el firewall no bloqueja la connexió
 - Nginx i el backend estan aixecats
 
-Exemple:
+### El staging no carrega amb HTTPS
 
-```bash
-flutter run --dart-define=API_BASE_URL=http://192.168.1.13
+L’entorn actual de Virtech està exposat per HTTP:
+
+```text
+http://nattech.fib.upc.edu:40400
 ```
 
-### Error de CORS o CSRF
+No utilitzis `https://nattech.fib.upc.edu:40400` si no s’ha configurat TLS.
 
-Cal revisar la configuració del backend:
+### La descàrrega de l’APK no funciona
 
-- `CORS_ALLOWED_ORIGINS`
-- `CSRF_TRUSTED_ORIGINS`
-- host o IP utilitzada pel frontend
+Comprova que el fitxer existeix:
 
-### El canvi no es reflecteix a l’app
+```text
+/opt/buildrank/app/frontend_build/downloads/buildrank.apk
+```
 
-Prova primer amb `r` per hot reload. Si el canvi és més profund, utilitza `R` per hot restart.
+i accedeix al fitxer concret:
 
-### El push a `main` falla
+```text
+http://nattech.fib.upc.edu:40400/downloads/buildrank.apk
+```
 
-És possible que la branca `main` estigui protegida. El flux recomanat és treballar en una branca pròpia i obrir Pull Request.
+No n’hi ha prou amb entrar a `/downloads/`, perquè Nginx pot retornar `403` si no mostra el llistat de directori.
+
+### Els avatars no carreguen
+
+Comprova:
+
+- que el backend retorna una URL correcta de media
+- que el backend té `MEDIA_URL=/media/`
+- que Nginx serveix `/media/`
+- que el frontend no està bloquejant la URL
+- que la URL base apunta a l’entorn correcte
+
+### Hot reload no reflecteix el canvi
+
+Prova `R` per fer hot restart. Si continua igual, atura amb `q` i torna a executar `flutter run`.
 
 ---
 
 ## Flux de treball recomanat amb Git
 
-1. actualitzar la branca d’integració
-2. crear una branca de treball
+1. actualitzar `Desenvolupament`
+2. crear una branca pròpia
 3. fer els canvis
-4. provar l’app en local
+4. provar l’app
 5. executar comprovacions bàsiques
 6. fer commit
 7. pujar la branca
-8. obrir una Pull Request
+8. obrir Pull Request
 
 Exemple:
 
 ```bash
-git checkout Desenvolupament
-git pull
+git switch Desenvolupament
+git pull --ff-only origin Desenvolupament
 git switch -c feature/nom-del-canvi
 git add .
 git commit -m "feat: descripció breu del canvi"
@@ -485,38 +719,58 @@ No s’hauria de fer push directe a `main`.
 
 ---
 
+## Preparació de release cap a main
+
+Abans de portar `Desenvolupament` cap a `main`, revisar:
+
+- frontend alineat amb backend
+- API base correcta
+- build Android validat
+- build Web validat si aplica
+- README actualitzat
+- cap fitxer generat o local versionat
+- `flutter analyze` sense errors crítics
+- `flutter test` executat
+- CI verd
+- staging validat si hi ha canvis de deploy
+
+---
+
 ## Bones pràctiques
 
-- comprova `flutter doctor` quan preparis un ordinador nou
-- treballa sobre `Desenvolupament` o sobre una branca `feature`
-- no treballis directament sobre `main`
-- encén l’emulador abans d’executar `flutter run`
-- utilitza `api_config.dart` per centralitzar endpoints
-- no dupliquis URLs a pantalles o serveis
-- utilitza `--dart-define=API_BASE_URL=...` per canviar d’entorn
-- prova els canvis abans de fer commit
-- executa `flutter analyze` i `flutter test` quan toquis lògica rellevant
-- documenta canvis importants si afecten la connexió amb backend
+- no treballar directament sobre `main`
+- utilitzar branques `feature/*`, `fix/*`, `docs/*` o `chore/*`
+- no versionar builds generats
+- no versionar APK/AAB dins del repositori
+- mantenir URLs centralitzades
+- utilitzar `--dart-define=API_BASE_URL=...` per canviar d’entorn
+- executar `flutter pub get` després de canvis a `pubspec.yaml`
+- executar `dart format .` abans de PRs grans
+- executar `flutter analyze` i `flutter test` quan es toqui lògica rellevant
+- documentar canvis importants que afectin backend, deploy o configuració
+- no pujar secrets, tokens ni configuracions privades de serveis externs
 
 ---
 
 ## Resum ràpid
 
-Si ets nou al projecte, queda’t amb aquesta idea:
+Si ets nou al projecte:
 
-- **Flutter** és el framework principal del frontend
+- **Flutter** és el framework principal
 - **Dart** és el llenguatge de programació
-- **VS Code** és l’editor habitual
-- **Android Studio** s’utilitza per l’SDK i l’emulador
-- **api_config.dart** centralitza la URL base i els endpoints
-- amb emulador i Docker + Nginx, la URL és `http://10.0.2.2`
-- amb mòbil físic, es passa la IP amb `--dart-define`
-- amb staging, es passa la URL de Virtech amb `--dart-define`
-- **flutter run** arrenca l’app
-- **r** fa hot reload
-- **R** fa hot restart
-- **q** atura l’execució
-- el treball habitual es fa en branca pròpia i es tanca amb Pull Request
+- **buildrank_mobile/** conté l’app
+- **pubspec.yaml** defineix dependències i assets
+- **http** comunica amb el backend
+- **shared_preferences** guarda dades simples com tokens
+- **flutter_map** mostra mapes
+- **Firebase Messaging** dona suport a notificacions push
+- **Stream Chat** dona suport al xat
+- **Google Sign-In** dona suport al login amb Google
+- **file_picker** permet seleccionar documents
+- **flutter_launcher_icons** genera les icones
+- **Desenvolupament** és la branca d’integració
+- **deploy/web** va servir per desplegar el frontend web
+- **Virtech** exposa el servei públic per HTTP a `http://nattech.fib.upc.edu:40400`
 
 ---
 
