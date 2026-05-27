@@ -1786,18 +1786,6 @@ abstract class AppLocalizations {
   /// **'VINCLES'**
   String get profileMetricLinks;
 
-  /// No description provided for @profileMetricAvgRanking.
-  ///
-  /// In ca, this message translates to:
-  /// **'RÀNQUING MITJÀ'**
-  String get profileMetricAvgRanking;
-
-  /// No description provided for @profileMetricProgress.
-  ///
-  /// In ca, this message translates to:
-  /// **'PROGRÉS'**
-  String get profileMetricProgress;
-
   /// No description provided for @profileBadgesTitle.
   ///
   /// In ca, this message translates to:

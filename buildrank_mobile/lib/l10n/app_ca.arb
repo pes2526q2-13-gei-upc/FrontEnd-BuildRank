@@ -458,8 +458,6 @@
     "profileLoadError":  "No s\u0027ha pogut carregar el perfil.",
     "profileMetricBuildings":  "EDIFICIS",
     "profileMetricLinks":  "VINCLES",
-    "profileMetricAvgRanking":  "RÀNQUING MITJÀ",
-    "profileMetricProgress":  "PROGRÉS",
     "profileBadgesTitle":  "Insígnies d\u0027edificis",
     "profileBadgesBody":  "Les insígnies reals es mostren dins de la fitxa de cada edifici. Quan un edifici compleixi criteris de puntuació, qualitat de dades o millora, apareixeran en el seu detall.",
     "profileBuildingNumber":  "Edifici #{id}",

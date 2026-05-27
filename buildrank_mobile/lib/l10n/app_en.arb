@@ -458,8 +458,6 @@
     "profileLoadError":  "Could not load the profile.",
     "profileMetricBuildings":  "BUILDINGS",
     "profileMetricLinks":  "LINKS",
-    "profileMetricAvgRanking":  "AVG RANKING",
-    "profileMetricProgress":  "PROGRESS",
     "profileBadgesTitle":  "Building badges",
     "profileBadgesBody":  "Real badges are shown inside each building profile. When a building meets score, data quality, or improvement criteria, they will appear in its details.",
     "profileBuildingNumber":  "Building #{id}",

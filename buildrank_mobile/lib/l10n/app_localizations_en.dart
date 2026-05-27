@@ -954,12 +954,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileMetricLinks => 'LINKS';
 
   @override
-  String get profileMetricAvgRanking => 'AVG RANKING';
-
-  @override
-  String get profileMetricProgress => 'PROGRESS';
-
-  @override
   String get profileBadgesTitle => 'Building badges';
 
   @override

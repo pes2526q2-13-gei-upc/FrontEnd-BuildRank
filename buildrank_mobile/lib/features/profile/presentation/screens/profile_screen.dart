@@ -641,21 +641,13 @@ class _ProfileScreenState extends State<ProfileScreen>
           ),
           const Divider(),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _Metric(
                 title: _buildings.length.toString(),
                 subtitle: _isAdminFinca
                     ? AppLocalizations.of(context).profileMetricBuildings
                     : AppLocalizations.of(context).profileMetricLinks,
-              ),
-              _Metric(
-                title: "B+",
-                subtitle: AppLocalizations.of(context).profileMetricAvgRanking,
-              ),
-              _Metric(
-                title: "+14%",
-                subtitle: AppLocalizations.of(context).profileMetricProgress,
               ),
             ],
           ),

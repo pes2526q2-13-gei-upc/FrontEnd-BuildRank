@@ -458,8 +458,6 @@
     "profileLoadError":  "No se ha podido cargar el perfil.",
     "profileMetricBuildings":  "EDIFICIOS",
     "profileMetricLinks":  "VÍNCULOS",
-    "profileMetricAvgRanking":  "RANKING MEDIO",
-    "profileMetricProgress":  "PROGRESO",
     "profileBadgesTitle":  "Insignias de edificios",
     "profileBadgesBody":  "Las insignias reales se muestran dentro de la ficha de cada edificio. Cuando un edificio cumpla criterios de puntuación, calidad de datos o mejora, aparecerán en su detalle.",
     "profileBuildingNumber":  "Edificio #{id}",

@@ -964,12 +964,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get profileMetricLinks => 'VINCLES';
 
   @override
-  String get profileMetricAvgRanking => 'RÀNQUING MITJÀ';
-
-  @override
-  String get profileMetricProgress => 'PROGRÉS';
-
-  @override
   String get profileBadgesTitle => 'Insígnies d\'edificis';
 
   @override
