@@ -49,6 +49,9 @@ dependencies:
   stream_chat_flutter: ^9.0.0
   flutter_local_notifications: ^18.0.0
   google_sign_in: ^7.2.0
+  # Necessari per renderitzar el botó oficial de Google Identity Services en
+  # Web (`web.renderButton()`). En altres plataformes no s'utilitza.
+  google_sign_in_web: ^1.1.3
   file_picker: ^10.3.3
   http_parser: ^4.1.2
 

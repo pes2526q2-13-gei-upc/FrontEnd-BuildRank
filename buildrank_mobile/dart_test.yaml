@@ -1,0 +1,12 @@
+# Força els tests a executar-se seqüencialment.
+#
+# Diversos singletons (StreamService.client, GoogleSignIn.instance,
+# ChatService._activeConnect) viuen com a estat global del procés. Quan els
+# tests corren en paral·lel (default de `flutter test`), els isolates
+# comparteixen referencia a aquests singletons i ocasionalment es trepitgen
+# entre ells — provocant fallades intermitents (per exemple, stack overflow
+# en Element.rebuild durant un test de pantalla aliena).
+#
+# `concurrency: 1` evita que aquests escenaris apareguin sense haver de
+# refactoritzar tots els tests per afegir teardowns explícits.
+concurrency: 1

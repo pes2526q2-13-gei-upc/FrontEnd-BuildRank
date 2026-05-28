@@ -16,7 +16,22 @@ class AuthService {
   Future<void> _ensureGoogleSignInInitialized() async {
     if (_isGoogleSignInInitialized) return;
 
-    await GoogleSignIn.instance.initialize();
+    // `google_sign_in` >=7.0 requereix configurar el client ID a `initialize()`
+    // perquè el flux retorni un `idToken` vàlid. Sense això, el plugin natiu
+    // fa un null-check intern i llança "Null check operator used on a null
+    // value", tant en Android (Credential Manager) com en Web (Google Identity
+    // Services).
+    //
+    // - `clientId`: necessari en Web (Google Identity Services).
+    // - `serverClientId`: necessari en Android perquè l'audience de l'`idToken`
+    //   coincideixi amb `GOOGLE_OAUTH_CLIENT_ID` del backend.
+    //
+    // En cada plataforma s'ignora el paràmetre que no aplica, així que el
+    // mateix valor (el Web client ID) serveix per ambdues.
+    await GoogleSignIn.instance.initialize(
+      clientId: ApiConfig.googleOAuthServerClientId,
+      serverClientId: ApiConfig.googleOAuthServerClientId,
+    );
 
     _isGoogleSignInInitialized = true;
   }
@@ -42,34 +57,11 @@ class AuthService {
         throw Exception('Google no ha retornat cap id_token.');
       }
 
-      final response = await http.post(
-        Uri.parse(ApiConfig.googleOAuth),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'id_token': idToken,
-          'mode': mode,
-          if (mode == 'register' && role != null && role.isNotEmpty)
-            'role': role,
-        }),
+      return await exchangeGoogleIdToken(
+        idToken: idToken,
+        mode: mode,
+        role: role,
       );
-
-      final data = _decodeBody(response);
-
-      if (response.statusCode == 200) {
-        final access = data['access'];
-        final refresh = data['refresh'];
-
-        if (access != null && refresh != null) {
-          await TokenStorage.saveTokens(
-            accessToken: access,
-            refreshToken: refresh,
-          );
-        }
-
-        return data;
-      }
-
-      throw Exception(_extractErrorMessage(data));
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw Exception('Inici de sessió amb Google cancel·lat.');
@@ -80,6 +72,56 @@ class AuthService {
       );
     }
   }
+
+  /// Posta l'`idToken` al backend (`/api/accounts/oauth/google/`) i guarda
+  /// els tokens JWT a `TokenStorage`. S'usa des de dues vies:
+  ///
+  /// - El flux imperatiu de mòbil (`loginWithGoogle` → `authenticate()`).
+  /// - El flux de Web amb el botó oficial: quan l'usuari clica, GIS emet un
+  ///   event al stream de `GoogleSignIn.instance.authenticationEvents` amb
+  ///   l'`idToken`, i la pantalla crida aquest mètode directament.
+  ///
+  /// Tot el postprocessament d'errors / extracció d'access+refresh viu aquí
+  /// per evitar duplicar lògica entre les dues plataformes.
+  Future<Map<String, dynamic>> exchangeGoogleIdToken({
+    required String idToken,
+    String mode = 'login',
+    String? role,
+  }) async {
+    final response = await http.post(
+      Uri.parse(ApiConfig.googleOAuth),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'id_token': idToken,
+        'mode': mode,
+        if (mode == 'register' && role != null && role.isNotEmpty) 'role': role,
+      }),
+    );
+
+    final data = _decodeBody(response);
+
+    if (response.statusCode == 200) {
+      final access = data['access'];
+      final refresh = data['refresh'];
+
+      if (access != null && refresh != null) {
+        await TokenStorage.saveTokens(
+          accessToken: access,
+          refreshToken: refresh,
+        );
+      }
+
+      return data;
+    }
+
+    throw Exception(_extractErrorMessage(data));
+  }
+
+  /// Garanteix la inicialització del plugin abans de poder subscriure's al
+  /// stream d'esdeveniments d'autenticació. Útil en Web, on l'únic camí per
+  /// rebre la credencial és escoltar el stream que emet GIS quan l'usuari
+  /// clica el botó oficial.
+  Future<void> ensureGoogleSignInReady() => _ensureGoogleSignInInitialized();
 
   // Login: guarda access y refresh si todo va bien.
   Future<Map<String, dynamic>> login({

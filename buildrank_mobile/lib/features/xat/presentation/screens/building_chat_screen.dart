@@ -51,9 +51,9 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
 
   Future<void> _initChannel() async {
     try {
-      if (StreamService.client.state.currentUser == null) {
-        await ChatService.provisionAndReconnect();
-      }
+      // S'uneix a la connexió en curs (si en login es va llançar en segon pla)
+      // o n'inicia una de nova. Evita dobles handshakes de WebSocket.
+      await ChatService.ensureConnected();
       if (StreamService.client.state.currentUser == null) {
         setState(
           () => _error = AppLocalizations.of(context).chatUserNotConnectedError,
@@ -76,8 +76,23 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
     }
   }
 
-  int _djangoId(String streamUserId) =>
-      int.tryParse(streamUserId.replaceFirst('user_', '')) ?? 0;
+  void _retryInit() {
+    setState(() {
+      _error = null;
+      _channel = null;
+    });
+    _initChannel();
+  }
+
+  // Extreu l'ID de Django d'un stream_user_id. Accepta dues formes:
+  //  - "user_17"        → 17
+  //  - "user_17_v2"     → 17  (cas en què el user_id antic va quedar
+  //                            tombstoned a GetStream i es va bumpar la
+  //                            versió al backend)
+  int _djangoId(String streamUserId) {
+    final match = RegExp(r'^user_(\d+)').firstMatch(streamUserId);
+    return match != null ? int.parse(match.group(1)!) : 0;
+  }
 
   void _showFeedback(String message, {bool isError = false}) {
     if (!mounted) return;
@@ -593,14 +608,39 @@ class _BuildingChatScreenState extends State<BuildingChatScreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(l10n.chatConnectionError(_error!)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.chatConnectionError(_error!),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _retryInit,
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.commonRetry),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
     if (_channel == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(l10n.chatConnecting),
+            ],
+          ),
+        ),
+      );
     }
 
     return StreamChannel(

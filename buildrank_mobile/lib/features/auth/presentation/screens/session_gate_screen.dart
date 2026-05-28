@@ -1,7 +1,5 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
-import 'package:buildrank_mobile/core/services/stream_service.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/xat/data/chat_service.dart';
 import 'package:buildrank_mobile/features/auth/data/token_storage.dart';
@@ -40,9 +38,15 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
       final me = await authService.getMe();
       final isSystemAdmin = me['is_system_admin'] == true;
 
-      try {
-        await _connectStreamUser(me);
-      } catch (_) {}
+      // Connecta el xat en segon pla: la handshake amb GetStream pot trigar
+      // 20-30s i no ha de bloquejar l'entrada a l'app.
+      final email = me['email'] as String? ?? '';
+      final fallbackId = 'user_${me['id']}';
+      final userName = email.isNotEmpty ? email.split('@').first : fallbackId;
+      ChatService.startSessionInBackground(
+        userName: userName,
+        requestNotificationPermission: true,
+      );
 
       if (isSystemAdmin) {
         return const AdminPanelScreen();
@@ -53,24 +57,6 @@ class _SessionGateScreenState extends State<SessionGateScreen> {
       await TokenStorage.clearTokens();
       return const AuthBaseScreen();
     }
-  }
-
-  Future<void> _connectStreamUser(Map<String, dynamic> me) async {
-    final email = me['email'] as String? ?? '';
-    final userId = 'user_${me['id']}';
-    final userName = email.isNotEmpty ? email.split('@').first : userId;
-
-    await ChatService.provisionAndReconnect(userName: userName);
-
-    try {
-      await FirebaseMessaging.instance.requestPermission().timeout(
-        const Duration(seconds: 5),
-      );
-      final token = await FirebaseMessaging.instance.getToken().timeout(
-        const Duration(seconds: 5),
-      );
-      if (token != null) await StreamService.registerFcmToken(token);
-    } catch (_) {}
   }
 
   @override

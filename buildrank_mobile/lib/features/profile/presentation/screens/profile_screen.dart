@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:buildrank_mobile/core/config/api_config.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/auth/presentation/screens/auth_base_screen.dart';
 import 'package:buildrank_mobile/features/formBuilding/data/building_service.dart';
@@ -556,7 +557,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   String? _currentAvatarUrl() {
     final value = _userData?['avatar_url']?.toString().trim();
     if (value == null || value.isEmpty || value == 'null') return null;
-    return value;
+    // El backend pot retornar URLs absolutes amb un host inaccessible si hi
+    // ha NAT/proxy entremig (cas de nattech): reconstruïm contra baseUrl.
+    return ApiConfig.absoluteMediaUrl(value);
   }
 
   String _avatarInitial() {

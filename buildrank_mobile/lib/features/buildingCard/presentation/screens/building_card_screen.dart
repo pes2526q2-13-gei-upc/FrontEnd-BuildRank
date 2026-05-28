@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:buildrank_mobile/core/config/api_config.dart';
+import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/features/formBuilding/data/building_service.dart';
 import '../../../../shared/widgets/metric_card.dart';
 import '../../../../shared/widgets/action_tile.dart';
@@ -35,6 +37,7 @@ class BuildingDetailScreen extends StatefulWidget {
 
 class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   late final BuildingService _buildingService;
+  final AuthService _authService = AuthService();
 
   int _tabIndex = 0;
   bool _isLoading = true;
@@ -45,6 +48,12 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
   String? _badgesErrorText;
   List<BuildingBadgeItem> _badges = [];
 
+  // Avatar de l'usuari autenticat per al CircleAvatar de la barra superior.
+  // Si `widget.avatarImage` ve donat (típicament en tests), no es carrega del
+  // backend.
+  String? _userAvatarUrl;
+  String _userInitial = '?';
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +61,50 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
     _buildingDetail = widget.building;
     _loadBuildingDetail();
     _loadBuildingBadges();
+    if (widget.avatarImage == null) {
+      _loadUserAvatar();
+    }
+  }
+
+  Future<void> _loadUserAvatar() async {
+    try {
+      final me = await _authService.getMe();
+      if (!mounted) return;
+      final rawUrl = me['avatar_url']?.toString().trim();
+      final firstName = (me['first_name'] ?? '').toString().trim();
+      final email = (me['email'] ?? '').toString().trim();
+      setState(() {
+        if (rawUrl != null && rawUrl.isNotEmpty && rawUrl != 'null') {
+          _userAvatarUrl = ApiConfig.absoluteMediaUrl(rawUrl);
+        }
+        if (firstName.isNotEmpty) {
+          _userInitial = firstName.characters.first.toUpperCase();
+        } else if (email.isNotEmpty) {
+          _userInitial = email.characters.first.toUpperCase();
+        }
+      });
+    } catch (_) {
+      // Si falla, queda les inicials "?" — no és bloquejant.
+    }
+  }
+
+  Widget _buildUserAvatar() {
+    if (widget.avatarImage != null) {
+      return CircleAvatar(backgroundImage: widget.avatarImage);
+    }
+    if (_userAvatarUrl != null) {
+      return CircleAvatar(backgroundImage: NetworkImage(_userAvatarUrl!));
+    }
+    return CircleAvatar(
+      backgroundColor: Colors.green.shade100,
+      child: Text(
+        _userInitial,
+        style: TextStyle(
+          color: Colors.green.shade900,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
   }
 
   Future<void> _refreshAll() async {
@@ -356,11 +409,7 @@ class _BuildingDetailScreenState extends State<BuildingDetailScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 16),
-                  child: CircleAvatar(
-                    backgroundImage:
-                        widget.avatarImage ??
-                        const NetworkImage("https://i.pravatar.cc/100"),
-                  ),
+                  child: _buildUserAvatar(),
                 ),
               ],
             ),

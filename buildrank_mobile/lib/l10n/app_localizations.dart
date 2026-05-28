@@ -808,10 +808,16 @@ abstract class AppLocalizations {
   /// **'Conversa directa entre administradors de finca.'**
   String get chatDirectDescription;
 
+  /// No description provided for @chatConnecting.
+  ///
+  /// In ca, this message translates to:
+  /// **'Connectant amb el xat…'**
+  String get chatConnecting;
+
   /// No description provided for @chatUserNotConnectedError.
   ///
   /// In ca, this message translates to:
-  /// **'Usuari no connectat. Tanca sessió i torna a entrar.'**
+  /// **'No s\'ha pogut connectar amb el xat.'**
   String get chatUserNotConnectedError;
 
   /// No description provided for @chatConnectionError.

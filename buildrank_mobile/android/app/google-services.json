@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "151978577358-ajr2qg24aie2qkr98j8eabigisov6r53.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.buildrank_mobile",
+            "certificate_hash": "51f0c4bf2abce06d2c879f2c0964865a70887f7f"
+          }
+        },
+        {
           "client_id": "151978577358-rlroa7mvj0n64anlvvip4slngldv87ch.apps.googleusercontent.com",
           "client_type": 3
         }

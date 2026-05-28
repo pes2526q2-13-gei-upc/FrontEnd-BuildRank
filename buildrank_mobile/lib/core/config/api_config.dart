@@ -372,6 +372,29 @@ class ApiConfig {
 
   static const String xemaApiKey = String.fromEnvironment('XEMA_API_KEY');
 
+  // =========================
+  // Google OAuth
+  // =========================
+  /// Web client ID d'OAuth 2.0 (de Google Cloud Console / Firebase).
+  ///
+  /// Requerit per `GoogleSignIn.instance.initialize(serverClientId: ...)` en
+  /// Android amb `google_sign_in` >=7.0: sense aquest valor, l'`idToken` no
+  /// es genera i el plugin natiu pot llançar "Null check operator used on a
+  /// null value".
+  ///
+  /// El backend ha d'usar exactament aquest mateix valor com a
+  /// `GOOGLE_OAUTH_CLIENT_ID` per verificar el token (l'audience ha de
+  /// coincidir).
+  ///
+  /// Per defecte agafa el web client del `google-services.json` del repo.
+  /// Es pot sobreescriure amb:
+  ///   flutter build apk --dart-define=GOOGLE_OAUTH_SERVER_CLIENT_ID=...
+  static const String googleOAuthServerClientId = String.fromEnvironment(
+    'GOOGLE_OAUTH_SERVER_CLIENT_ID',
+    defaultValue:
+        '151978577358-rlroa7mvj0n64anlvvip4slngldv87ch.apps.googleusercontent.com',
+  );
+
   static Uri xemaCurrentWeather({String city = 'Barcelona'}) {
     return Uri.parse(
       '$xemaWeatherBaseUrl/api/weather/current/',
@@ -391,5 +414,25 @@ class ApiConfig {
         (key, value) => MapEntry(key, value?.toString()),
       ),
     );
+  }
+
+  /// Reconstrueix una URL de media (avatar, etc.) perquè apunti a [baseUrl].
+  ///
+  /// El backend genera URLs absolutes amb `request.build_absolute_uri()`, que
+  /// depèn del header `Host` que veu Django. Si entre el client i el backend
+  /// hi ha un NAT/proxy que reescriu o stripeja el `Host` (per exemple,
+  /// nattech a la UPC), la URL retornada apunta a un host/port inaccessible
+  /// des de fora. Aquest helper extreu el path i el torna a compondre amb el
+  /// [baseUrl] que el front ja està utilitzant amb èxit per parlar amb el
+  /// backend — així la URL és sempre accessible.
+  static String absoluteMediaUrl(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) return trimmed;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      final parsed = Uri.parse(trimmed);
+      final query = parsed.hasQuery ? '?${parsed.query}' : '';
+      return '$baseUrl${parsed.path}$query';
+    }
+    return '$baseUrl$trimmed';
   }
 }
