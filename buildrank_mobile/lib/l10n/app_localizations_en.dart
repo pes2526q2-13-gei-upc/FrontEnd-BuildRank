@@ -408,8 +408,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Direct conversation between property administrators.';
 
   @override
-  String get chatUserNotConnectedError =>
-      'User not connected. Sign out and sign back in.';
+  String get chatConnecting => 'Connecting to chat…';
+
+  @override
+  String get chatUserNotConnectedError => 'Couldn\'t connect to chat.';
 
   @override
   String chatConnectionError(String error) {

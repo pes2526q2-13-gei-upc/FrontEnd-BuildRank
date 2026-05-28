@@ -153,7 +153,8 @@
     "myChatsDirectDescription":  "Conversa directa o canal compartit entre administradors.",
     "chatFallbackName":  "Xat",
     "chatDirectDescription":  "Conversa directa entre administradors de finca.",
-    "chatUserNotConnectedError":  "Usuari no connectat. Tanca sessió i torna a entrar.",
+    "chatConnecting":  "Connectant amb el xat…",
+    "chatUserNotConnectedError":  "No s'ha pogut connectar amb el xat.",
     "chatConnectionError":  "Error al connectar el xat:\n{error}",
     "@chatConnectionError":  {
                                  "placeholders":  {

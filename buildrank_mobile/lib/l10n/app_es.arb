@@ -153,7 +153,8 @@
     "myChatsDirectDescription":  "Conversación directa o canal compartido entre administradores.",
     "chatFallbackName":  "Chat",
     "chatDirectDescription":  "Conversación directa entre administradores de finca.",
-    "chatUserNotConnectedError":  "Usuario no conectado. Cierra sesión y vuelve a entrar.",
+    "chatConnecting":  "Conectando con el chat…",
+    "chatUserNotConnectedError":  "No se ha podido conectar con el chat.",
     "chatConnectionError":  "Error al conectar el chat:\n{error}",
     "@chatConnectionError":  {
                                  "placeholders":  {

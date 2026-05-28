@@ -413,8 +413,11 @@ class AppLocalizationsCa extends AppLocalizations {
       'Conversa directa entre administradors de finca.';
 
   @override
+  String get chatConnecting => 'Connectant amb el xat…';
+
+  @override
   String get chatUserNotConnectedError =>
-      'Usuari no connectat. Tanca sessió i torna a entrar.';
+      'No s\'ha pogut connectar amb el xat.';
 
   @override
   String chatConnectionError(String error) {

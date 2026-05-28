@@ -153,7 +153,8 @@
     "myChatsDirectDescription":  "Direct conversation or shared channel between administrators.",
     "chatFallbackName":  "Chat",
     "chatDirectDescription":  "Direct conversation between property administrators.",
-    "chatUserNotConnectedError":  "User not connected. Sign out and sign back in.",
+    "chatConnecting":  "Connecting to chat…",
+    "chatUserNotConnectedError":  "Couldn't connect to chat.",
     "chatConnectionError":  "Error connecting chat:\n{error}",
     "@chatConnectionError":  {
                                  "placeholders":  {

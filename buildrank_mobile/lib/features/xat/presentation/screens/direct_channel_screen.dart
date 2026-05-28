@@ -34,9 +34,9 @@ class _DirectChannelScreenState extends State<DirectChannelScreen> {
 
   Future<void> _initChannel() async {
     try {
-      if (StreamService.client.state.currentUser == null) {
-        await ChatService.provisionAndReconnect();
-      }
+      // S'uneix a la connexió en curs (si en login es va llançar en segon pla)
+      // o n'inicia una de nova. Evita dobles handshakes de WebSocket.
+      await ChatService.ensureConnected();
 
       if (StreamService.client.state.currentUser == null) {
         setState(
@@ -59,6 +59,14 @@ class _DirectChannelScreenState extends State<DirectChannelScreen> {
     }
   }
 
+  void _retryInit() {
+    setState(() {
+      _error = null;
+      _channel = null;
+    });
+    _initChannel();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -69,14 +77,39 @@ class _DirectChannelScreenState extends State<DirectChannelScreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(l10n.chatConnectionError(_error!)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.chatConnectionError(_error!),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _retryInit,
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.commonRetry),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
     if (_channel == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(l10n.chatConnecting),
+            ],
+          ),
+        ),
+      );
     }
 
     return StreamChannel(

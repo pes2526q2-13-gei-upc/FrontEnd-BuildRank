@@ -8,6 +8,11 @@ class StreamService {
     logLevel: Level.INFO,
   );
 
+  /// Cert si l'usuari està connectat i el WebSocket de GetStream és viu.
+  static bool get isUserConnected =>
+      client.state.currentUser != null &&
+      client.wsConnectionStatus == ConnectionStatus.connected;
+
   static Future<void> connectUser({
     required String userId,
     required String userName,

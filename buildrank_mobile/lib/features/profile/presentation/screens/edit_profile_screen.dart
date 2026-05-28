@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:buildrank_mobile/core/config/api_config.dart';
 import 'package:buildrank_mobile/features/auth/data/auth_service.dart';
 import 'package:buildrank_mobile/l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
@@ -72,7 +73,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _normalizeAvatarUrl(String? value) {
     final clean = value?.trim();
     if (clean == null || clean.isEmpty || clean == 'null') return null;
-    return clean;
+    // El backend pot retornar URLs absolutes amb un host inaccessible si hi
+    // ha NAT/proxy entremig: reconstruïm contra baseUrl.
+    return ApiConfig.absoluteMediaUrl(clean);
   }
 
   String _avatarInitial() {

@@ -412,8 +412,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Conversación directa entre administradores de finca.';
 
   @override
+  String get chatConnecting => 'Conectando con el chat…';
+
+  @override
   String get chatUserNotConnectedError =>
-      'Usuario no conectado. Cierra sesión y vuelve a entrar.';
+      'No se ha podido conectar con el chat.';
 
   @override
   String chatConnectionError(String error) {
